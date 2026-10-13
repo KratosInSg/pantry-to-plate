@@ -1,0 +1,17 @@
+unit,aliases,kind,to_base,base_unit,note
+g,g|gram|grams|gm|gms,mass,1,g,
+kg,kg|kilogram|kilograms|kilo,mass,1000,g,
+mg,mg|milligram|milligrams,mass,0.001,g,
+oz,oz|ounce|ounces,mass,28.3495,g,avoirdupois ounce (weight)
+lb,lb|lbs|pound|pounds,mass,453.592,g,
+ml,ml|milliliter|milliliters|millilitre|millilitres,volume,1,ml,
+l,l|liter|liters|litre|litres,volume,1000,ml,
+tsp,tsp|teaspoon|teaspoons|t,volume,4.92892,ml,US customary
+tbsp,tbsp|tablespoon|tablespoons|tbs|tbl|T,volume,14.7868,ml,US customary
+fl_oz,fl oz|fl. oz|fluid ounce|fluid ounces,volume,29.5735,ml,US customary
+cup,cup|cups|c,volume,236.588,ml,US customary cup (metric cup = 250 ml)
+pint,pint|pints|pt,volume,473.176,ml,US customary
+quart,quart|quarts|qt,volume,946.353,ml,US customary
+gallon,gallon|gallons|gal,volume,3785.41,ml,US customary
+pinch,pinch|pinches,volume,0.31,ml,~1/16 tsp (approximate)
+dash,dash|dashes,volume,0.62,ml,~1/8 tsp (approximate)

@@ -1,0 +1,1501 @@
+canonical_name,n_occurrences,n_recipes,usda_description,match_method,match_score
+cardamom,1715,1707,"Spices, cardamom",auto,1.05
+self-rising flour,1609,1609,"Wheat flour, white, all-purpose, self-rising, enriched",auto,0.94
+marshmallow,1555,1548,"Candies, marshmallows",auto,0.93
+onion soup mix,1305,1304,"Soup, onion, dry, mix",auto,1.03
+bread flour,1253,1253,"Flour, bread, white, enriched, unbleached",auto,1.19
+dried rosemary,1242,1242,"Spices, rosemary, dried",auto,1.05
+celery seed,1234,1232,"Spices, celery seed",auto,1.05
+light corn syrup,1164,1164,"Syrups, corn, light",auto,1.18
+cream of tartar,1076,1076,"Leavening agents, cream of tartar",auto,1.02
+tarragon,1031,1014,"Spices, tarragon, dried",auto,0.9
+stewed tomato,1018,1015,"Tomatoes, red, ripe, canned, stewed",auto,0.97
+velveeta cheese,921,921,KRAFT VELVEETA Pasteurized Process Cheese Spread,auto,0.94
+taco seasoning,876,876,"Seasoning mix, dry, taco, original",auto,0.85
+mustard seed,857,856,"Spices, mustard seed, ground",auto,1.02
+caraway seed,848,846,"Spices, caraway seed",auto,1.05
+cake flour,838,838,"Wheat flour, white, cake, enriched",auto,0.97
+poppy seed,832,829,"Spices, poppy seed",auto,1.05
+yellow mustard,801,801,"Mustard, prepared, yellow",auto,1.03
+mandarin orange,796,795,"Tangerines, (mandarin oranges), raw",auto,1.1
+dried dill,784,783,"Spices, dill weed, dried",auto,1.02
+poultry seasoning,745,745,"Spices, poultry seasoning",auto,1.05
+saffron,737,737,"Spices, saffron",auto,1.05
+fennel seed,736,736,"Spices, fennel seed",auto,1.05
+marjoram,733,732,"Spices, marjoram, dried",auto,0.9
+prosciutto,675,675,"Ham, prosciutto",auto,0.82
+yellow squash,606,606,"Squash, summer, yellow, includes skin, raw",auto,1.11
+pizza sauce,558,557,"Sauce, pizza, canned, ready-to-serve",auto,1.13
+coriander seed,523,521,"Spices, coriander seed",auto,1.05
+dried marjoram,521,521,"Spices, marjoram, dried",auto,1.05
+dried tarragon,488,488,"Spices, tarragon, dried",auto,1.05
+flank steak,484,484,"Beef, flank, steak, boneless, choice, raw",auto,1.01
+cream of celery soup,482,482,"Soup, cream of celery, canned, condensed",auto,1.13
+instant vanilla pudding,453,453,"Puddings, vanilla, dry mix, instant",auto,0.88
+candy bar,428,422,"Candies, peanut bar",auto,1.15
+condensed cream of mushroom soup,419,419,"Soup, cream of mushroom, canned, condensed",auto,1.03
+cornbread,419,417,"Cornbread, made from home recipe",auto,1.16
+grenadine,407,407,"Syrups, grenadine",auto,1.05
+ritz cracker,406,406,"Nabisco, Nabisco Ritz Crackers",auto,1.05
+club soda,404,404,"Beverages, carbonated, club soda",auto,0.9
+smoked salmon,391,391,"Fish, salmon, chinook, smoked",auto,1.02
+pistachio,381,381,"Nuts, pistachio nuts, raw",auto,1.1
+instant chocolate pudding mix,376,376,"Puddings, chocolate, dry mix, instant",auto,1.03
+vanilla instant pudding mix,371,371,"Puddings, vanilla, dry mix, instant",auto,1.03
+mace,370,369,"Spices, mace, ground",auto,1.02
+pork loin chop,364,364,"Pork, fresh, loin, top loin (chops), boneless, separable lean only, raw",auto,1.05
+graham cracker crust,363,363,"Pie Crust, Cookie-type, Graham Cracker, Ready Crust",auto,0.97
+ghee,355,355,"Ghee, clarified butter",auto,1.19
+long-grain rice,353,353,"Rice, white, long-grain, regular, raw, enriched",auto,1.02
+pizza crust,343,343,"Pizza, no cheese, thin crust",auto,0.86
+sirloin steak,334,334,"Beef, top sirloin steak, raw",auto,1.04
+pork shoulder,319,319,"Pork, fresh, shoulder, whole, separable lean only, raw",auto,1.08
+deli ham,312,312,"Ham, turkey, sliced, extra lean, prepackaged or deli",auto,1.03
+sourdough bread,310,310,"Bread, french or vienna (includes sourdough)",auto,1.09
+condensed tomato soup,308,308,"Soup, tomato, canned, condensed",auto,1.03
+condensed milk,305,305,"Milk, condensed, sweetened",auto,1.05
+sea scallop,302,302,"Scallops, sea, frozen, wild caught",auto,1.19
+caramel,290,289,"Candies, caramels",auto,0.93
+tuna in water,290,290,"Fish, tuna, white, canned in water, drained solids",auto,0.81
+vanilla wafer,284,282,"Cookies, vanilla wafers, lower fat",auto,0.87
+frozen corn kernel,283,283,"Corn, sweet, white, frozen, kernels on cob, unprepared",auto,1.06
+bok choy,277,277,"Cabbage, bok choy, raw",auto,1.07
+salted peanut,276,276,"Nuts, mixed nuts, oil roasted, with peanuts, lightly salted",auto,0.81
+chicken leg,274,274,"Chicken, broilers or fryers, leg, meat only, raw",auto,1.11
+frozen hash brown potato,269,269,"Potatoes, hash brown, frozen, plain, unprepared",auto,1.12
+frozen green bean,263,263,"Green beans, frozen, cooked with oil",auto,1.02
+unsweetened chocolate square,259,256,"Baking chocolate, unsweetened, squares",auto,1.15
+graham cracker pie crust,257,257,"Pie Crust, Cookie-type, Graham Cracker, Ready Crust",auto,1.12
+long-grain white rice,256,256,"Rice, white, long-grain, regular, raw, enriched",auto,1.05
+sun-dried tomato in oil,253,253,"Tomatoes, sun-dried, packed in oil, drained",auto,1.12
+cooked shrimp,252,252,"Crustaceans, shrimp, cooked",auto,1.05
+sake,252,252,"Alcoholic beverage, rice (sake)",auto,0.87
+refrigerated biscuit,244,244,"Biscuits, mixed grain, refrigerated dough",auto,1.09
+honey mustard,242,242,Honey mustard dip,auto,0.92
+salad green,239,239,"Salad dressing, green goddess, regular",auto,0.97
+carbonated lemon-lime beverage,233,233,"Beverages, carbonated, lemon-lime soda, no caffeine",auto,1.09
+gelatin,232,232,"Gelatins, dry powder, unsweetened",auto,1.15
+coconut cream,231,231,"Nuts, coconut cream, raw (liquid expressed from grated meat)",auto,0.98
+pork loin roast,230,230,"Pork, fresh, loin, top loin (roasts), boneless, separable lean only, raw",auto,1.05
+sun-dried tomatoes in oil,229,229,"Tomatoes, sun-dried, packed in oil, drained",auto,1.12
+dry roasted peanut,227,227,"Peanuts, dry roasted, salted",auto,1.17
+smoked ham,227,227,"Ham, smoked, extra lean, low sodium",auto,1.19
+champagne,226,226,Champagne punch,auto,0.92
+distilled white vinegar,218,218,"Vinegar, distilled",auto,0.97
+orange juice concentrate,218,218,"Orange juice, chilled, includes from concentrate",auto,1.12
+chocolate baking square,216,215,"Baking chocolate, mexican, squares",auto,1.15
+anise seed,215,215,"Spices, anise seed",auto,1.05
+roasted peanut,215,215,"Peanuts, roasted, salted",auto,1.17
+caramel ice cream topping,214,214,"Ice cream sundae, caramel topping",auto,0.92
+coffee liqueur,212,212,"Alcoholic beverage, liqueur, coffee, 63 proof",auto,0.87
+red apple,212,212,"Apples, red delicious, with skin, raw",auto,1.14
+dark corn syrup,210,210,"Syrups, corn, dark",auto,1.18
+roasted garlic,210,210,"Garlic, raw",auto,0.866
+frozen hash brown,204,204,"Potatoes, hash brown, frozen, plain, unprepared",auto,0.99
+red chili pepper flake,204,204,"Peppers, hot chili, red, raw",auto,0.86
+biscuit mix,203,203,"Biscuits, plain or buttermilk, dry mix",auto,0.97
+leg of lamb,203,203,"Lamb, leg, shank half, separable lean and fat, trimmed to 1/4"" fat, choice, raw",auto,1.15
+long grain white rice,203,203,"Rice, white, long grain, unenriched, raw",auto,1.05
+curd cottage cheese,202,202,"Cheese, cottage, creamed, large or small curd",auto,0.97
+onion flake,201,201,"Onions, dehydrated flakes",auto,1.03
+hot red pepper flake,200,200,"Peppers, hot chili, red, raw",auto,0.848
+popped popcorn,199,199,"Popcorn, popped in oil, with added butter",auto,0.86
+canned black bean,197,197,"Beans, black turtle, mature seeds, canned",auto,1.09
+unbleached white flour,196,196,"Wheat flour, white, all-purpose, enriched, unbleached",auto,0.97
+espresso,190,190,"Beverages, coffee, brewed, espresso, restaurant-prepared",auto,0.84
+hoagie roll,189,189,"Roll, white, hoagie, submarine",auto,0.89
+dried sweetened cranberry,188,188,"Cranberries, dried, sweetened (Includes foods for USDA's Food Distribution Program)",auto,1.0
+seasoned dry bread crumb,188,188,"Bread, crumbs, dry, grated, seasoned",auto,1.15
+white bread flour,187,187,"Wheat flour, white, bread, enriched",auto,1.0
+kaiser roll,185,185,"Rolls, hard (includes kaiser)",auto,1.12
+sourdough starter,181,181,,none,
+refrigerated buttermilk biscuit,180,180,"Pillsbury Golden Layer Buttermilk Biscuits, Artificial Flavor, refrigerated dough",auto,1.0
+unsweetened coconut,178,178,"Coconut water, unsweetened",auto,0.92
+vanilla pudding mix,178,178,"Puddings, vanilla, dry mix, regular",auto,1.0
+gruyere,173,173,"Cheese, gruyere",auto,1.05
+frozen whole kernel corn,170,170,"Corn, sweet, white, frozen, kernels on cob, unprepared",auto,1.06
+cream of coconut,169,169,"Nuts, coconut cream, raw (liquid expressed from grated meat)",auto,0.98
+lemonade,168,168,"Lemonade, frozen concentrate, pink",auto,1.15
+chicken meat,163,163,"Chicken, stewing, meat only, raw",auto,1.17
+dried cilantro,161,161,"Coriander (cilantro) leaves, raw",auto,0.804
+dried lentil,161,161,"Lentils, from dried, fat added",auto,1.02
+kiwi,161,161,"Kiwifruit (kiwi), green, peeled, raw",auto,1.11
+seedless grape,161,161,"Grapes, red, seedless, raw",auto,1.17
+ground turkey breast,159,159,"Turkey, Ground, raw",auto,0.815
+key lime juice,156,156,SILK Key Lime soy yogurt,auto,0.82
+unsweetened pineapple juice,156,156,"Pineapple juice, canned or bottled, unsweetened, with added ascorbic acid",auto,0.91
+vanilla sugar,154,154,"Ice creams, BREYERS, No Sugar Added, Vanilla",auto,0.93
+sweetened coconut,153,153,"Coconut water, sweetened",auto,0.92
+bun,151,151,"Cinnamon buns, frosted (includes honey buns)",auto,1.06
+sprite,151,151,"Beverages, carbonated, SPRITE, lemon-lime, without caffeine",auto,0.81
+fenugreek seed,150,150,"Spices, fenugreek seed",auto,1.05
+instant vanilla pudding mix,150,150,"Puddings, vanilla, dry mix, instant",auto,1.03
+candied ginger,148,148,,none,
+dry crushed red pepper,148,148,"Peppers, sweet, red, raw",auto,0.929
+savory,148,148,"Spices, savory, ground",auto,1.02
+pork butt,147,147,"Pork, fresh, shoulder, (Boston butt), blade (steaks), separable lean only, raw",auto,0.99
+sweetened whipped cream,147,147,,none,
+tapioca flour,147,147,"Bread, gluten-free, white, made with tapioca starch and brown rice flour",auto,0.87
+apple butter,146,146,"Fruit butters, apple",auto,1.15
+soft brown sugar,146,146,"Sugars, brown",auto,0.83
+silken tofu,145,145,"MORI-NU, Tofu, silken, firm",auto,1.02
+dried chive,144,144,"Chives, raw",auto,0.857
+dill seed,143,143,"Spices, dill seed",auto,1.05
+lemons rind,143,143,"Cookies, ladyfingers, with lemon juice and rind",auto,0.87
+seedless raisin,140,140,"Raisins, golden, seedless",auto,1.15
+smoked gouda cheese,140,140,"Cheese, gouda",auto,0.845
+mixed green,138,138,"Mixed salad greens, raw",auto,0.85
+sandwich bun,136,136,Wheat bun as ingredient in sandwiches,auto,0.89
+deli turkey,135,135,"Turkey, white, rotisserie, deli cut",auto,1.09
+soft goat cheese,135,135,"Cheese, goat, soft type",auto,1.18
+fish stock,134,134,"Soup, stock, fish, home-prepared",auto,0.9
+burgundy wine,133,133,"Alcoholic Beverage, wine, table, red, Burgundy",auto,0.84
+sriracha sauce,133,133,"Sauce, hot chile, sriracha",auto,1.12
+condensed cream of celery soup,131,131,"Soup, cream of celery, canned, condensed",auto,1.03
+bay scallop,130,130,"Scallops, bay, Patagonian, frozen, wild caught",auto,1.16
+cooked long-grain rice,130,130,"Rice, white, long-grain, regular, enriched, cooked",auto,0.97
+whole allspice,130,130,"Spices, allspice, ground",auto,1.02
+baby portabella mushroom,129,129,"Mushrooms, portabella, raw",auto,0.943
+portabella mushroom cap,129,129,"Mushrooms, portabella, raw",auto,0.85
+caramel topping,127,127,"Toppings, butterscotch or caramel",auto,1.15
+pork sparerib,127,127,"Pork, fresh, spareribs, separable lean and fat, raw",auto,0.99
+white balsamic vinegar,127,127,"Vinegar, balsamic",auto,0.986
+beef short rib,125,125,"Beef, chuck, short ribs, boneless, separable lean and fat, trimmed to 0"" fat, choice, raw",auto,0.9
+clarified butter,125,125,"Butter, Clarified butter (ghee)",auto,1.15
+white corn syrup,125,125,"Syrups, corn, dark",auto,0.87
+crispy rice cereal,124,124,"Cereal, rice crispy, plain",auto,1.17
+red bean,124,124,"Beans, kidney, red, mature seeds, raw",auto,1.14
+hash brown,123,123,"Potatoes, hash brown, home-prepared",auto,1.02
+split pea,122,122,"Peas, green, split, mature seeds, raw",auto,1.14
+beef round steak,120,120,"Beef, Australian, imported, grass-fed, round, bottom round steak/roast, boneless, separable lean only, raw",auto,0.96
+puff pastry sheet,120,120,,none,
+instant coffee powder,119,119,"Beverages, coffee, instant, regular, powder",auto,0.9
+unsalted peanut,118,118,"Peanuts, roasted, unsalted",auto,0.8
+frozen vegetable,116,116,"Vegetables, mixed, frozen, unprepared",auto,1.12
+lamb shank,116,116,"Lamb, New Zealand, imported, tunnel-boned leg, chump off, shank off, separable lean only, raw",auto,0.96
+raw cashew,116,116,"Nuts, cashew nuts, raw",auto,1.05
+asafoetida powder,115,115,,none,
+crisp rice cereal,115,115,"Cereals ready-to-eat, RALSTON CRISP RICE",auto,0.9
+ladyfinger,115,115,"Cookies, ladyfingers, with lemon juice and rind",auto,0.84
+corn muffin mix,114,114,"Muffins, corn, dry mix, prepared",auto,0.88
+pickling spice,113,113,,none,
+short-grain rice,113,113,"Rice, white, short-grain, raw, unenriched",auto,1.05
+coca-cola,112,112,"Beverages, The COCA-COLA company, Minute Maid, Lemonade",auto,0.81
+sifted flour,112,112,,none,
+sour milk,111,111,,none,
+thai basil,111,111,,none,
+wasabi powder,111,111,,none,
+amaretto liqueur,110,110,,none,
+ciabattum,110,110,,none,
+green lentil,110,110,"Lentils, raw",auto,0.829
+peppermint candy,110,106,"Candies, YORK Peppermint Pattie",auto,1.12
+stuffing,110,110,Bread stuffing,auto,0.92
+whole wheat pita bread,110,110,"Bread, pita, whole wheat",auto,0.92
+corn on the cob,109,109,"Corn, sweet, white, frozen, kernels on cob, unprepared",auto,0.91
+canned tuna,108,108,"Fish, tuna, white, canned in oil, drained solids",auto,0.93
+cola,108,108,Rum and cola,auto,0.92
+cornish hen,108,108,"Chicken, cornish game hens, meat only, raw",auto,1.01
+instant pudding mix,108,108,"Puddings, lemon, dry mix, instant",auto,1.0
+champagne vinegar,107,107,,none,
+masa harina,107,107,"Masa harina, cooked",auto,1.1
+norus,107,107,,none,
+pomegranate seed,107,107,"Pomegranates, raw",auto,0.809
+red currant jelly,107,107,"Currants, red and white, raw",auto,0.819
+rice chex,107,107,,none,
+stuffed green olive,107,107,"Olives, green, Manzanilla, stuffed with pimiento",auto,1.09
+black sesame seed,106,105,,none,
+butter spread,106,106,Peanut butter and chocolate spread,auto,0.89
+dry basil,106,106,"Basil, fresh",auto,0.81
+shredded hash brown,106,106,"Potatoes, hash brown, home-prepared",auto,1.02
+chocolate curl,105,105,,none,
+mincemeat,105,105,,none,
+natural yoghurt,105,105,,none,
+sandwich bread,105,105,"Rudi's, Gluten-Free Bakery, Original Sandwich Bread",auto,0.93
+real maple syrup,104,104,"Syrups, maple",auto,0.801
+soba noodle,104,104,"Noodles, japanese, soba, dry",auto,1.0
+southern comfort,104,104,,none,
+toast,104,104,"Crackers, rusk toast",auto,1.02
+baby bok choy,103,103,"Cabbage, bok choy, raw",auto,0.84
+chocolate liqueur,103,103,,none,
+crescent roll dough,103,103,,none,
+garam masala powder,103,103,,none,
+ginger-garlic paste,103,103,,none,
+creole mustard,102,102,,none,
+ham steak,102,102,"Pork, cured, ham, steak, boneless, extra lean, unheated",auto,0.9
+peanut butter cup,102,100,"Candies, REESE'S Peanut Butter Cups",auto,0.87
+red sweet bell pepper,102,102,"Peppers, bell, red, raw",auto,0.984
+steel oat,102,102,"Oats, whole grain, steel cut",auto,1.06
+unsweetened apple juice,102,102,"Apple juice, canned or bottled, unsweetened, with added ascorbic acid",auto,0.91
+vegan margarine,102,102,,none,
+baking apple,101,101,,none,
+long grain brown rice,101,101,"Rice, brown, long grain, unenriched, raw",auto,1.05
+mixed baby green,101,101,,none,
+old-fashioned oatmeal,101,101,,none,
+top sirloin steak,101,101,"Beef, top sirloin steak, raw",auto,1.07
+cooked spaghetti,100,100,"Spaghetti, spinach, cooked",auto,1.15
+dried pinto bean,100,100,"Pinto beans, from dried, fat added",auto,1.02
+juniper berry,100,100,,none,
+pastry for double-crust pie,100,100,,none,
+seafood cocktail sauce,100,100,,none,
+apple pie spice,99,99,"Spices, pumpkin pie spice",auto,0.834
+beetroot,99,99,,none,
+processed cheese,99,99,"Cheese, processed, with vegetables",auto,1.17
+vanilla soymilk,99,99,"SILK Vanilla, soymilk",auto,1.15
+chicken part,98,98,"Chicken, NS as to part, rotisserie, skin eaten",auto,1.11
+grape jelly,98,98,,none,
+macaroni noodle,98,98,"Macaroni or noodles, creamed, with cheese",auto,1.07
+steamed rice,98,98,"Rice, white, steamed, Chinese restaurant",auto,0.97
+baby potato,97,97,,none,
+bacon fat,97,97,"Animal fat, bacon grease",auto,1.12
+chicken stuffing mix,97,97,"Kraft, Stove Top Stuffing Mix Chicken Flavor",auto,0.96
+dried navy bean,97,97,"Beans, navy, mature seeds, raw",auto,0.868
+instant pistachio pudding mix,97,97,,none,
+vanillaing,97,97,,none,
+fudge brownie mix,96,96,,none,
+green cardamom pod,96,96,,none,
+lime jell-o gelatin,96,96,,none,
+mashed sweet potato,96,96,"Sweet potato, canned, mashed",auto,1.03
+orange gelatin,96,96,,none,
+tapioca starch,96,96,,none,
+whole grain bread,96,96,"Bread, whole grain white",auto,0.89
+beef sirloin,95,95,"Beef, top sirloin steak, raw",auto,1.14
+cardamom powder,95,95,,none,
+lemon curd,95,95,,none,
+roasted cashew,95,95,"Nuts, cashew nuts, oil roasted, with salt added",auto,0.96
+thickened cream,95,95,,none,
+whole milk ricotta cheese,95,95,"Cheese, ricotta, whole milk",auto,1.15
+demerara sugar,94,94,,none,
+frozen orange juice,94,94,"Frozen novelties, juice type, orange",auto,1.15
+sweet relish,94,94,"Pickle relish, sweet",auto,1.15
+sweet-and-sour mix,94,94,,none,
+thai fish sauce,94,94,,none,
+unsifted flour,94,94,,none,
+all-purpose white flour,93,93,"Wheat flour, white, all-purpose, unenriched",auto,1.0
+arugula leaf,93,93,,none,
+baby red potato,93,93,,none,
+corn chex,93,93,,none,
+refrigerated sugar cookie dough,93,93,"Cookies, sugar, refrigerated dough",auto,0.817
+soda water,93,93,,none,
+banana liqueur,92,92,,none,
+butter cracker,92,92,"Crackers, butter, plain",auto,1.17
+glace cherry,92,92,,none,
+manchego cheese,92,92,,none,
+mascarpone,92,92,,none,
+red pepper sauce,92,92,"Sauce, peppers, hot, chili, mature red, canned",auto,0.94
+orange jell-o,91,91,,none,
+shortcrust pastry,91,91,,none,
+amarula cream liqueur,90,90,,none,
+chocolate kiss,90,90,,none,
+dried beef,90,90,"Beef, cured, dried",auto,1.15
+roast,90,90,"Roast beef, deli style, prepackaged, sliced",auto,1.06
+stilton cheese,90,90,,none,
+strawberry yogurt,90,90,SILK Strawberry soy yogurt,auto,1.12
+unbleached cane sugar,90,90,,none,
+mushroom cap,89,89,,none,
+peach preserve,89,89,,none,
+pico de gallo,89,89,"Salsa, pico de gallo",auto,0.82
+stevium,89,89,,none,
+sumac,89,89,,none,
+textured vegetable protein,89,89,"Textured vegetable protein, dry",auto,1.1
+whole green chili,89,89,"Peppers, hot chili, green, raw",auto,1.07
+dried split pea,88,88,"Split peas, from dried, fat added",auto,1.02
+instant garlic,88,88,"Garlic, raw",auto,0.804
+lemon gelatin,88,88,,none,
+mapleing,88,88,,none,
+single cream,88,88,,none,
+beef flank steak,87,87,"Beef, flank, steak, boneless, choice, raw",auto,1.14
+beefsteak tomato,87,87,,none,
+bulb of garlic,87,87,,none,
+frozen lemonade,87,87,"Lemonade, frozen concentrate, pink",auto,1.0
+jiffy corn muffin mix,87,87,,none,
+lemon yogurt,87,87,"Yogurt, Greek, nonfat, lemon blend, CHOBANI",auto,0.94
+sirloin,87,87,"Beef, top sirloin steak, raw",auto,1.01
+soft tofu,87,87,"Tofu, soft, prepared with calcium sulfate and magnesium chloride (nigari)",auto,1.13
+unsweetened dried shredded coconut,87,87,,none,
+bulgar wheat,86,86,,none,
+candied cherry,86,86,,none,
+candy cane,86,85,,none,
+cream of potato soup,86,86,"Soup, cream of potato, canned, condensed",auto,1.13
+escarole,86,86,"Escarole, cooked",auto,1.1
+mixed berry,86,86,"Beverages, POWERADE, Zero, Mixed Berry",auto,0.87
+string bean,86,86,,none,
+canned corn,85,85,"Corn, sweet, white, canned, vacuum pack, regular pack",auto,1.03
+eaglecondensed milk,85,85,,none,
+fritos corn chip,85,85,"Corn chips, plain (Fritos)",auto,0.92
+japanese eggplant,85,85,,none,
+non-dairy whipped topping,85,85,"Oil, industrial, palm kernel (hydrogenated) , used for whipped toppings, non-dairy",auto,0.9
+sparerib,85,85,"Pork, fresh, spareribs, separable lean and fat, raw",auto,0.86
+tiny new potato,85,85,,none,
+bosc pear,84,84,"Pears, raw, bosc (Includes foods for USDA's Food Distribution Program)",auto,1.05
+dry pectin,84,84,"Pectin, unsweetened, dry mix",auto,1.0
+genoa salami,84,84,,none,
+phyllo pastry sheet,84,84,,none,
+toasted wheat germ,84,84,"Wheat germ, crude",auto,0.835
+brewed espresso,83,83,"Beverages, coffee, brewed, espresso, restaurant-prepared",auto,0.87
+dried shiitake mushroom,83,83,"Mushrooms, shiitake, dried",auto,1.18
+green peppercorn,83,83,,none,
+rocket,83,83,,none,
+seltzer water,83,83,,none,
+stale bread,83,83,,none,
+yellow split pea,83,83,"Peas, green, split, mature seeds, raw",auto,0.838
+cool whip free,82,82,,none,
+red cinnamon candy,82,82,,none,
+almonding,81,81,,none,
+orange blossom water,81,81,,none,
+vegetable soup mix,81,81,,none,
+double-acting baking powder,80,80,"Leavening agents, baking powder, double-acting, straight phosphate",auto,0.96
+smoked turkey,80,80,"Turkey, breast, smoked, lemon pepper flavor, 97% fat-free",auto,1.03
+focaccia bread,79,79,,none,
+gluten,79,79,Vital wheat gluten,auto,1.12
+limoncello,79,79,,none,
+vinaigrette,79,79,,none,
+7-up soda,78,78,,none,
+albacore tuna,78,78,,none,
+aubergine,78,78,,none,
+dried tart cherry,78,78,"Cherries, tart, dried, sweetened (Includes foods for USDA's Food Distribution Program)",auto,0.85
+green cardamom,78,78,,none,
+lamb shoulder,78,78,"Lamb, shoulder, arm, separable lean and fat, trimmed to 1/8"" fat, choice, raw",auto,1.18
+merlot,78,78,"Alcoholic Beverage, wine, table, red, Merlot",auto,0.81
+white shoepeg corn,78,78,,none,
+belgian endive,77,77,,none,
+jack daniels whiskey,77,77,,none,
+raspberry jell-o gelatin,77,77,,none,
+gherkin,76,74,,none,
+orange juice and zest,76,76,,none,
+oriental sesame oil,76,76,,none,
+protein powder,76,76,"Protein supplement, milk based, Muscle Milk, powder",auto,1.06
+whole cumin seed,76,76,"Spices, cumin seed",auto,1.05
+chervil,75,75,"Spices, chervil, dried",auto,0.9
+chicken stock powder,75,75,,none,
+cooked beef,75,75,"Beef, cured, breakfast strips, cooked",auto,1.09
+daikon radish,75,75,,none,
+dried bay leaf,75,75,"Spices, bay leaf",auto,0.805
+firm silken tofu,75,75,"MORI-NU, Tofu, silken, firm",auto,1.02
+pastry shell,75,75,,none,
+squid,75,75,"Mollusks, squid, mixed species, raw",auto,1.04
+coke,74,74,,none,
+instant malted milk powder,74,74,,none,
+kirsch,74,74,,none,
+pastry dough,74,74,,none,
+saffron strand,74,74,,none,
+sesame seed oil,74,74,,none,
+solid pack pumpkin,74,74,,none,
+chocolate sprinkle,73,73,,none,
+chuck steak,73,73,"Beef, steak, chuck",auto,0.82
+dry buttermilk,73,73,"Biscuits, plain or buttermilk, dry mix",auto,0.87
+pork steak,73,73,"Pork, steak, coated",auto,1.17
+saltine,73,73,"Crackers, saltines, fat-free, low-sodium",auto,0.99
+unsalted dry roasted peanut,73,73,"Peanuts, dry roasted, unsalted",auto,0.95
+beef mince,72,72,,none,
+chardonnay wine,72,72,"Alcoholic beverage, wine, table, white, Chardonnay",auto,0.84
+cider,72,72,"Vinegar, cider",auto,1.05
+dry roasted salted peanut,72,72,"Peanuts, dry roasted, salted",auto,0.95
+lager beer,72,72,,none,
+maraschino cherry juice,72,72,,none,
+mint extract,72,72,,none,
+pink salmon,72,72,"Fish, salmon, pink, raw",auto,1.1
+white grape juice,72,72,"Grape juice, white, with added vitamin C, from concentrate, shelf stable",auto,1.1
+white peppercorn,72,72,,none,
+ancho chili,71,70,,none,
+chickpea flour,71,71,Chickpea flour (besan),auto,1.15
+lebanese cucumber,71,71,,none,
+pita bread round,71,71,"Bread, pita, whole-wheat",auto,0.814
+poundcake,71,71,,none,
+stone mustard,71,71,,none,
+canning salt,70,70,,none,
+coffee ice cream,70,70,"Ice creams, vanilla",auto,0.808
+spicy mustard,70,70,,none,
+strong black coffee,70,70,,none,
+espresso powder,69,69,,none,
+filet of beef,69,69,"Beef, ribeye petite roast/filet, boneless, separable lean only, trimmed to 0"" fat, choice, raw",auto,0.84
+halloumi cheese,69,69,,none,
+hard salami,69,69,"Oscar Mayer, Salami (hard)",auto,1.02
+sugar syrup,69,69,"Syrups, table blends, corn, refiner, and sugar",auto,1.06
+thai red chili pepper,69,69,"Peppers, hot chili, red, raw",auto,0.886
+turkey broth,69,69,"Turkey, canned, meat only, with broth",auto,0.97
+white chocolate baking square,69,67,"Baking chocolate, mexican, squares",auto,0.974
+black tea,68,68,"Tea, hot, leaf, black",auto,0.89
+chicken ramen noodle,68,68,,none,
+fingerling potato,68,68,,none,
+instant dry milk powder,68,68,,none,
+jarlsberg cheese,68,68,,none,
+unsifted all-purpose flour,68,68,,none,
+white creme de cacao,68,68,,none,
+bittersweet chocolate chip,67,67,,none,
+custard powder,67,67,,none,
+galangal,67,67,,none,
+instant butterscotch pudding mix,67,67,,none,
+kernel corn,67,67,"Corn, sweet, yellow and white kernels,  fresh, raw",auto,1.08
+reynolds wrap foil,67,67,,none,
+vanilla chip,67,66,,none,
+yellow mustard seed,67,67,,none,
+carob powder,66,66,,none,
+cooked macaroni,66,66,"Macaroni, vegetable, enriched, cooked",auto,1.0
+country bread,66,66,,none,
+double crust pie crust,66,66,,none,
+lemons juice and zest,66,66,,none,
+pomegranate molasses,66,66,,none,
+refrigerated chocolate chip cookie dough,66,66,"Cookies, chocolate chip, refrigerated dough",auto,0.855
+short rib of beef,66,66,"Beef, chuck, short ribs, boneless, separable lean and fat, trimmed to 0"" fat, choice, raw",auto,0.9
+spice mix,66,66,,none,
+unbaked pie crust,66,66,"Pie crust, refrigerated, regular, unbaked",auto,1.12
+angostura bitter,65,65,,none,
+center pork chop,65,65,"Pork, chop, center cut, raw",auto,1.17
+cheez whiz,65,65,KRAFT CHEEZ WHIZ Pasteurized Process Cheese Sauce,auto,0.91
+cooked egg noodle,65,65,"Noodles, egg, enriched, cooked",auto,1.03
+ketjap mani,65,65,,none,
+raw rice,65,65,"Wild rice, raw",auto,1.15
+red cayenne pepper,65,65,"Spices, pepper, red or cayenne",auto,1.05
+root beer,65,65,"Beverages, carbonated, root beer",auto,0.9
+streaky bacon,65,65,,none,
+sweet pea,65,65,"Peas, green, sweet, canned, sodium added, sugar added, drained and rinsed",auto,0.82
+unsweetened flaked coconut,65,65,,none,
+vanilla wafer crumb,65,65,,none,
+apricot brandy,64,64,,none,
+cooked pork,64,64,"Pork, fresh, ground, cooked",auto,1.12
+creme de menthe,64,64,"Alcoholic beverage, creme de menthe, 72 proof",auto,0.87
+fat cottage cheese,64,64,"Cottage cheese, full fat, large or small curd",auto,1.03
+fiber one cereal,64,64,,none,
+fontina,64,64,"Cheese, fontina",auto,1.05
+instant lemon pudding,64,64,"Puddings, lemon, dry mix, instant",auto,0.88
+jalapeno jack cheese,64,64,,none,
+jalapeno jelly,64,64,,none,
+lavender flower,64,64,,none,
+lime gelatin,64,64,,none,
+spanish olive,64,64,,none,
+tamarind pulp,64,64,,none,
+yellow sweet onion,64,64,"Onions, yellow, raw",auto,0.892
+apple juice concentrate,63,63,"Apple juice, with added vitamin C, from concentrate, shelf stable",auto,1.0
+candy corn,63,63,,none,
+french vanilla instant pudding,63,63,,none,
+light-brown sugar,63,63,,none,
+rice vermicelli,63,63,,none,
+shiitake mushroom cap,63,63,"Mushrooms, shiitake, raw",auto,0.845
+szechuan peppercorn,63,63,,none,
+blackstrap molasses,62,62,,none,
+buffalo wing sauce,62,62,,none,
+cajun spice,62,62,,none,
+chinese rice wine,62,62,,none,
+duck breast,62,62,"Duck, wild, breast, meat only, raw",auto,1.14
+gingersnap,62,62,"Cookies, gingersnaps",auto,1.05
+mandarin orange section,62,62,,none,
+marinated artichoke,62,62,,none,
+mcintosh apple,62,62,,none,
+ouzo,62,62,,none,
+pink grapefruit,62,62,"Grapefruit, raw, pink and red, Florida",auto,1.17
+almond liqueur,61,61,,none,
+black coffee,61,61,,none,
+coffee bean,61,61,"Candies, dark chocolate coated coffee beans",auto,0.84
+flaked sea salt,61,61,,none,
+french onion soup mix,61,61,,none,
+gelatin powder,61,61,"Gelatins, dry powder, unsweetened",auto,1.0
+liquid egg substitute,61,61,,none,
+mung bean sprout,61,61,,none,
+parchment paper,61,61,,none,
+tri-color spiral pasta,61,61,,none,
+ale,60,60,Whiskey and ginger ale,auto,0.89
+beef bouillon powder,60,60,,none,
+converted rice,60,60,,none,
+flax seed oil,60,60,,none,
+garlic and herb seasoning,60,60,,none,
+lamb loin chop,60,60,"Lamb, New Zealand, imported, loin chop, separable lean only, raw",auto,1.05
+liquid smokeing,60,60,,none,
+marsala,60,60,Veal Marsala,auto,0.92
+non-dairy coffee creamer,60,60,,none,
+potato flake,60,60,,none,
+sweet gherkin,60,60,,none,
+top round steak,60,60,"Game meat, bison, top round, separable lean only, 1"" steak, raw",auto,0.95
+unsweetened baking cocoa,60,60,,none,
+boursin cheese,59,59,,none,
+calvado,59,59,,none,
+cavatappi pasta,59,59,,none,
+challah,59,59,,none,
+chocolate wafer,59,58,"Cookies, chocolate wafers",auto,1.05
+crisp bacon,59,59,,none,
+dripping,59,59,,none,
+english mustard,59,59,,none,
+instant lemon pudding mix,59,59,"Puddings, lemon, dry mix, instant",auto,1.03
+karo syrup,59,59,,none,
+parmigiano,59,59,,none,
+quick oatmeal,59,59,,none,
+whole wheat hamburger bun,59,59,"Hamburger, on wheat bun, 1 small patty",auto,1.14
+chocolate pudding mix,58,58,"Puddings, chocolate, dry mix, regular",auto,1.0
+chocolate wafer crumb,58,58,,none,
+cinnamon-sugar mixture,58,58,,none,
+dream whip,58,58,,none,
+frozen lima bean,58,58,"Lima beans, immature seeds, frozen, fordhook, unprepared",auto,1.06
+garlic crouton,58,58,,none,
+head of garlic,58,58,,none,
+hot red pepper sauce,58,58,"Sauce, peppers, hot, chili, mature red, canned",auto,0.97
+macaroni and cheese,58,58,"Macaroni and Cheese, canned entree",auto,1.15
+pretzel twist,58,58,,none,
+roasted almond,58,58,"Nuts, almonds, honey roasted, unblanched",auto,0.99
+soda cracker,58,58,"Crackers, saltines (includes oyster, soda, soup)",auto,0.94
+solid white tuna,58,58,"Fish, tuna, white, canned in oil, drained solids",auto,0.84
+unsulphured molasses,58,58,,none,
+albacore tuna in water,57,57,,none,
+celery root,57,57,,none,
+chocolate fudge topping,57,57,,none,
+dried coriander,57,57,"Spices, coriander leaf, dried",auto,1.02
+emmenthaler cheese,57,57,,none,
+instant coffee crystal,57,57,,none,
+jalapeno juice,57,57,,none,
+kumara,57,57,,none,
+oranges zest,57,57,,none,
+refrigerated breadstick dough,57,57,,none,
+rock salt,57,57,,none,
+seafood seasoning,57,57,,none,
+vanilla instant pudding and pie filling mix,57,57,,none,
+veal cutlet,57,57,"Veal, leg, top round, cap off, cutlet, boneless, raw",auto,1.05
+wax bean,57,57,,none,
+beef top round steak,56,56,"Beef, round, top round, steak, separable lean and fat, trimmed to 1/8"" fat, select, raw",auto,0.96
+caramel syrup,56,56,"Popcorn, sugar syrup/caramel, fat-free",auto,0.89
+cherry jell-o,56,56,,none,
+four-cheese mexican blend cheese,56,56,"Cheese, Mexican blend",auto,0.811
+instant chicken bouillon,56,56,,none,
+lavender,56,56,,none,
+miracle whip light,56,56,,none,
+pimento-stuffed green olive,56,56,,none,
+baby green,55,55,,none,
+black cardamom pod,55,55,,none,
+bottled hot pepper sauce,55,55,,none,
+canned corn niblet,55,55,,none,
+corn flakes cereal,55,55,"Cereal, corn flakes, plain",auto,1.17
+dried garlic,55,55,"Garlic, raw",auto,0.812
+dried red chili pepper,55,55,"Peppers, hot chili, red, raw",auto,0.972
+ears of corn,55,55,,none,
+grands refrigerated buttermilk biscuit,55,55,"Pillsbury Grands, Buttermilk Biscuits, refrigerated dough",auto,1.12
+italian stewed tomato,55,55,,none,
+pea pod,55,55,,none,
+powdered coffee creamer,55,55,,none,
+salt substitute,55,55,,none,
+sazon,55,55,,none,
+shrimp paste,55,55,,none,
+spring roll wrapper,55,55,,none,
+vanilla syrup,55,55,,none,
+wheat berry,55,55,,none,
+baby back rib,54,54,,none,
+brown mustard seed,54,54,,none,
+buttering,54,54,,none,
+cherry gelatin,54,54,,none,
+cream sherry,54,54,,none,
+dark creme de cacao,54,54,,none,
+french mustard,54,54,,none,
+french's french fried onion,54,54,,none,
+frozen pink lemonade concentrate,54,54,"Lemonade, frozen concentrate, pink",auto,1.18
+pickling cucumber,54,54,,none,
+raw honey,54,54,Honey,auto,0.857
+ruby port,54,54,,none,
+solid white tuna in water,54,54,"Fish, tuna, white, canned in water, drained solids",auto,0.87
+solid-pack pumpkin,54,54,,none,
+table cream,54,54,"Cream, fluid, light (coffee cream or table cream)",auto,0.97
+za'atar spice mix,54,54,,none,
+canned salmon,53,53,"Salmon, sockeye, canned, total can contents",auto,1.06
+cannellini,53,53,"Beans, cannellini, dry",auto,0.87
+chevre cheese,53,53,,none,
+chicken fillet,53,53,"Chicken fillet, breaded",auto,1.1
+dried red lentil,53,53,"Lentils, pink or red, raw",auto,0.903
+frozen unsweetened strawberry,53,53,"Strawberries, frozen, unsweetened (Includes foods for USDA's Food Distribution Program)",auto,1.0
+glaze,53,53,"Frostings, glaze, prepared-from-recipe",auto,1.02
+graham wafer crumb,53,53,,none,
+grape-nuts cereal,53,53,"Cereals ready-to-eat, POST, GRAPE-NUTS Cereal",auto,0.9
+grilled chicken breast,53,53,"Chicken, broiler or fryers, breast, skinless, boneless, meat only, cooked, grilled",auto,0.85
+guar gum,53,53,"Gums, seed gums (includes locust bean, guar)",auto,1.06
+meat tenderizer,53,53,,none,
+pepita,53,53,"Seeds, pumpkin seeds (pepitas), raw",auto,1.04
+raspberry liqueur,53,53,,none,
+red salmon,53,53,"Fish, salmon, sockeye (red), raw (Alaska Native)",auto,0.91
+risotto rice,53,53,,none,
+season-all salt,53,53,,none,
+sirloin tip roast,53,53,"Pork, Leg sirloin tip roast, boneless, separable lean and fat, raw",auto,0.83
+sun-dried tomato pesto,53,53,,none,
+teriyaki marinade,53,53,,none,
+bran flake,52,52,,none,
+cayenne pepper sauce,52,52,,none,
+cinnamon baking chip,52,52,,none,
+crispix cereal,52,52,,none,
+dill relish,52,52,,none,
+dried mexican oregano,52,52,,none,
+herb stuffing mix,52,52,,none,
+lobster meat,52,52,,none,
+m and m,52,52,"Candies, M&M MARS Pretzel Chocolate Candies",auto,0.84
+panir,52,52,,none,
+pineapple preserve,52,52,,none,
+pot roast,52,52,"Tongue pot roast, Puerto Rican style",auto,0.86
+process american cheese,52,52,"Cheese, pasteurized process, American, without added vitamin D",auto,1.03
+unsweetened crushed canned pineapple,52,52,"Pineapple juice, canned or bottled, unsweetened, with added ascorbic acid",auto,0.91
+white sesame seed,52,52,"Seeds, sesame butter, paste",auto,0.854
+baby clam,51,51,,none,
+cabernet sauvignon wine,51,51,"Alcoholic Beverage, wine, table, red, Cabernet Sauvignon",auto,0.84
+cherry preserve,51,51,,none,
+honey dijon mustard,51,51,,none,
+light chunk tuna in water,51,51,,none,
+non-dairy powdered coffee creamer,51,51,,none,
+orange flower water,51,51,,none,
+pie pastry,51,51,,none,
+raspberry gelatin powder,51,51,,none,
+s chocolate syrup,51,51,"Syrups, chocolate, HERSHEY'S Genuine Chocolate Flavored Lite Syrup",auto,0.94
+tagliatelle pasta noodle,51,51,,none,
+whole coriander seed,51,50,"Spices, coriander seed",auto,1.05
+wonton skin,51,51,,none,
+almond essence,50,50,,none,
+brie round,50,50,,none,
+buttery cracker,50,50,,none,
+grape leaf,50,50,,none,
+hot chili powder,50,50,,none,
+orange section,50,50,,none,
+scotch whisky,50,50,,none,
+sour mix,50,50,"Whiskey sour mix, bottled, with added potassium and sodium",auto,1.03
+sweetcorn,50,50,,none,
+turkey pepperoni,50,50,Hormel Pillow Pak Sliced Turkey Pepperoni,auto,1.06
+wheat chex,50,50,,none,
+wooden popsicle stick,50,50,,none,
+agave syrup,49,49,"Sweetener, syrup, agave",auto,1.05
+bouillon,49,49,,none,
+chocolate instant pudding,49,49,"Puddings, chocolate, dry mix, instant",auto,0.88
+colored sprinkle,49,49,,none,
+cooked elbow macaroni,49,49,,none,
+dried rubbed sage,49,49,,none,
+frozen broccoli carrots cauliflower mix,49,49,,none,
+frozen pearl onion,49,49,,none,
+gram flour,49,49,,none,
+instant beef bouillon,49,49,,none,
+raisin bran cereal,49,49,"Cereals ready-to-eat, POST Raisin Bran Cereal",auto,0.9
+ricottum,49,49,,none,
+shoyu,49,49,Soy sauce made from soy and wheat (shoyu),auto,0.94
+stout beer,49,49,,none,
+brown basmati rice,48,48,,none,
+cheese whiz,48,48,KRAFT CHEEZ WHIZ Pasteurized Process Cheese Sauce,auto,0.91
+chocolate cookie pie crust,48,48,"Pie Crust, Cookie-type, Chocolate, Ready Crust",auto,0.852
+dried hot red chili pepper,48,48,"Peppers, hot chili, red, raw",auto,1.046
+filet mignon,48,48,,none,
+flat bread,48,48,,none,
+french haricots vert,48,48,,none,
+fried onion,48,48,Fried onion rings,auto,0.92
+frozen french fry,48,48,,none,
+hot fudge,48,48,,none,
+king prawn,48,48,,none,
+lemon juice and rind,48,48,"Cookies, ladyfingers, with lemon juice and rind",auto,1.02
+lobster tail,48,48,"Lobster, tail only, frozen, wild caught",auto,0.91
+pepper sauce,48,48,"Sauce, peppers, hot, chili, mature red, canned",auto,1.16
+seitan,48,48,,none,
+self-rising cornmeal,48,48,"Cornmeal, white, self-rising, degermed, enriched",auto,0.97
+tart green apple,48,48,,none,
+tuna in vegetable oil,48,48,,none,
+vanilla pod,48,48,,none,
+vegetable bouillon granule,48,48,,none,
+beef eye round,47,47,"Beef, New Zealand, imported, eye round, separable lean only, raw",auto,1.05
+bocconcini,47,47,,none,
+broccoli rabe,47,47,,none,
+broccoli slaw mix,47,47,,none,
+broccoli stem,47,47,,none,
+butternut pumpkin,47,47,,none,
+candied orange peel,47,47,"Orange peel, raw",auto,0.822
+chicken strip,47,47,"Chicken tenders or strips, NFS",auto,0.92
+cooked turkey breast,47,47,"Turkey, whole, breast, meat only, cooked, roasted",auto,0.94
+dried apricot half,47,47,,none,
+fenugreek,47,47,"Spices, fenugreek seed",auto,1.02
+french onion dip,47,47,,none,
+garlic head,47,47,,none,
+green zucchini,47,47,"Squash, summer, green, zucchini, includes skin, raw",auto,0.98
+habanero,47,47,,none,
+lemon thyme,47,47,,none,
+littleneck clam,47,47,,none,
+mesclun,47,47,,none,
+mixed sprout,47,47,,none,
+pace picante sauce,47,47,,none,
+pumpkin pie filling,47,47,,none,
+rye cocktail bread,47,47,"Bread, rye",auto,0.805
+salt water,47,47,"Water convolvulus, cooked, boiled, drained, with salt",auto,0.82
+seedless raspberry preserve,47,47,,none,
+turkey kielbasa,47,47,"Kielbasa, Polish, turkey and beef, smoked",auto,0.97
+white hominy,47,47,"Hominy, canned, white",auto,1.03
+whole wheat breadcrumb,47,47,,none,
+black forest ham,46,46,,none,
+blood orange,46,45,,none,
+bottled lemon juice,46,46,"Lemon juice from concentrate, bottled, CONCORD",auto,1.0
+cherry brandy,46,46,,none,
+colored crystal sugar,46,46,,none,
+condensed french onion soup,46,46,,none,
+dried red pepper,46,45,"Peppers, sweet, red, raw",auto,0.882
+dried tarragon leaf,46,46,,none,
+frozen cranberry,46,46,"Cranberries, raw",auto,0.854
+fryer chicken,46,46,"Chicken, broilers or fryers, giblets, raw",auto,1.17
+graham cracker square,46,46,,none,
+lemon twist,46,46,,none,
+popped corn,46,46,,none,
+sucanat,46,45,,none,
+sweet apple,46,46,,none,
+tart shell,46,46,,none,
+texas toast thick bread,46,46,,none,
+unbaked pastry shell,46,46,,none,
+vegemite,46,46,,none,
+brown rice syrup,45,45,,none,
+buttered bread crumb,45,45,,none,
+buttermilk biscuit,45,45,"Biscuits, plain or buttermilk, prepared from recipe",auto,0.97
+chocolate bar,45,45,"Ice cream bar, covered with chocolate and nuts",auto,1.06
+condensed cream of potato soup,45,45,"Soup, cream of potato, canned, condensed",auto,1.03
+creamed horseradish,45,45,,none,
+decorative candy,45,45,,none,
+dry pinto bean,45,45,"Beans, Dry, Pinto (0% moisture)",auto,1.12
+full-fat milk,45,45,,none,
+grey poupon dijon mustard,45,45,,none,
+hot chicken stock,45,45,,none,
+mexican chocolate,45,45,"Baking chocolate, mexican, squares",auto,1.12
+minute tapioca,45,45,,none,
+party rye round,45,45,,none,
+pita pocket,45,45,,none,
+purple cabbage,45,45,,none,
+smoked turkey breast,45,45,"Turkey, breast, smoked, lemon pepper flavor, 97% fat-free",auto,1.06
+soft margarine,45,45,,none,
+stevia powder,45,45,"Sweetener, herbal extract powder from Stevia leaf",auto,0.96
+sweet bell pepper,45,45,"Peppers, bell, red, raw",auto,0.891
+sweet rice flour,45,45,,none,
+unsweetened pineapple chunk,45,45,,none,
+white cabbage,45,45,"Cabbage, raw",auto,0.839
+white miso,45,45,Miso,auto,0.854
+beef bone,44,44,"Beef, neck bones",auto,0.92
+beef t-bone steak,44,44,"Beef, short loin, t-bone steak, separable lean and fat, trimmed to 1/8"" fat, choice, raw",auto,0.9
+bing cherry,44,44,,none,
+brioche bread,44,44,,none,
+candied red cherry,44,44,,none,
+cellophane noodle,44,44,"Noodles, chinese, cellophane or long rice (mung beans), dehydrated",auto,0.88
+ciabatta roll,44,44,,none,
+crawfish tail,44,44,,none,
+creme de banane,44,44,,none,
+edible flower,44,44,,none,
+english toffee bit,44,44,,none,
+green tea,44,44,"Tea, hot, leaf, green",auto,0.89
+gumdrop,44,42,"Candies, gumdrops, starch jelly pieces",auto,0.84
+lemonade concentrate,44,44,"Lemonade, frozen concentrate, pink",auto,1.0
+maggi seasoning,44,44,,none,
+red chili paste,44,44,,none,
+roasted sunflower seed,44,44,"Seeds, sunflower seed kernels, oil roasted, without salt",auto,1.06
+spring green,44,44,,none,
+stick,44,44,Bacon and beef sticks,auto,1.12
+toasted hazelnut,44,44,,none,
+watercress leaf,44,44,,none,
+white distilled vinegar,44,44,"Vinegar, distilled",auto,0.97
+beef sirloin steak,43,43,"Beef, top sirloin steak, raw",auto,1.17
+blood orange juice,43,43,,none,
+bottled clam juice,43,43,,none,
+chabli,43,43,,none,
+dashi,43,43,,none,
+family-size tea bag,43,43,,none,
+frozen pie crust,43,43,"Pie crust, standard-type, frozen, ready-to-bake, enriched",auto,0.97
+gold tequila,43,43,,none,
+green creme de menthe,43,43,,none,
+instant espresso,43,43,,none,
+phyllo cup,43,43,,none,
+red raspberry,43,43,"Raspberries, frozen, red, unsweetened",auto,1.0
+red-hot candy,43,43,,none,
+snap pea,43,43,,none,
+sweet vermouth,43,43,,none,
+turkey carcass,43,43,,none,
+unsalted margarine,43,43,,none,
+unsweetened orange juice,43,43,"Orange juice, canned, unsweetened",auto,1.03
+ziploc bag,43,42,,none,
+butterscotch pudding mix,42,42,,none,
+canned jalapeno slice,42,42,,none,
+canned pineapple chunk,42,41,,none,
+celery heart,42,42,,none,
+cheesecloth,42,42,,none,
+citrus-infused vodka,42,42,,none,
+dried sweet basil leaf,42,42,,none,
+ear of corn,42,42,,none,
+farmer cheese,42,42,"Cottage cheese, farmer's",auto,0.89
+lasagna sheet,42,42,,none,
+lean ground chuck,42,42,,none,
+nicoise olive,42,41,,none,
+paraffin wax,42,42,,none,
+passatum,42,42,,none,
+peach yogurt,42,42,SILK Peach soy yogurt,auto,1.12
+prime rib roast,42,42,,none,
+racks of lamb,42,42,"Lamb, New Zealand, imported, rack - fully frenched, separable lean only, raw",auto,0.99
+real vanilla extract,42,42,Vanilla extract,auto,0.808
+riesling wine,42,42,"Alcoholic beverage, wine, table, white, Riesling",auto,0.84
+salad leaf,42,42,,none,
+summer savory,42,42,,none,
+sushi rice,42,42,,none,
+tomato and basil pasta sauce,42,42,,none,
+urad dal,42,42,,none,
+vanilla protein powder,42,42,,none,
+white karo,42,42,,none,
+blackening seasoning,41,41,,none,
+bulgur wheat,41,41,,none,
+chocolate-covered english toffee bar,41,40,,none,
+cocktail frank,41,41,,none,
+consomme,41,41,,none,
+cooking onion,41,41,,none,
+cream of shrimp soup,41,41,"Soup, cream of shrimp, canned, condensed",auto,1.13
+dehydrated onion,41,41,"Onions, dehydrated flakes",auto,1.15
+dried red bean,41,41,,none,
+file powder,41,41,,none,
+french fry,41,41,"Potato, french fries, NFS",auto,0.82
+frozen unsweetened raspberry,41,41,"Raspberries, frozen, red, unsweetened",auto,1.15
+garlic butter,41,41,,none,
+granulated onion,41,41,,none,
+honey-roasted ham,41,41,,none,
+hot mustard,41,41,,none,
+lemonade mix,41,41,,none,
+oreo cookie crumb,41,41,"Nabisco, Nabisco Oreo Crunchies, Cookie Crumb Topping",auto,0.87
+oriental instant ramen noodle,41,41,,none,
+porridge oat,41,41,,none,
+rag pasta sauce,41,41,,none,
+red beet,41,41,,none,
+ritz cracker crumb,41,41,,none,
+roasted sweet red pepper,41,41,"Peppers, sweet, red, raw",auto,1.027
+sirloin tip steak,41,41,,none,
+soy margarine,41,41,"Margarine, industrial, non-dairy, cottonseed, soy oil (partially hydrogenated ), for flaky pastries",auto,0.94
+sugar cookie mix,41,41,,none,
+tahini paste,41,41,,none,
+tia marium,41,41,,none,
+tiger shrimp,41,41,,none,
+trout fillet,41,41,,none,
+unsalted sunflower seed,41,41,"Sunflower seeds, plain, unsalted",auto,0.92
+black tea bag,40,40,,none,
+boboli pizza crust,40,40,,none,
+chunk pineapple,40,40,"Pineapple, frozen, chunks, sweetened",auto,0.88
+citric acid,40,40,,none,
+cornichon,40,40,,none,
+dried brown lentil,40,40,,none,
+dried celery flake,40,40,,none,
+floury potato,40,40,,none,
+ginger juice,40,40,,none,
+greek olive,40,40,,none,
+green tea bag,40,40,,none,
+jamaican jerk spice,40,40,,none,
+jar,40,36,,none,
+jello,40,40,,none,
+limes juice and zest,40,40,,none,
+mango powder,40,40,,none,
+melon liqueur,40,40,,none,
+mexican chili powder,40,40,,none,
+oxtail,40,40,"Beef, oxtails",auto,0.82
+shell macaroni,40,40,,none,
+sweet white onion,40,40,"Onions, sweet, raw",auto,0.956
+szechwan pepper,40,40,,none,
+tamarind juice,40,40,"Tamarinds, raw",auto,0.824
+tzatziki,40,40,Tzatziki dip,auto,0.92
+wax paper,40,40,,none,
+white baking chocolate,40,40,"Baking chocolate, mexican, squares",auto,0.86
+whole wheat english muffin,40,40,"Muffins, English, wheat",auto,1.18
+alum,39,39,,none,
+blue food coloring,39,39,,none,
+broccoli coleslaw mix,39,39,,none,
+chicken drummette,39,39,,none,
+chocolate-covered coffee bean,39,39,,none,
+cooked jasmine rice,39,39,,none,
+cream of broccoli soup,39,39,,none,
+cream-filled chocolate sandwich cookies,39,39,,none,
+crookneck yellow squash,39,39,"Squash, summer, crookneck and straightneck, raw",auto,0.879
+dark cocoa,39,39,,none,
+dr pepper cola,39,39,,none,
+dried orange peel,39,39,"Orange peel, raw",auto,0.934
+dried white bean,39,39,"White beans, from dried, fat added",auto,1.02
+filet mignon steak,39,39,,none,
+frozen cheese tortellini,39,39,,none,
+fudge sauce,39,39,,none,
+galliano,39,39,,none,
+grain rice,39,39,"Rice, brown, long grain, unenriched, raw",auto,0.99
+hot cocoa mix,39,39,"Cocoa mix, NESTLE, Rich Chocolate Hot Cocoa Mix",auto,1.09
+instant oat,39,39,,none,
+israeli couscous,39,39,,none,
+limes zest,39,39,,none,
+mineral water,39,39,,none,
+mostaccioli pasta,39,39,,none,
+peach pie filling,39,39,,none,
+peppermint schnapps,39,39,,none,
+powdered fruit pectin,39,39,,none,
+red hot sauce,39,39,"Sauce, peppers, hot, chili, mature red, canned",auto,0.94
+seafood,39,39,Seafood dip,auto,0.92
+steak fillet,39,39,,none,
+strawberry syrup,39,39,"Strawberries, canned, heavy syrup pack, solids and liquids",auto,0.91
+sultana raisin,39,39,,none,
+tabasco jalapeno sauce,39,39,,none,
+tabascochipotle pepper sauce,39,39,,none,
+velveeta mexican cheese,39,39,,none,
+wondra flour,39,39,,none,
+wood chip,39,39,,none,
+banana extract,38,38,,none,
+brine,38,38,,none,
+buttermilk baking mix,38,38,,none,
+capellini,38,38,,none,
+caribbean jerk seasoning,38,38,,none,
+chili without bean,38,38,,none,
+creme de cassi,38,38,,none,
+crusty italian bread,38,38,,none,
+day-old white bread,38,38,,none,
+dorito,38,38,,none,
+dried chinese mushroom,38,38,,none,
+dried tomato,38,38,,none,
+garlic oil,38,38,,none,
+heirloom tomato,38,38,,none,
+key lime,38,38,SILK Key Lime soy yogurt,auto,1.09
+masa harina flour,38,38,"Corn flour, masa harina, white or yellow, dry, raw",auto,0.96
+mutton,38,37,"Mutton, cooked, roasted (Navajo)",auto,1.05
+peach juice,38,38,"Peaches, canned, juice pack, solids and liquids",auto,0.94
+pear halves in natural juice,38,38,,none,
+preserve,38,38,Jams and preserves,auto,1.15
+red grapefruit,38,38,"Grapefruit, raw, pink and red, Florida",auto,1.17
+snow pea pod,38,38,,none,
+white horseradish,38,38,,none,
+wholemeal self-rising flour,38,38,,none,
+bar,37,37,"Ice cream bar, covered with chocolate and nuts",auto,1.03
+beef cube steak,37,37,"Beef, steak, cube",auto,0.95
+black walnut,37,35,"Nuts, walnuts, black, dried",auto,0.9
+broad egg noodle,37,37,,none,
+candied pineapple,37,37,,none,
+canned pinto bean,37,37,"Beans, pinto, canned, drained solids",auto,1.12
+chat masala,37,37,,none,
+chicken leg quarter,37,37,,none,
+cinnamon raisin bread,37,37,"Bread, cinnamon",auto,0.821
+cooked lentil,37,37,"Lentils, sprouted, cooked, stir-fried, with salt",auto,0.97
+cooking wine,37,37,"Alcoholic beverage, wine, cooking",auto,0.9
+currant jelly,37,37,,none,
+decorator sugar,37,37,,none,
+extract,37,37,Vanilla extract,auto,1.15
+flavoring,37,37,"Oil, industrial, soy (partially hydrogenated), principal uses popcorn and flavoring vegetables",auto,0.81
+frozen sweet pea,37,37,,none,
+greek oregano,37,37,,none,
+hamburger patty,37,37,"Hamburger, on white bun, 1 small patty",auto,0.86
+honey graham cracker,37,37,"Cookies, graham crackers, plain or honey (includes cinnamon)",auto,0.96
+italian roll,37,37,,none,
+marzipan,37,37,,none,
+nigella seed,37,37,,none,
+pan dripping,37,37,,none,
+raspberry sherbet,37,37,,none,
+rice paper sheet,37,37,,none,
+ruming,37,37,,none,
+smoked kielbasa,37,37,"Kielbasa, Polish, turkey and beef, smoked",auto,1.09
+solid shortening,37,37,,none,
+spaghettini,37,37,,none,
+string,37,37,,none,
+suet,37,37,"Beef, variety meats and by-products, suet, raw",auto,1.01
+tea leaf,37,37,"Tea, hot, leaf, black",auto,0.89
+tony chachere's seasoning,37,37,,none,
+turkey breast tenderloin,37,37,,none,
+turkey cutlet,37,37,,none,
+turkey meat,37,37,"Turkey, whole, meat only, raw",auto,1.17
+7-up,36,36,,none,
+beef ramen noodle,36,36,,none,
+black vinegar,36,36,,none,
+brown button mushroom,36,36,"Mushrooms, white button",auto,0.853
+butter extract,36,36,,none,
+center-cut bacon,36,36,,none,
+cherry pepper,36,36,,none,
+chinese egg noodle,36,36,"Noodles, chinese, chow mein",auto,0.838
+chinese wine,36,36,,none,
+curly-leaf parsley,36,36,,none,
+day-old french bread,36,36,,none,
+dry bread,36,36,"Bread, crumbs, dry, grated, plain",auto,1.09
+frozen fruit,36,36,"Frozen novelties, ice type, fruit, no sugar added",auto,1.03
+frozen shrimp,36,36,,none,
+fruit preserve,36,36,Jams and preserves,auto,0.802
+gold medal all-purpose flour,36,36,,none,
+hazelnut liqueur,36,36,,none,
+head broccoli,36,36,,none,
+horseradish cream,36,36,,none,
+hot cocoa,36,36,"Cocoa mix, NESTLE, Rich Chocolate Hot Cocoa Mix",auto,0.94
+liquid,36,36,"Pectin, liquid",auto,1.05
+orange food coloring,36,36,,none,
+pink peppercorn,36,36,,none,
+refrigerated buttermilk flaky biscuit,36,36,,none,
+rose petal,36,36,,none,
+southwest seasoning,36,36,,none,
+strawberry jelly,36,36,,none,
+white raisin,36,36,,none,
+whole wheat couscous,36,36,,none,
+whole wheat lasagna noodle,36,36,,none,
+biscuit dough,35,35,"Biscuits, mixed grain, refrigerated dough",auto,1.09
+butter substitute,35,35,,none,
+canned jalapeno pepper,35,35,"Peppers, jalapeno, canned, solids and liquids",auto,1.12
+canned mushroom slice,35,35,,none,
+canned unsweetened coconut milk,35,35,,none,
+channa dal,35,35,,none,
+chex cereal,35,35,,none,
+corn husk,35,35,,none,
+dark sweet cherry,35,35,"Cherries, sweet, dark red, raw",auto,1.17
+digestive biscuit,35,34,,none,
+dried bean,35,35,"Beans, from dried, NS as to type, fat added",auto,1.02
+dry-roasted unsalted peanut,35,35,"Peanuts, all types, dry-roasted, with salt",auto,0.804
+frozen non-dairy topping,35,35,,none,
+frozen sweet corn,35,35,"Corn, sweet, white, frozen, kernels on cob, unprepared",auto,1.06
+fryer,35,35,"Chicken, broilers or fryers, giblets, raw",auto,1.04
+gingersnap crumb,35,35,,none,
+hot chili paste,35,35,,none,
+oil-cured black olive,35,35,,none,
+pepsi,35,35,"Beverages, water, bottled, non-carbonated, PEPSI, AQUAFINA",auto,0.81
+pie dough,35,35,,none,
+powdered cocoa mix,35,35,,none,
+powdered saffron,35,35,,none,
+racks of baby-back pork rib,35,35,,none,
+serrano chili pepper,35,35,"Peppers, serrano, raw",auto,0.927
+tomatillo salsa,35,35,,none,
+truffle oil,35,35,,none,
+unsalted chicken stock,35,35,,none,
+wesson oil,35,35,,none,
+anise extract,34,34,,none,
+bermuda onion,34,34,,none,
+cheese-filled tortellini,34,34,"Tortellini, cheese-filled, no sauce",auto,1.02
+chocolate cookie crumb,34,34,,none,
+country ham,34,34,,none,
+free-range egg,34,34,,none,
+frozen shredded hash brown,34,34,"Potatoes, hash brown, frozen, plain, unprepared",auto,0.99
+fruit pectin,34,34,"Pectin, liquid",auto,0.819
+garlic and herb cheese,34,34,,none,
+hard roll,34,34,"Rolls, hard (includes kaiser)",auto,1.12
+instant banana pudding mix,34,34,"Puddings, banana, dry mix, instant",auto,1.03
+k cereal,34,34,"Cereal, K's, plain",auto,0.89
+mild curry paste,34,34,,none,
+mild paprika,34,34,,none,
+oreo cookie pie crust,34,34,,none,
+pappardelle pasta,34,34,,none,
+roasted pepper,34,34,,none,
+roasted unsalted peanut,34,34,"Peanuts, roasted, unsalted",auto,0.95
+seedless orange,34,34,,none,
+swede,34,34,,none,
+unsweetened soymilk,34,34,"SILK Unsweetened, soymilk",auto,1.15
+whole grain dijon mustard,34,34,,none,
+aniseed,33,33,,none,
+bitter,33,33,"Balsam-pear (bitter gourd), pods, raw",auto,1.14
+camparus,33,33,,none,
+canned crabmeat,33,33,,none,
+chunk light tuna,33,33,,none,
+dried mixed fruit,33,33,,none,
+farina,33,33,,none,
+frozen light whipped dessert topping,33,33,,none,
+guava juice,33,33,,none,
+hokkien noodle,33,33,,none,
+instant espresso coffee powder,33,33,,none,
+light ricotta cheese,33,33,"Cheese, ricotta, whole milk",auto,0.833
+light soya sauce,33,33,,none,
+m and m baking bit,33,33,"Baking chocolate, MARS SNACKFOOD US, M&M's Milk Chocolate Mini Baking Bits",auto,0.97
+mango juice,33,33,"Fruit juice smoothie, NAKED JUICE, MIGHTY MANGO",auto,1.06
+mountain dew soda,33,33,,none,
+no-added-salt tomato paste,33,33,,none,
+pastry for a double-crust pie,33,33,,none,
+peaches in juice,33,33,"Peaches, canned, juice pack, solids and liquids",auto,0.94
+pina colada nonalcoholic drink mix,33,33,,none,
+plain dorito,33,33,,none,
+plum jam,33,33,,none,
+romaine leaf,33,33,,none,
+saltine crumb,33,33,,none,
+shaoxing wine,33,33,,none,
+soft silken tofu,33,33,"MORI-NU, Tofu, silken, soft",auto,1.05
+top round beef,33,33,"Beef, round, top round, boneless, choice, raw",auto,1.14
+vanilla baking chip,33,33,,none,
+vegetable stock powder,33,33,,none,
+whole grain bun,33,33,,none,
+anchovies in oil,32,32,"Anchovies, canned in olive oil, with salt, drained",auto,0.91
+baby onion,32,32,,none,
+beau monde seasoning,32,32,,none,
+chocolate graham cracker,32,32,"Graham crackers, chocolate covered",auto,0.92
+chocolate instant pudding and pie filling mix,32,32,,none,
+clamato juice,32,32,,none,
+dried fenugreek leaf,32,32,,none,
+dried leaf thyme,32,32,,none,
+dry rub seasoning,32,32,,none,
+egg wash,32,32,,none,
+frisee,32,32,,none,
+frozen baby lima bean,32,32,"Lima beans, immature seeds, frozen, baby, unprepared",auto,1.09
+frozen sweetened strawberry,32,32,"Strawberries, frozen, sweetened, sliced",auto,1.15
+gummy worm,32,32,,none,
+instant vanilla pudding and pie filling,32,32,,none,
+italian cheese,32,32,"Pastry, Italian, with cheese",auto,0.82
+lime sherbet,32,32,,none,
+milk chocolate kiss,32,32,,none,
+nam pla,32,32,,none,
+peach jam,32,32,,none,
+pernod,32,32,,none,
+raspberry vodka,32,32,,none,
+raspberry yogurt,32,32,SILK Raspberry soy yogurt,auto,1.12
+rotelle pasta,32,32,,none,
+smooth cashew butter,32,32,,none,
+sun-dried tomato paste,32,32,,none,
+tapenade,32,32,Olive tapenade,auto,0.92
+vanilla powder,32,32,,none,
+veggie crumble,32,32,,none,
+whipped dessert topping mix,32,32,,none,
+white frosting,32,32,"Frostings, white, fluffy, dry mix",auto,1.1
+whole cardamom pod,32,32,,none,
+bean thread noodle,31,31,,none,
+canned plum tomato,31,31,,none,
+chunky applesauce,31,31,,none,
+crawfish,31,31,,none,
+dried hot pepper,31,31,"Peppers, hot chili, red, raw",auto,0.855
+french bread dough,31,31,,none,
+frozen strawberries in syrup,31,31,,none,
+instant chocolate drink mix,31,31,,none,
+kale leaf,31,31,,none,
+malted milk ball,31,31,,none,
+mixed peel,31,31,,none,
+onion ring,31,31,"Onion rings, breaded, par fried, frozen, unprepared",auto,0.97
+pepper bacon,31,31,,none,
+pigeon pea,31,31,"Pigeon peas (red gram), mature seeds, raw",auto,1.11
+pizza cheese,31,31,"Pizza, cheese, with fruit, thin crust",auto,1.11
+pizza seasoning,31,31,,none,
+real vanilla,31,31,,none,
+red onion ring,31,31,,none,
+roasted sesame seed,31,31,"Seeds, sesame seeds, whole, roasted and toasted",auto,1.0
+san marzano tomato,31,31,,none,
+sardine,31,31,"Fish oil, sardine",auto,1.02
+sea bas,31,31,,none,
+shake-n-bake,31,31,,none,
+shoulder lamb chop,31,31,"Lamb, New Zealand, imported, square-cut shoulder chops, separable lean only, raw",auto,1.02
+skor english toffee bit,31,31,,none,
+tart cherry,31,31,"Cherry juice, tart",auto,1.03
+tart cooking apple,31,31,,none,
+unbaked deep dish pie pastry,31,31,,none,
+veal stock,31,31,,none,
+yellow hominy,31,31,"Hominy, canned, yellow",auto,1.03
+yellow zucchini,31,31,,none,
+beef shank,30,30,"Beef, shank crosscuts, separable lean only, trimmed to 1/4"" fat, choice, raw",auto,0.9
+bourbon whiskey,30,30,,none,
+brewed tea,30,30,"Tea, herbal, brewed, Hohoysi (Hopi)",auto,0.99
+broad bean,30,30,,none,
+brown bread,30,30,"Bread, boston brown, canned",auto,1.0
+cedar plank,30,30,,none,
+chocolate crumb crust,30,30,,none,
+cinnamon-swirl bread,30,30,,none,
+colby,30,30,"Cheese, colby",auto,1.05
+condensed mushroom soup,30,30,"Soup, beef mushroom, canned, condensed",auto,1.0
+cooked linguine,30,30,,none,
+crab boil,30,30,,none,
+crushed pineapple in syrup,30,30,"Pineapple, canned, heavy syrup pack, solids and liquids",auto,0.91
+cubanelle pepper,30,30,,none,
+dried coconut,30,30,"Nuts, coconut meat, dried (desiccated), creamed",auto,0.84
+dry dill weed,30,30,"Dill weed, fresh",auto,0.954
+english pea,30,30,,none,
+frozen pound cake,30,30,"Cake, pound, commercially prepared, butter (includes fresh and frozen)",auto,0.91
+gluten flour,30,30,,none,
+golden caster sugar,30,30,,none,
+hickory barbecue sauce,30,30,,none,
+hickory chip,30,30,,none,
+honeydew,30,30,"Melons, honeydew, raw",auto,1.1
+karo light corn syrup,30,30,,none,
+lean ground sirloin,30,30,,none,
+lemon verbena leaf,30,26,,none,
+light muscovado sugar,30,30,,none,
+masala,30,30,"SMART SOUP, Indian Bean Masala",auto,0.84
+onion juice,30,30,,none,
+orange soda,30,30,,none,
+pickapeppa sauce,30,30,,none,
+pork back rib,30,30,,none,
+quark,30,30,,none,
+red pepper powder,30,30,"Peppers, sweet, red, raw",auto,0.84
+rindless bacon,30,30,,none,
+unbleached bread flour,30,30,"Flour, bread, white, enriched, unbleached",auto,0.97
+unsweetened powdered drink mix,30,30,,none,
+vanilla bean paste,30,30,,none,
+vegan butter,30,30,,none,
+vegetarian ground beef,30,30,,none,
+almond bark,29,29,,none,
+anise,29,29,"Spices, anise seed",auto,1.02
+baby rocket,29,29,,none,
+barbecue seasoning,29,29,,none,
+bay shrimp,29,29,,none,
+bechamel sauce,29,29,,none,
+bread dough,29,29,"Bread, dough, fried",auto,1.05
+broccolini,29,29,,none,
+cacao,29,29,"Chocolate, dark, 60-69% cacao solids",auto,0.99
+carbonated water,29,29,"Water, carbonated, plain",auto,1.17
+chicken quarter,29,29,,none,
+club cracker,29,29,,none,
+coco lopez,29,29,,none,
+coconuting,29,29,,none,
+cookie crumb,29,29,"Nabisco, Nabisco Oreo Crunchies, Cookie Crumb Topping",auto,0.84
+corn niblet,29,29,,none,
+cream of onion soup,29,29,"Soup, cream of onion, canned, condensed",auto,1.13
+deep dish pie crust,29,29,"Pie crust, deep dish, frozen, unbaked, made with enriched flour",auto,0.92
+deli corned beef,29,29,,none,
+dried whole thyme,29,29,"Spices, thyme, dried",auto,1.05
+dry marsala wine,29,29,,none,
+dutch process cocoa,29,29,,none,
+ener-g egg substitute,29,29,,none,
+field mushroom,29,29,,none,
+frozen cranberry juice concentrate,29,29,"Cranberry juice cocktail, frozen concentrate",auto,1.15
+fruit chutney,29,29,,none,
+ground buffalo meat,29,29,"Game meat, buffalo, water, raw",auto,0.856
+head of broccoli,29,29,,none,
+hormel real bacon bit,29,29,,none,
+jelly bean,29,29,,none,
+lamb stew meat,29,29,,none,
+libby's canned pumpkin,29,29,,none,
+longhorn cheese,29,29,,none,
+onion soup,29,29,"Soup, onion, dry, mix",auto,1.13
+pepperoni zest,29,29,,none,
+ranch dip mix,29,29,,none,
+rice bubble,29,29,,none,
+shrimp stock,29,29,,none,
+soup mix,29,29,"Soup, onion, dry, mix",auto,1.0
+spaghetti sauce mix,29,29,,none,
+sweet sherry,29,29,,none,
+taco cheese,29,29,"Taco, cheese only",auto,0.92
+veg-all,29,29,,none,
+vegan chocolate chip,29,29,,none,
+vegetarian refried bean,29,29,"Refried beans, canned, vegetarian",auto,1.03
+wheat gluten,29,29,Vital wheat gluten,auto,1.15
+white chocolate liqueur,29,29,,none,
+yellow capsicum,29,29,,none,
+yellow rice,29,29,"Yellow rice, cooked, NS as to fat",auto,0.95
+backfin crab meat,28,28,,none,
+calamarus,28,28,,none,
+chard leaf,28,28,,none,
+chuck,28,28,"Beef, chuck, roast, boneless, choice, raw",auto,0.98
+converted white rice,28,28,,none,
+cooked ground beef,28,28,"Beef, ground, unspecified fat content, cooked",auto,0.97
+cream soup,28,28,"Soup, cream of tomato",auto,0.92
+dried lavender,28,28,,none,
+fennel leaf,28,28,,none,
+fleur de sel,28,28,,none,
+green tea powder,28,28,,none,
+ground chicken breast,28,28,,none,
+hostess twinky,28,28,,none,
+hot fudge topping,28,28,,none,
+instant couscous,28,28,,none,
+instant tea,28,28,"Beverages, tea, instant, lemon, unsweetened",auto,0.87
+jaggery,28,28,,none,
+liquid fruit pectin,28,28,"Pectin, liquid",auto,0.941
+liquor,28,28,"Beverages, Malt liquor beverage",auto,0.9
+matzo,28,28,"Crackers, matzo, egg",auto,1.02
+meatless spaghetti sauce,28,28,,none,
+mexican crema,28,28,,none,
+mint chocolate chip,28,28,"Ice creams, BREYERS, All Natural Light Mint Chocolate Chip",auto,0.81
+nacho chip,28,28,"Tortilla chips, nacho cheese flavor (Doritos)",auto,0.83
+o'brien frozen potato,28,28,"Potatoes, o'brien, frozen, unprepared",auto,1.15
+pimento pepper,28,28,,none,
+pineapple zest,28,28,,none,
+porcini mushroom,28,28,,none,
+raspberry syrup,28,28,"Raspberries, canned, red, heavy syrup pack, solids and liquids",auto,0.88
+split red lentil,28,28,"Lentils, pink or red, raw",auto,0.821
+sweet smoked paprika,28,28,,none,
+tuna in oil,28,28,"Fish, tuna, white, canned in oil, drained solids",auto,0.81
+yellow potato,28,28,,none,
+yucca root,28,28,,none,
+absolut citron vodka,27,27,,none,
+au jus mix,27,27,,none,
+butterscotch pudding,27,27,,none,
+california-blend frozen vegetable,27,27,,none,
+cranberry-raspberry juice,27,27,,none,
+cream soda,27,27,"Carbonated beverage, cream soda",auto,0.9
+drambuie,27,27,,none,
+dried lemon peel,27,27,"Lemon peel, raw",auto,0.939
+flakey biscuit,27,27,,none,
+goldfish cracker,27,27,"Crackers, cheese (Goldfish)",auto,0.92
+grilled chicken,27,27,"Chicken fillet, grilled",auto,0.92
+grouper fillet,27,27,,none,
+jello instant vanilla pudding mix,27,27,,none,
+kool-aid,27,27,,none,
+lamb fillet,27,27,,none,
+laughing cow cheese,27,27,,none,
+lemon instant pudding and pie filling,27,27,,none,
+light vanilla soymilk,27,27,"SILK Light Vanilla, soymilk",auto,1.15
+marmite,27,27,,none,
+mexican seasoning,27,27,,none,
+minute steak,27,27,,none,
+minute white rice,27,27,,none,
+mochiko sweet rice flour,27,27,,none,
+onion roll,27,27,,none,
+pastry for single-crust pie,27,27,,none,
+peach brandy,27,27,,none,
+plain white flour,27,27,"Corn flour, whole-grain, white",auto,1.12
+pork fat,27,27,"Pork, fresh, separable fat, raw",auto,1.17
+porterhouse steak,27,27,,none,
+puffed rice cereal,27,27,"Cereals ready-to-eat, QUAKER, QUAKER Puffed Rice",auto,0.9
+roasted pistachio,27,27,"Nuts, pistachio nuts, dry roasted, with salt added",auto,0.84
+rose's lime juice,27,27,,none,
+ruby red grapefruit juice,27,27,"Ruby Red grapefruit juice blend (grapefruit, grape, apple), OCEAN SPRAY, bottled, with added vitamin C",auto,0.91
+salt cod fish,27,27,"Fish, cod, Atlantic, raw",auto,0.947
+strip steak,27,27,"Beef, grass-fed, strip steaks, lean only, raw",auto,1.01
+sweet white wine,27,27,,none,
+thin pizza crust,27,27,"Pizza, no cheese, thin crust",auto,0.86
+tostada,27,27,"Tostada shells, corn",auto,1.12
+walla walla onion,27,27,,none,
+white crab meat,27,27,,none,
+white tequila,27,27,,none,
+whole nutmeg,27,27,"Oil, nutmeg butter",auto,1.02
+almond syrup,26,26,,none,
+beet leaf,26,26,,none,
+boiled ham,26,26,,none,
+cabbage and carrot coleslaw mix,26,26,,none,
+canned solid-pack pumpkin,26,26,,none,
+capicola,26,26,,none,
+cheese zest,26,26,,none,
+cheez-it cracker,26,26,"Crackers, cheese (Cheez-It)",auto,0.92
+chicken gravy mix,26,26,,none,
+chipotle hot sauce,26,26,,none,
+condensed cream of mushroom and garlic soup,26,26,,none,
+dipping chocolate,26,26,,none,
+dry green lentil,26,26,"Lentils, dry",auto,0.854
+fenugreek leaf,26,26,,none,
+frozen peppers and onion,26,26,,none,
+frozen white bread dough,26,26,,none,
+frying oil,26,26,"Oil, industrial, soy, refined, for woks and light frying",auto,0.91
+garlic chive,26,26,,none,
+ginger beer,26,26,,none,
+gravy mix,26,26,"Gravy, onion, dry, mix",auto,1.0
+habanero sauce,26,26,,none,
+hickory smoked bacon,26,26,,none,
+kirby cucumber,26,26,,none,
+mizithra cheese,26,26,,none,
+muesli,26,26,,none,
+oven cooking bag,26,26,,none,
+passion fruit pulp,26,26,,none,
+pork mince,26,26,,none,
+potato water,26,26,,none,
+pumpkin spice,26,26,"Spices, pumpkin pie spice",auto,1.03
+ranch dips mix,26,26,,none,
+refrigerated cheese tortellini,26,26,,none,
+serrano ham,26,26,,none,
+sesame,26,26,"Sesame butter, creamy",auto,1.09
+star fruit,26,26,,none,
+strawberry glaze,26,26,,none,
+tomatoes seasoned,26,26,,none,
+acini di pepe pasta,25,25,,none,
+baby beet,25,25,Baby Toddler beets,auto,0.8
+baby pea,25,25,"Peas, green (includes baby and lesuer types), canned, drained solids, unprepared",auto,0.82
+cannelloni tube,25,25,,none,
+corn cob,25,25,"Corn, sweet, white, frozen, kernels on cob, unprepared",auto,0.91
+curd,25,25,"Soybean, curd cheese",auto,1.02
+dry white vermouth,25,25,,none,
+fermented black bean,25,25,,none,
+frozen creamed spinach,25,25,,none,
+frozen deep dish pie shell,25,25,,none,
+frozen dinner roll,25,25,"Rolls, dinner, egg",auto,0.898
+frozen raspberries in light syrup,25,25,,none,
+frozen white corn,25,25,"Corn, sweet, white, frozen, kernels on cob, unprepared",auto,1.06
+golden grahams cereal,25,25,,none,
+graham cracker crumb crust,25,25,,none,
+heads of garlic,25,25,,none,
+horseradish mustard,25,25,,none,
+lemoning,25,25,,none,
+light oil,25,25,"Oil, industrial, soy, refined, for woks and light frying",auto,1.03
+mandarin oranges in juice,25,25,"Tangerines, (mandarin oranges), canned, juice pack",auto,0.87
+mango puree,25,25,,none,
+mild enchilada sauce,25,25,"Sauce, enchilada, red, mild, ready to serve",auto,1.09
+olive juice,25,25,,none,
+pattypan squash,25,25,,none,
+powdered drink mix,25,25,,none,
+powdered soy protein concentrate,25,25,"Soy protein concentrate, produced by acid wash",auto,0.8
+red maraschino cherry,25,25,,none,
+red miso,25,25,,none,
+refried black bean,25,25,,none,
+seasoned rice wine vinegar,25,25,,none,
+sloppy joe sandwich sauce,25,25,,none,
+spicy hot,25,25,,none,
+sumaq,25,25,,none,
+sweet whole kernel corn,25,25,"Corn, sweet, yellow and white kernels,  fresh, raw",auto,1.11
+tawny port,25,25,,none,
+turkey breast cutlet,25,25,,none,
+vanilla caramel,25,25,"Cookie, vanilla with caramel, coconut, and chocolate coating",auto,0.84
+wagon wheel macaroni,25,25,,none,
+white almond bark,25,25,,none,
+whole wheat elbow macaroni,25,25,,none,
+apple brandy,24,24,,none,
+baked pie crust,24,24,"Pie crust, refrigerated, regular, baked",auto,1.12
+black bean garlic sauce,24,24,,none,
+chocolate graham cracker crumb,24,24,,none,
+coconut syrup,24,24,,none,
+coriander root,24,24,,none,
+dried plum,24,24,"Plums, dried (prunes), uncooked",auto,1.12
+dry bread cube,24,24,,none,
+dry parsley flake,24,24,,none,
+fat buttermilk,24,24,"Buttermilk, low fat",auto,1.0
+fines herbe,24,24,,none,
+fish steak,24,24,,none,
+french vanilla coffee creamer,24,24,SILK French Vanilla Creamer,auto,0.931
+frozen french-cut green bean,24,24,,none,
+granola,24,24,"Muffins, English, mixed-grain (includes granola)",auto,0.96
+hazelnut syrup,24,24,,none,
+hickory liquid smoke,24,24,,none,
+instant coconut cream pudding mix,24,24,"Puddings, coconut cream, dry mix, instant",auto,1.03
+lamb cutlet,24,24,,none,
+lamb stock,24,24,,none,
+lemon and herb seasoning,24,24,,none,
+light raisin,24,24,,none,
+onion seed,24,24,,none,
+paper,24,24,Rice paper,auto,0.92
+parmesan-romano cheese mix,24,24,,none,
+peach halves in syrup,24,24,,none,
+polska kielbasa,24,24,,none,
+ponzu sauce,24,24,,none,
+pork and beans in tomato sauce,24,24,"Beans, baked, canned, with pork and tomato sauce",auto,0.88
+red bliss potato,24,24,,none,
+refrigerated crescent roll,24,24,,none,
+rotini noodle,24,24,,none,
+sesame paste,24,24,"Seeds, sesame butter, paste",auto,1.02
+shelled pistachio,24,24,,none,
+soy crumble,24,24,,none,
+sweet marsala wine,24,24,,none,
+tiny pea,24,24,,none,
+toasted breadcrumb,24,24,,none,
+white truffle oil,24,24,,none,
+amaretti cookies,23,23,,none,
+andes mints candy,23,23,,none,
+bean flour,23,23,,none,
+berbere,23,23,,none,
+black treacle,23,23,,none,
+blueberry yogurt,23,23,SILK Blueberry soy yogurt,auto,1.12
+bottom round roast,23,23,"Beef, Australian, imported, grass-fed, round, bottom round steak/roast, boneless, separable lean only, raw",auto,0.86
+bottom round steak,23,23,"Beef, Australian, imported, grass-fed, round, bottom round steak/roast, boneless, separable lean only, raw",auto,0.86
+butter bud,23,23,,none,
+chestnut mushroom,23,23,,none,
+chinese vegetable,23,23,,none,
+cinnamon bark,23,23,,none,
+cinnamon schnapps,23,23,,none,
+citron,23,23,,none,
+coconut pecan frosting,23,23,,none,
+curacao,23,23,,none,
+dark soya sauce,23,23,,none,
+diet lemon-lime soda,23,23,,none,
+dried lavender flower,23,23,,none,
+dried sour cherry,23,23,"Cherries, sour, red, raw",auto,0.901
+dry fettuccine,23,23,,none,
+english mustard powder,23,23,,none,
+hard alcoholic cider,23,23,,none,
+hing,23,23,,none,
+jerusalem artichoke,23,23,,none,
+kasseri cheese,23,23,,none,
+leek soup mix,23,23,,none,
+light vegetable oil,23,23,,none,
+liquid hot pepper sauce,23,23,,none,
+marjoram leaf,23,23,,none,
+meat stock,23,23,,none,
+meyer lemon,23,23,,none,
+nacho cheese dorito,23,23,,none,
+nutmeat,23,23,,none,
+pear juice,23,23,"Juice, apple, grape and pear blend, with added ascorbic acid and calcium",auto,0.97
+pineapple sherbet,23,23,,none,
+pork sirloin roast,23,23,"Pork, fresh, loin, sirloin (chops or roasts), bone-in, separable lean only, raw",auto,1.02
+powdered chocolate milk mix,23,23,,none,
+raspberry jelly,23,23,,none,
+red plum,23,23,"Plums, raw",auto,0.805
+smoked oyster,23,23,,none,
+sorrel,23,23,,none,
+turkey leg,23,23,"Turkey, all classes, leg, meat and skin, raw",auto,1.14
+x-rated fusion liqueur,23,23,,none,
+yellow wax bean,23,23,,none,
+zinfandel,23,23,"Alcoholic Beverage, wine, table, red, Zinfandel",auto,0.81
+alphabet pasta,22,22,,none,
+angel flake coconut,22,22,,none,
+asadero cheese,22,22,"Cheese, mexican, queso asadero",auto,1.12
+baby eggplant,22,22,,none,
+butt,22,22,"Pork, fresh, shoulder, (Boston butt), blade (steaks), separable lean only, raw",auto,0.86
+carob chip,22,22,,none,
+chocolate fudge frosting,22,22,"Cake, cherry fudge with chocolate frosting",auto,0.9
+chocolate protein powder,22,22,,none,
+chocolate wafer pie crust,22,22,"Pie Crust, Cookie-type, Chocolate, Ready Crust",auto,0.804
+cinnamon graham cracker,22,22,"Cookies, graham crackers, plain or honey (includes cinnamon)",auto,0.96
+cooked fettuccine,22,22,,none,
+deviled ham,22,22,,none,
+dry lasagna noodle,22,22,,none,
+dry parmesan cheese,22,22,"Cheese, Parmesan, dry grated",auto,0.92
+espresso bean,22,22,,none,
+eye of round roast,22,22,"Beef, round, eye of round, roast, separable lean and fat, trimmed to 1/8"" fat, choice, raw",auto,0.83
+fig preserve,22,22,,none,
+frozen tiny pea,22,22,,none,
+german mustard,22,22,,none,
+graham flour,22,22,,none,
+herbed crouton,22,22,,none,
+honey-roasted peanut,22,22,,none,

@@ -1,0 +1,97 @@
+{
+  "recipes": 54179,
+  "recipe_ingredient_rows": 573725,
+  "ingredients_total": 3314,
+  "ingredients_used_by_pool": 2252,
+  "foodcom_occurrence_coverage_mapped": 0.968395054969431,
+  "foodcom_occurrence_share_curated": 0.8671615347076241,
+  "foodcom_distinct_raw_strings": 14942,
+  "pool_ingredient_rows_mapped_pct": 100.0,
+  "pool_rows_curated_pct": 90.6723604514358,
+  "pool_rows_auto_pct": 9.327639548564207,
+  "quantity_source": {
+    "estimated": 573725,
+    "parsed": 0
+  },
+  "nutrition_consistency": {
+    "kcal": {
+      "mae": 16.24,
+      "median_abs_err": 7.72,
+      "median_rel_err": 0.0216
+    },
+    "protein_g": {
+      "mae": 2.11,
+      "median_abs_err": 0.97,
+      "median_rel_err": 0.0457
+    },
+    "fat_g": {
+      "mae": 1.54,
+      "median_abs_err": 0.78,
+      "median_rel_err": 0.049
+    },
+    "carbohydrate_g": {
+      "mae": 2.27,
+      "median_abs_err": 1.29,
+      "median_rel_err": 0.0459
+    },
+    "sat_fat_g": {
+      "mae": 0.98,
+      "median_abs_err": 0.47,
+      "median_rel_err": 0.09
+    },
+    "sugars_g": {
+      "mae": 1.87,
+      "median_abs_err": 1.23,
+      "median_rel_err": 0.2575
+    },
+    "sodium_mg": {
+      "mae": 125.33,
+      "median_abs_err": 26.11,
+      "median_rel_err": 0.0459
+    }
+  },
+  "held_out_median_ape": {
+    "sat_fat_g_stated": 0.123,
+    "sugars_g_stated": 0.294,
+    "sodium_mg_stated": 0.36
+  },
+  "nutrition_field_coverage_pool_ingredients": {
+    "energy_kcal": 1.0,
+    "protein_g": 1.0,
+    "fat_g": 1.0,
+    "carbohydrate_g": 0.999,
+    "fiber_g": 0.927,
+    "sodium_mg": 0.992
+  },
+  "shelf_life_default_coverage_pool_pct": 99.9,
+  "shelf_life_confidence_by_usage_pct": {
+    "high": 93.2,
+    "medium": 2.1,
+    "low": 4.7
+  },
+  "pool_diet": {
+    "vegetarian": 8898,
+    "vegan": 2654,
+    "gluten_free": 23177,
+    "dairy_free": 22112,
+    "nut_free": 51139,
+    "pescatarian": 14584
+  },
+  "pool_minutes_quantiles": {
+    "0.1": 20.0,
+    "0.5": 45.0,
+    "0.9": 155.0
+  },
+  "pool_kcal_quantiles": {
+    "0.1": 189.0,
+    "0.5": 391.0,
+    "0.9": 740.0
+  },
+  "interactions": {
+    "train": 197297,
+    "validation": 1809,
+    "test": 3217
+  },
+  "interaction_users_train": 20350,
+  "built_on": "2026-10-12"
+}

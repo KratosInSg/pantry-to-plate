@@ -1,0 +1,459 @@
+{
+  "dataset": "pantry-to-plate canonical dataset",
+  "built_on": "2026-10-12",
+  "files": [
+    {
+      "path": "_meta/grams_estimation_report.json",
+      "bytes": 228,
+      "sha256": "b842722bb249862e0b602792c671fc25be9ae988bacd8c0529e5bdac6f8ec690"
+    },
+    {
+      "path": "_meta/ingredient_mapping_report.json",
+      "bytes": 372,
+      "sha256": "6dc76e15ef5e3c0f3fa2d901848e27d244cd2ceefcfdfc7688f8240c1db24cdb"
+    },
+    {
+      "path": "_meta/quality_gates.json",
+      "bytes": 2296,
+      "sha256": "7f0d301177bc0e63f834156e363e68a5781955a2265dcbb2e941b836c63705ac"
+    },
+    {
+      "path": "_meta/recipe_funnel.csv",
+      "bytes": 229,
+      "sha256": "294c62ea3bf92f3d3b089647fb556ba0b9f5ce0b2007435ca262543febd2ea3d",
+      "rows": 7,
+      "columns": [
+        "stage",
+        "recipes"
+      ]
+    },
+    {
+      "path": "_meta/recipes_dropped_poor_fit.csv",
+      "bytes": 448115,
+      "sha256": "4b2ea61c3a06b5f7792904c911715277ec64b97368417d99de28cfd55b541d5b",
+      "rows": 4435,
+      "columns": [
+        "recipe_id",
+        "fit_kcal_rel_error",
+        "_err_fat_g",
+        "_err_carbohydrate_g",
+        "_err_protein_g",
+        "total_g"
+      ]
+    },
+    {
+      "path": "_meta/review_unmapped_or_low_confidence.csv",
+      "bytes": 72063,
+      "sha256": "4f30ab46ebf139a43b753b4306eee6dfbedfda6127b80859c4cd6ca3e3fc406e",
+      "rows": 1500,
+      "columns": [
+        "canonical_name",
+        "n_occurrences",
+        "n_recipes",
+        "usda_description",
+        "match_method",
+        "match_score"
+      ]
+    },
+    {
+      "path": "ingredients/ingredient.parquet",
+      "bytes": 122154,
+      "sha256": "eb11846b570339e04f8ba742511955faa43f86740986fe03d23d4be33bb2da0a",
+      "rows": 3314,
+      "columns": [
+        "ingredient_id",
+        "canonical_name",
+        "food_group",
+        "fdc_id",
+        "usda_description",
+        "usda_data_type",
+        "match_method",
+        "match_score",
+        "match_confidence",
+        "n_occurrences_foodcom",
+        "n_recipes_foodcom",
+        "is_assumed_available",
+        "contains_dairy",
+        "contains_egg",
+        "contains_gluten",
+        "contains_peanut",
+        "contains_tree_nut",
+        "contains_soy",
+        "contains_sesame",
+        "contains_fish",
+        "contains_shellfish",
+        "contains_meat",
+        "contains_poultry",
+        "contains_pork",
+        "contains_alcohol",
+        "contains_honey",
+        "contains_gelatin",
+        "is_vegetarian",
+        "is_vegan",
+        "n_recipes_pool"
+      ]
+    },
+    {
+      "path": "ingredients/ingredient_alias.parquet",
+      "bytes": 137869,
+      "sha256": "c896bc0335ccecf6de81b2d7980028c552df0c1ca41debd1ebd6042542af3616",
+      "rows": 12409,
+      "columns": [
+        "alias",
+        "ingredient_id",
+        "alias_source",
+        "n_occurrences",
+        "is_split"
+      ]
+    },
+    {
+      "path": "ingredients/ingredient_unit_weight.parquet",
+      "bytes": 54158,
+      "sha256": "ac6aef440ffa4ec1006a279006e597537a3906797c43855b6054d0e33334d29a",
+      "rows": 12223,
+      "columns": [
+        "ingredient_id",
+        "unit",
+        "size",
+        "grams_per_unit",
+        "prep_basis",
+        "source"
+      ]
+    },
+    {
+      "path": "interactions/interaction_test.parquet",
+      "bytes": 53093,
+      "sha256": "a44848b461fbf1aebb42005fc48c8ccdd7891450cf5fe81b1e60fd688374adc7",
+      "rows": 3217,
+      "columns": [
+        "user_id",
+        "recipe_id",
+        "date",
+        "rating",
+        "is_rated"
+      ]
+    },
+    {
+      "path": "interactions/interaction_train.parquet",
+      "bytes": 1018080,
+      "sha256": "c793df27f3446f49beb93d1d64633b2c0bca653e8cfb1836c70009a788ca56ef",
+      "rows": 197297,
+      "columns": [
+        "user_id",
+        "recipe_id",
+        "date",
+        "rating",
+        "is_rated"
+      ]
+    },
+    {
+      "path": "interactions/interaction_validation.parquet",
+      "bytes": 31311,
+      "sha256": "697b5af101f26f19d18493f59b2ab651c08946ecdf85881a278c1a3cbea233c7",
+      "rows": 1809,
+      "columns": [
+        "user_id",
+        "recipe_id",
+        "date",
+        "rating",
+        "is_rated"
+      ]
+    },
+    {
+      "path": "nutrition/ingredient_nutrition_per100g.parquet",
+      "bytes": 144197,
+      "sha256": "55aaa88c7a3895defdac6f58855ead9f5a6fb80796fec6046ebd2694a7666ea5",
+      "rows": 3314,
+      "columns": [
+        "ingredient_id",
+        "fdc_id",
+        "match_confidence",
+        "energy_kcal",
+        "protein_g",
+        "fat_g",
+        "sat_fat_g",
+        "carbohydrate_g",
+        "sugars_g",
+        "fiber_g",
+        "sodium_mg",
+        "cholesterol_mg",
+        "calcium_mg",
+        "iron_mg",
+        "potassium_mg",
+        "vitamin_c_mg",
+        "vitamin_a_rae_ug",
+        "water_g",
+        "energy_source",
+        "basis",
+        "source"
+      ]
+    },
+    {
+      "path": "nutrition/usda_food_nutrient_per100g.parquet",
+      "bytes": 569520,
+      "sha256": "7382c673c0b0d49213873bc6e13d99b36fec6dbf9b3a2bdf72ce45f615a26f62",
+      "rows": 13694,
+      "columns": [
+        "fdc_id",
+        "data_type",
+        "description",
+        "category",
+        "energy_kcal",
+        "protein_g",
+        "fat_g",
+        "sat_fat_g",
+        "carbohydrate_g",
+        "sugars_g",
+        "fiber_g",
+        "sodium_mg",
+        "cholesterol_mg",
+        "calcium_mg",
+        "iron_mg",
+        "potassium_mg",
+        "vitamin_c_mg",
+        "vitamin_a_rae_ug",
+        "water_g",
+        "energy_source",
+        "qc_flag"
+      ]
+    },
+    {
+      "path": "nutrition/usda_food_portion_weight.parquet",
+      "bytes": 166073,
+      "sha256": "4736ebf944a2bf46cbb241c9188921b767973d8d24f323a6f73ea0e0a8af4970",
+      "rows": 21249,
+      "columns": [
+        "fdc_id",
+        "seq_num",
+        "unit",
+        "size",
+        "prep",
+        "amount",
+        "gram_weight",
+        "grams_per_unit",
+        "label_raw"
+      ]
+    },
+    {
+      "path": "recipes/recipe.parquet",
+      "bytes": 4563420,
+      "sha256": "79f2131e435d901c59650923f0b1215ef3dd1f7f1ec00927da92ba1ee28f4a01",
+      "rows": 54179,
+      "columns": [
+        "recipe_id",
+        "name",
+        "minutes_total",
+        "n_steps",
+        "n_ingredients",
+        "cuisine",
+        "tags",
+        "is_vegetarian",
+        "is_vegan",
+        "contains_dairy",
+        "contains_egg",
+        "contains_gluten",
+        "contains_peanut",
+        "contains_tree_nut",
+        "contains_soy",
+        "contains_sesame",
+        "contains_fish",
+        "contains_shellfish",
+        "contains_meat",
+        "contains_poultry",
+        "contains_pork",
+        "contains_alcohol",
+        "kcal_stated",
+        "protein_g_stated",
+        "fat_g_stated",
+        "sat_fat_g_stated",
+        "carbohydrate_g_stated",
+        "sugars_g_stated",
+        "sodium_mg_stated",
+        "rating_mean_train",
+        "n_ratings_train",
+        "kcal_computed",
+        "protein_g_computed",
+        "fat_g_computed",
+        "sat_fat_g_computed",
+        "carbohydrate_g_computed",
+        "sugars_g_computed",
+        "fiber_g_computed",
+        "sodium_mg_computed",
+        "cholesterol_mg_computed",
+        "calcium_mg_computed",
+        "iron_mg_computed",
+        "potassium_mg_computed",
+        "vitamin_c_mg_computed",
+        "vitamin_a_rae_ug_computed",
+        "water_g_computed",
+        "total_grams_per_serving",
+        "fit_kcal_rel_error"
+      ]
+    },
+    {
+      "path": "recipes/recipe_ingredient.parquet",
+      "bytes": 4083847,
+      "sha256": "145d47c66a4decb34a090194f6480c933ffb2246258239c77a065290802437fd",
+      "rows": 573725,
+      "columns": [
+        "recipe_id",
+        "position",
+        "ingredient_id",
+        "raw_text",
+        "grams_per_serving",
+        "grams_source",
+        "kcal_share",
+        "grams_basis"
+      ]
+    },
+    {
+      "path": "recipes/recipe_step.parquet",
+      "bytes": 11288030,
+      "sha256": "e14caca2fc526e8964c00dc101304572b653ffcb1e5a333d2da2abd536189eee",
+      "rows": 54179,
+      "columns": [
+        "recipe_id",
+        "steps"
+      ]
+    },
+    {
+      "path": "reference/ingredient_foodkeeper_overrides.csv",
+      "bytes": 5728,
+      "sha256": "04440268719bb62c21dc9000fc896c9c00e2d6e894dd910b857202b45f6821ab",
+      "rows": 339,
+      "columns": [
+        "canonical_name",
+        "foodkeeper_product_id",
+        "note"
+      ]
+    },
+    {
+      "path": "reference/ingredient_synonyms.csv",
+      "bytes": 18489,
+      "sha256": "6712e2461c94240d06cb62e71d05dff50834a31226505b85ea93b23376c08060",
+      "rows": 661,
+      "columns": [
+        "name",
+        "canonical_name",
+        "note"
+      ]
+    },
+    {
+      "path": "reference/ingredient_usda_overrides.csv",
+      "bytes": 18812,
+      "sha256": "4bffb9e99e0a197f10110eea32e67caf89ef75fbfa67cdc52fdbe401545e394b",
+      "rows": 385,
+      "columns": [
+        "canonical_name",
+        "usda_description",
+        "note"
+      ]
+    },
+    {
+      "path": "reference/nutrient_daily_value.csv",
+      "bytes": 635,
+      "sha256": "e38770705cf747f619ae3f2b420986e9fe9af5ddfa42eb7e3628ae39fbdec9ae",
+      "rows": 6,
+      "columns": [
+        "nutrient_column",
+        "daily_value",
+        "unit",
+        "used_for",
+        "source_note"
+      ]
+    },
+    {
+      "path": "reference/nutrition_reference_ranges.csv",
+      "bytes": 1689,
+      "sha256": "889b73da9b9171e120e548475ab7c95185656f4e7bd70d98d2b77129c3fbbb16",
+      "rows": 20,
+      "columns": [
+        "nutrient",
+        "basis",
+        "min",
+        "max",
+        "unit",
+        "source",
+        "note"
+      ]
+    },
+    {
+      "path": "reference/unit_conversion.csv",
+      "bytes": 923,
+      "sha256": "032f4665505a09a7d533fb782c5919401bbafc814a4f5841041a0ae43f000480",
+      "rows": 16,
+      "columns": [
+        "unit",
+        "aliases",
+        "kind",
+        "to_base",
+        "base_unit",
+        "note"
+      ]
+    },
+    {
+      "path": "shelf_life/foodkeeper_product.parquet",
+      "bytes": 25171,
+      "sha256": "3818520ed5e1afa33ba5eecacbee70df15d0c6f4ec01a18b22b0f2979b09f7f7",
+      "rows": 661,
+      "columns": [
+        "product_id",
+        "name",
+        "subtitle",
+        "category",
+        "subcategory",
+        "keywords"
+      ]
+    },
+    {
+      "path": "shelf_life/foodkeeper_shelf_life.parquet",
+      "bytes": 20003,
+      "sha256": "d7c7bb0385e24f94aa261f205ab6c09a95f6079123bcd4b0f7bd46b1b84f5f7e",
+      "rows": 1341,
+      "columns": [
+        "product_id",
+        "storage",
+        "state",
+        "basis",
+        "min_days",
+        "max_days",
+        "is_indefinite",
+        "is_when_ripe",
+        "is_not_recommended",
+        "is_package_date_only",
+        "metric_raw",
+        "tips",
+        "min_days_effective",
+        "max_days_effective",
+        "effective_source"
+      ]
+    },
+    {
+      "path": "shelf_life/ingredient_shelf_life.parquet",
+      "bytes": 70939,
+      "sha256": "680df05d818ea1596a92c8d80b679c36f67d387123a78e0a503115a16256451a",
+      "rows": 13719,
+      "columns": [
+        "ingredient_id",
+        "foodkeeper_product_id",
+        "match_method",
+        "match_score",
+        "confidence",
+        "storage",
+        "state",
+        "basis",
+        "min_days",
+        "max_days",
+        "min_days_effective",
+        "max_days_effective",
+        "effective_source",
+        "is_indefinite",
+        "is_when_ripe",
+        "is_package_date_only",
+        "is_not_recommended",
+        "tips",
+        "is_default"
+      ]
+    }
+  ]
+}

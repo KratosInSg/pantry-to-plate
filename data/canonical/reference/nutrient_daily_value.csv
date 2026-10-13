@@ -1,0 +1,7 @@
+nutrient_column,daily_value,unit,used_for,source_note
+fat_g,65,g,convert Food.com %DV to grams,"Pre-2016 FDA label DV. Calibrated: kcal = 9*fat + 4*protein + 4*carb fits Food.com rows with R2=0.987"
+sat_fat_g,20,g,convert Food.com %DV to grams,Pre-2016 FDA label DV
+carbohydrate_g,300,g,convert Food.com %DV to grams,Pre-2016 FDA label DV (calibrated with the kcal fit above)
+protein_g,50,g,convert Food.com %DV to grams,Pre-2016 FDA label DV
+sodium_mg,2400,mg,convert Food.com %DV to mg,Pre-2016 FDA label DV
+sugars_g,25,g,convert Food.com %DV to grams,Calibrated from sugar+water recipes (774 kcal syrup: 198 g carb = 799 %DV sugar)

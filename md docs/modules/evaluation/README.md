@@ -1,0 +1,44 @@
+# `src/evaluation/` — measuring plans, never producing them
+
+## Purpose
+
+Everything needed to answer "is the optimiser better than the baselines, and why?": a seeded synthetic benchmark of
+simulated kitchens, a frozen validation/test split, plan metrics computed by one shared replay, and a runner that
+compares methods with paired statistics. It **measures plans; it never produces the app's plan**.
+
+## Flow
+
+```
+scenarios.generate_scenario(family, seed)      8 families × N seeds   (pure function of the dataset)
+        │
+        ▼
+scenarios.freeze_benchmark                      data/evaluation/{scenarios_v1.jsonl, split_v1.json, FROZEN.json}
+        │                                       (SHA-256 verified on every load)
+        ▼
+runner.run(split, planners)                     plan each scenario with each method
+        │
+        ▼
+metrics.evaluate_plan                           replay against the HIDDEN truth + same scoring for every method
+        │
+        ▼
+metrics.summarise / paired_bootstrap            per-family and paired comparisons with 95 % CIs
+```
+
+## Files
+
+| File | Role | Doc |
+| --- | --- | --- |
+| `scenarios.py` | Generator (8 families), split, freeze, verified load | [scenarios.md](scenarios.md) |
+| `metrics.py` | `evaluate_plan`, `summarise`, `paired_bootstrap` | [metrics.md](metrics.md) |
+| `runner.py` | Planner registry + CLI comparison | [runner.md](runner.md) |
+| `build_benchmark.py` | One-shot freeze script | [build_benchmark.md](build_benchmark.md) |
+
+## Discipline (project non-negotiable)
+
+1. The split is frozen **before** any weight is tuned; `load_split` refuses a modified file.
+2. Tune on `validation` only. Run `test` **once**, at the end, after weights are frozen (the runner prints a reminder).
+3. Never change the generator without bumping `BENCHMARK_VERSION`; old numbers then no longer apply.
+
+## Change log
+
+- 2026-10-12 — Package created; benchmark v1 frozen (240 scenarios, 120 validation / 120 test).

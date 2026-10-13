@@ -1,0 +1,51 @@
+# `src/domain/models.py`
+
+## Purpose
+
+The shared, validated data shapes of the planning path. Pydantic models, so they validate on construction, serialise
+with `model_dump_json()` (the benchmark is stored that way) and fail loudly on nonsense.
+
+## Where it sits
+
+```
+nlp.ParseResult ──pantry_from_parse──▶ list[PantryItem] ─┐
+UI / benchmark generator ───────────▶ UserProfile ───────┼─▶ Scenario ──▶ planner ──▶ WeekPlan ──▶ evaluator / explainer
+```
+
+## Public API
+
+| Name | What |
+| --- | --- |
+| `Diet` | `omnivore`, `pescatarian`, `vegetarian`, `vegan` — each a hard rule |
+| `ALLERGENS` | The nine allergen names; each maps to a `contains_<name>` flag on ingredients and recipes |
+| `UserProfile` | Hard constraints (diet, allergens, pork, alcohol, excluded ingredients, **excluded recipes** (rejected dinners), optional time cap, **`dinner_only`**), soft preferences (likes/dislikes, cuisines, weekday time limit) and nutrition targets |
+| `PantryItem` | `ingredient_id`, `grams`, `last_use_day`, `expiry_known`, `expiry_confidence`, `urgency`, `quantity_assumed` |
+| `Scenario` | One planning problem: profile + pantry + horizon + start weekday (+ hidden truth for benchmarks). `is_weekday(day)` |
+| `WeekPlan` | `planner`, `recipe_ids` (index = day), `status`, `diagnostics`. `is_complete` |
+| `HORIZON_DAYS = 7`, `WEEKDAYS_PER_WEEK = 5` | Plan length; Monday–Friday are indices 0–4 |
+
+## Decisions
+
+* **Hard vs soft is visible in the field list.** The first block of `UserProfile` forbids; the second block only
+  scores. A reader can see what can never be traded off.
+* **Nutrition targets are planning support, not medical advice.** `dinner_kcal_range` is a band; no penalty applies
+  inside it.
+* **`WeekPlan.status`** is one of `ok | optimal | feasible | partial | infeasible | no_candidates`. `is_complete` is
+  true only for the first three *and* a non-empty plan, so an "infeasible user" is never mistaken for a plan.
+* **Unknown allergens are rejected** at construction: a typo ("peanuts") must not silently disable a safety rule.
+
+## Limits
+
+* One person, one serving per dinner (MVP scope).
+* No dates: days are offsets from today; the UI is responsible for mapping calendar dates to offsets.
+
+## Tests
+
+[`tests/domain/test_models.py`](../tests/domain/test_models.md)
+
+## Change log
+
+- 2026-10-12 — Created.
+- 2026-10-13 — `UserProfile.excluded_recipe_ids` (a rejected dinner) and `dinner_only` (opt-in, default off so the
+  frozen benchmark is unchanged); `PantryItem.quantity_assumed`. All additions have defaults, so stored scenarios
+  still load.

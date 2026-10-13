@@ -1,0 +1,10 @@
+{
+  "recipes_final":54179,
+  "kcal_fit_median_rel_error":0.0216000006,
+  "total_grams_median":298.4100036621,
+  "held_out_median_ape":{
+    "sat_fat_g_stated":0.123,
+    "sugars_g_stated":0.294,
+    "sodium_mg_stated":0.36
+  }
+}

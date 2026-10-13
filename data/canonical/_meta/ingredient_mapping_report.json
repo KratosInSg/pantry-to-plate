@@ -1,0 +1,13 @@
+{
+  "distinct_raw_strings": 14942,
+  "canonical_names": 10179,
+  "mapped_names": 3370,
+  "occurrences_total": 2118814,
+  "occurrence_coverage_mapped": 0.968395054969431,
+  "occurrence_share_by_method": {
+    "auto": 0.10099234760578324,
+    "curated": 0.8671615347076241,
+    "none": 0.031846117686592595
+  },
+  "occurrence_share_curated": 0.8671615347076241
+}

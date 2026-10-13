@@ -1,0 +1,10 @@
+{
+ "version": "v1",
+ "created": "2026-10-12",
+ "n_scenarios": 240,
+ "files": {
+  "scenarios_v1.jsonl": "aa3e87802fafa125a6e1f1b5c15be214046383898a81c95ad9d377b92a3cfdc5",
+  "split_v1.json": "3e3c6665cf0264226fbb1c00988e4eb8a4f0b9836c95a4b6241a32db10f19f3c"
+ },
+ "dataset_manifest_sha256": "bdce58fb1da057ba1e5fc93dd799ad3f2ac7a6ceb687efdfdfd9ae889f8b81f0"
+}

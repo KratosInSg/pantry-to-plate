@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+.env
+
+# Raw downloads: large and reproducible from their sources (see data/canonical/README.md)
+data/FoodData_Central_csv_*/
+data/recipes/
+# data/foodkeeper/ is small (<1 MB) and its source blocks scripted downloads, so it IS tracked.
+
+# data/canonical/ is tracked on purpose: the team shares one curated dataset.
+# data/evaluation/ (the frozen benchmark) is tracked on purpose too; per-run result CSVs are derived and ignored.
+data/evaluation/runs/
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

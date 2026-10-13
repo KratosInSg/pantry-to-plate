@@ -1,0 +1,21 @@
+nutrient,basis,min,max,unit,source,note
+energy_kcal,per_day,,,kcal,FDA Daily Values (21 CFR 101.9),2000 kcal is the label reference; individual targets come from the user profile
+protein_g,pct_energy,10,35,% of kcal,Institute of Medicine AMDR (2005),adult acceptable macronutrient distribution range
+protein_g,per_day_dv,,50,g,FDA Daily Values (2016 label rule),
+carbohydrate_g,pct_energy,45,65,% of kcal,Institute of Medicine AMDR (2005),
+carbohydrate_g,per_day_dv,,275,g,FDA Daily Values (2016 label rule),
+fat_g,pct_energy,20,35,% of kcal,Institute of Medicine AMDR (2005),
+fat_g,per_day_dv,,78,g,FDA Daily Values (2016 label rule),
+sat_fat_g,pct_energy,,10,% of kcal,Dietary Guidelines for Americans 2020-2025,limit
+sat_fat_g,per_day_dv,,20,g,FDA Daily Values (2016 label rule),
+sugars_g,pct_energy,,10,% of kcal,Dietary Guidelines for Americans 2020-2025,applies to ADDED sugars; the dataset carries total sugars so treat as a loose upper bound
+sugars_g,per_day_dv,,50,g,FDA Daily Values (2016 label rule),added sugars DV
+fiber_g,per_1000_kcal,14,,g,Dietary Guidelines for Americans 2020-2025,minimum
+fiber_g,per_day_dv,28,,g,FDA Daily Values (2016 label rule),
+sodium_mg,per_day,,2300,mg,Dietary Guidelines for Americans 2020-2025,limit (Chronic Disease Risk Reduction level)
+cholesterol_mg,per_day_dv,,300,mg,FDA Daily Values (2016 label rule),
+calcium_mg,per_day_dv,1300,,mg,FDA Daily Values (2016 label rule),
+iron_mg,per_day_dv,18,,mg,FDA Daily Values (2016 label rule),
+potassium_mg,per_day_dv,4700,,mg,FDA Daily Values (2016 label rule),
+vitamin_c_mg,per_day_dv,90,,mg,FDA Daily Values (2016 label rule),
+vitamin_a_rae_ug,per_day_dv,900,,ug,FDA Daily Values (2016 label rule),
