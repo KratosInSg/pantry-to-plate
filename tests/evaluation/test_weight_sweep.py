@@ -8,8 +8,9 @@ from __future__ import annotations
 import pandas as pd
 import pytest
 
-from evaluation.weight_sweep import (GRID, GUARDRAILS, SWEEP_BASE, SweepConfig, choose, guardrail_failures,
-                                     liked_cuisine_rate, run_sweep, summarise, weights_for)
+from evaluation.weight_sweep import (GRID, GUARDRAILS, SWEEP_BASE, SweepConfig, adoption_failures, choose,
+                                     guardrail_failures, liked_cuisine_rate, parse_candidates, run_sweep, summarise,
+                                     weights_for)
 from optimizer.weekly import DEFAULT_WEIGHTS
 
 BASE = SweepConfig().name
@@ -114,3 +115,29 @@ def test_the_test_split_is_refused():
 def test_guardrail_table_documents_every_rule_the_code_checks():
     assert set(GUARDRAILS) == {"waste_g", "grocery_items", "nutrition_in_range_pct", "disliked_rate", "violations",
                                "complete"}
+
+
+# --------------------------------------------------------------------------- confirmation of an owner's trade-off
+def test_parse_candidates_always_leads_with_the_default_and_deduplicates():
+    assert parse_candidates("6:2") == (SweepConfig(), SweepConfig(6.0, 2.0))
+    assert parse_candidates("1:1,3:1,6:2") == (SweepConfig(), SweepConfig(3.0, 1.0), SweepConfig(6.0, 2.0))
+
+
+def test_a_candidate_meeting_every_criterion_is_adoptable():
+    s = _summary({BASE: {}, "c": {"liked_cuisine_rate": 0.20 + 0.10, "nutrition_in_range_pct": 57 + 8,
+                                  "grocery_items": 13 + 3.5, "waste_g": 700 * 1.05}})
+    assert adoption_failures(s, BASE, "c") == []
+
+
+@pytest.mark.parametrize("change, missed", [
+    ({"liked_cuisine_rate": 0.29}, "liked cuisine effect too small"),
+    ({"nutrition_in_range_pct": 64.9}, "calorie-band gain too small"),
+    ({"grocery_items": 16.6}, "too many extra grocery items"),
+    ({"waste_g": 700 * 1.06}, "waste rose"),
+    ({"disliked_rate": 0.13}, "disliked meals rose"),
+    ({"violations": 0.01}, "rule violations"),
+    ({"complete": 0.99}, "shorter weeks")])
+def test_each_adoption_criterion_is_enforced(change, missed):
+    good = {"liked_cuisine_rate": 0.35, "nutrition_in_range_pct": 70.0, "grocery_items": 15.0}
+    s = _summary({BASE: {}, "c": {**good, **change}})
+    assert adoption_failures(s, BASE, "c") == [missed]

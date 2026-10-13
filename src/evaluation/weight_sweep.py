@@ -57,6 +57,52 @@ GUARDRAILS = {
 }
 
 
+# --- confirmation of a trade-off the project owner chose to make --------------------------------------------------
+# The sweep's guardrail protects the grocery count (+0.5 items). On 2026-10-13 the owner decided that stronger taste
+# matching and a better calorie fit are worth up to about three extra grocery items a week - a product decision, not
+# something the data can make. Because that decision came *after* seeing the 48-scenario sweep, the exact candidate is
+# re-measured on the FULL validation split (which includes scenarios the sweep never saw) against criteria fixed here,
+# before that run. All differences are candidate minus the starting weights; means over scenarios.
+ADOPTION_CRITERIA = {
+    "liked_cuisine_rate": 0.10,            # at least +10 points of dinners in a liked cuisine
+    "nutrition_in_range_pct": 8.0,         # at least +8 points of dinners inside the calorie band
+    "grocery_items": 3.5,                  # at most +3.5 extra grocery items a week (the owner's accepted cost)
+    "waste_g": 0.05,                       # at most 5 % more waste (relative)
+    "disliked_rate": 0.02,                 # disliked meals may not rise by more than 2 points
+    "violations": 0.0,                     # no rule violations
+    "complete": 0.0,                       # no shorter weeks
+}
+
+
+def adoption_failures(summary: pd.DataFrame, baseline: str, candidate: str) -> list[str]:
+    """Which ``ADOPTION_CRITERIA`` ``candidate`` misses against ``baseline`` (empty = adopt)."""
+    b, c = summary.loc[baseline], summary.loc[candidate]
+    missed: list[str] = []
+    if c["liked_cuisine_rate"] - b["liked_cuisine_rate"] < ADOPTION_CRITERIA["liked_cuisine_rate"] - 1e-9:
+        missed.append("liked cuisine effect too small")
+    if c["nutrition_in_range_pct"] - b["nutrition_in_range_pct"] < ADOPTION_CRITERIA["nutrition_in_range_pct"] - 1e-9:
+        missed.append("calorie-band gain too small")
+    if c["grocery_items"] - b["grocery_items"] > ADOPTION_CRITERIA["grocery_items"] + 1e-9:
+        missed.append("too many extra grocery items")
+    if c["waste_g"] > b["waste_g"] * (1 + ADOPTION_CRITERIA["waste_g"]) + 1e-9:
+        missed.append("waste rose")
+    if c["disliked_rate"] - b["disliked_rate"] > ADOPTION_CRITERIA["disliked_rate"] + 1e-9:
+        missed.append("disliked meals rose")
+    if c["violations"] > ADOPTION_CRITERIA["violations"] + 1e-9:
+        missed.append("rule violations")
+    if c["complete"] < b["complete"] + ADOPTION_CRITERIA["complete"] - 1e-9:
+        missed.append("shorter weeks")
+    return missed
+
+
+def parse_candidates(spec: str) -> tuple["SweepConfig", ...]:
+    """``"1:1,3:1,6:2"`` -> candidates (preference multiplier : nutrition multiplier). The default (1:1) is always
+    first, because every comparison is against it."""
+    configs = [SweepConfig(float(p), float(n)) for p, n in (pair.split(":") for pair in spec.split(",") if pair)]
+    default = SweepConfig()
+    return (default, *[c for c in configs if c != default])
+
+
 @dataclass(frozen=True)
 class SweepConfig:
     """One candidate: multipliers on the default weights."""
@@ -199,10 +245,16 @@ def main() -> None:
     ap.add_argument("--split", default="validation", help="only 'validation' is allowed")
     ap.add_argument("--limit", type=int, default=48, help="scenarios (stratified by family)")
     ap.add_argument("--workers", type=int, default=6, help="parallel processes (one per candidate)")
+    ap.add_argument("--candidates", default=None,
+                    help="only these, as 'pref:nutrition' multipliers, e.g. '3:1,6:2' (the default 1:1 is always "
+                         "included). Omit for the full grid. --limit 0 uses every validation scenario")
+    ap.add_argument("--confirm", default=None, metavar="PREF:NUTRITION",
+                    help="also check this candidate against ADOPTION_CRITERIA (must be among the candidates)")
     ap.add_argument("--save", action="store_true", help="write per-scenario rows to data/evaluation/runs/")
     args = ap.parse_args()
 
-    df = run_sweep(args.split, args.limit, args.workers)
+    configs = parse_candidates(args.candidates) if args.candidates else GRID
+    df = run_sweep(args.split, args.limit or None, args.workers, configs)
     pd.set_option("display.width", 220)
     summary = summarise(df)
     baseline = SweepConfig().name
@@ -213,6 +265,14 @@ def main() -> None:
     for name, broken in failures.items():
         print(f"  {name:<28} {'PASS' if not broken else 'FAIL: ' + ', '.join(broken)}")
     print(f"\nchosen by the pre-declared rule: {best}")
+    if args.confirm:
+        pref, nut = (float(x) for x in args.confirm.split(":"))
+        target = SweepConfig(pref, nut).name
+        missed = adoption_failures(summary, baseline, target)
+        print(f"\n=== adoption criteria for {target} (n={df.scenario_id.nunique()}) ===")
+        for key, value in ADOPTION_CRITERIA.items():
+            print(f"  {key:<24} {value}")
+        print("  ->", "MEETS ALL CRITERIA: adopt" if not missed else "MISSES: " + "; ".join(missed))
     if args.save:
         out = DEFAULT_EVAL_DIR / "runs"
         out.mkdir(parents=True, exist_ok=True)

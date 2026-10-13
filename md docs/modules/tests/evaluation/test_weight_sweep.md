@@ -18,7 +18,11 @@ against tuning on the test split. No solving: the rule is a pure function of a s
 | `test_summarise_averages_per_candidate_…` | per-candidate means, undefined rates ignored |
 | `test_the_test_split_is_refused` | tuning on test is a `ValueError` |
 | `test_guardrail_table_documents_every_rule_the_code_checks` | table and code cannot drift |
+| `test_parse_candidates_always_leads_with_the_default_and_deduplicates` | CLI candidate parsing; the default is always the baseline |
+| `test_a_candidate_meeting_every_criterion_is_adoptable` | exactly at every threshold ⇒ adoptable |
+| `test_each_adoption_criterion_is_enforced` (×7) | each confirmation criterion trips on its own, with its own message |
 
 ## Change log
 
 - 2026-10-13 — Created.
+- 2026-10-13 — Added the confirmation-mode tests.

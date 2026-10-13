@@ -8,6 +8,9 @@ scenarios. It exists because reading real explanations showed the hand-set prefe
 
 ```bash
 python src/evaluation/weight_sweep.py --limit 48 --workers 6 --save      # ~6 minutes (one process per candidate)
+
+# re-measure one specific candidate on EVERY validation scenario against the fixed adoption criteria
+python src/evaluation/weight_sweep.py --limit 0 --candidates "3:1,6:2" --confirm 6:2 --workers 3 --save
 ```
 
 ## Public API
@@ -20,6 +23,8 @@ python src/evaluation/weight_sweep.py --limit 48 --workers 6 --save      # ~6 mi
 | `summarise(df)`, `guardrail_failures(summary, baseline)`, `choose(summary, baseline)` | The decision rule (pure functions of a table) |
 | `liked_cuisine_rate(cuisines, liked)` | The "visible effect" metric: share of dinners in a cuisine the user likes |
 | `GUARDRAILS` | The limits a candidate must respect |
+| `ADOPTION_CRITERIA`, `adoption_failures(summary, baseline, candidate)` | The *confirmation* criteria (below): what a candidate must show on the full validation split to be adopted |
+| `parse_candidates("3:1,6:2")` | CLI candidates as `preference:nutrition` multipliers; the default is always first |
 
 ## The rule (fixed before running)
 
@@ -33,6 +38,24 @@ Among candidates that pass **every** guardrail relative to the default, take the
 | dinners in kcal band | at most 3 points worse |
 | disliked meals | at most 2 points more |
 | rule violations / incomplete weeks | none |
+
+## Confirming a trade-off the owner chose
+
+The guardrails above protect the grocery count (+0.5 items). The project owner may decide that a stronger setting is
+worth more shopping — that is a *product* decision the data cannot make. Because such a decision comes after the sweep
+has been seen, the exact candidate is **re-measured on every validation scenario** (including ones the sweep never
+used) against `ADOPTION_CRITERIA`, which are fixed in code before the run:
+
+| Criterion (candidate − start) | Threshold |
+| --- | --- |
+| liked-cuisine dinners | at least +10 points |
+| dinners inside the calorie band | at least +8 points |
+| extra grocery items | at most +3.5 (the owner's accepted cost) |
+| waste | at most 5 % more |
+| disliked meals | at most +2 points |
+| rule violations, shorter weeks | none |
+
+`--confirm PREF:NUTRITION` prints which criteria are met or missed. The test split is still not used.
 
 ## Decisions
 
@@ -58,3 +81,5 @@ Among candidates that pass **every** guardrail relative to the default, take the
 ## Change log
 
 - 2026-10-13 — Created. First (and recorded) run adopted preference ×3: `OptimizerWeights.preference` 1.0 → 3.0.
+- 2026-10-13 — Added the confirmation mode (`ADOPTION_CRITERIA`, `adoption_failures`, `parse_candidates`, `--candidates`,
+  `--confirm`, `--limit 0` = all validation scenarios). Tooling only: `DEFAULT_WEIGHTS` is unchanged by this entry.
