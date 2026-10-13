@@ -13,3 +13,5 @@ httpx>=0.27
 # Optional CP-SAT backend (planner suffix `_cpsat`). It runs in a child process: on Windows/conda it cannot share a
 # process with pyarrow (clashing abseil/protobuf/re2 DLLs). The planner works without it; tests skip its cases.
 ortools>=9.10
+# front end (src/ui): the Streamlit prototype
+streamlit>=1.40

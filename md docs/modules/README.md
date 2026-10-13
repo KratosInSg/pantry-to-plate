@@ -30,6 +30,7 @@ Tests · Change log**.
 | `src/evaluation/` | [evaluation/README.md](evaluation/README.md) | benchmark v1 frozen; metrics + runner done; robustness metric pending |
 | `src/explain/` | [explain/README.md](explain/README.md) | facts + templates + validated optional LLM paraphrase done |
 | `src/app/` | [app/README.md](app/README.md) | service facade for a UI: pantry review, profile, plan, grocery box, re-plan |
+| `src/ui/` | [ui/README.md](ui/README.md) | Streamlit prototype: pantry review, profile, week, shopping list, re-plan |
 | `src/llm/` | [llm/README.md](llm/README.md) | client done (Ollama native + OpenAI-compatible); decision record `md docs/llm.md` |
 
 ## `src/knowledge/`
@@ -92,6 +93,15 @@ Tests · Change log**.
 | `app/grocery.py` | [app/grocery.md](app/grocery.md) |
 | `app/service.py` | [app/service.md](app/service.md) |
 
+## `src/ui/`
+
+| Source | Doc |
+| --- | --- |
+| `ui/streamlit_app.py` | [ui/streamlit_app.md](ui/streamlit_app.md) |
+| `ui/views.py` | [ui/views.md](ui/views.md) |
+| `ui/logic.py` | [ui/logic.md](ui/logic.md) |
+| `ui/theme.py` | [ui/theme.md](ui/theme.md) |
+
 ## `src/domain/`
 
 | Source | Doc |
@@ -150,6 +160,9 @@ Tests · Change log**.
 | `tests/explain/test_render.py` | [tests/explain/test_render.md](tests/explain/test_render.md) |
 | `tests/explain/test_paraphrase.py` | [tests/explain/test_paraphrase.md](tests/explain/test_paraphrase.md) |
 | `tests/explain/test_explainer.py` | [tests/explain/test_explainer.md](tests/explain/test_explainer.md) |
+| `tests/ui/test_logic.py` | [tests/ui/test_logic.md](tests/ui/test_logic.md) |
+| `tests/ui/test_app.py` | [tests/ui/test_app.md](tests/ui/test_app.md) |
+| `tests/ui/test_theme.py` | [tests/ui/test_theme.md](tests/ui/test_theme.md) |
 | `tests/app/test_grocery.py` | [tests/app/test_grocery.md](tests/app/test_grocery.md) |
 | `tests/app/test_service.py` | [tests/app/test_service.md](tests/app/test_service.md) |
 | `tests/optimizer/test_replan.py` | [tests/optimizer/test_replan.md](tests/optimizer/test_replan.md) |
@@ -189,3 +202,5 @@ Tests · Change log**.
 - 2026-10-13 — Added `src/explain/` (facts, render, paraphrase, explainer) and its tests.
 - 2026-10-13 — Added `src/app/` (service facade, models, grocery box), `optimizer/replan.py`,
   `evaluation/weight_sweep.py` and their tests.
+- 2026-10-13 — Added `src/ui/` (Streamlit prototype: streamlit_app, views, logic) and its tests.
+- 2026-10-13 — Added `ui/theme.py` (UI redesign) and its tests.

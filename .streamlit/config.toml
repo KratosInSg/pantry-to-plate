@@ -1,0 +1,12 @@
+# Theme for the Streamlit prototype (src/ui). The look itself lives in src/ui/theme.py; this sets the base colours
+# Streamlit's own widgets use, so the two agree.
+[theme]
+base = "light"
+primaryColor = "#2F6B4F"
+backgroundColor = "#FAF8F4"
+secondaryBackgroundColor = "#F3F0EA"
+textColor = "#1F2A24"
+font = "sans serif"
+
+[browser]
+gatherUsageStats = false

@@ -39,6 +39,7 @@ must work (more bluntly) without it, and every LLM answer is validated against t
 | `src/optimizer/` | The only place that decides the weekly plan: hard rules, shortlist, inventory accounting, baselines, weekly MILP | Pure functions of their inputs |
 | `src/explain/` | Turns solver output into plain English | Reads, never decides |
 | `src/app/` | `PantryToPlateService`: the one object a UI calls (pantry review, profile, plan, grocery box, re-plan) | Orchestrates and presents; decides nothing |
+| `src/ui/` | The Streamlit prototype (`streamlit run src/ui/streamlit_app.py`) | Layout and state only; every decision is the service's |
 | `src/evaluation/` | Scenario generator, simulator-backed metrics, benchmark runner | Measures plans; never produces the app's plan |
 | `data/evaluation/` | Frozen synthetic scenarios + split (+ SHA-256 freeze file) | Frozen: regenerate only by bumping the version |
 | `tests/` | Mirrors `src/` (`tests/nlp/test_x.py` tests `src/nlp/x.py`) | Every module ships with tests |
@@ -80,6 +81,7 @@ tests/nlp/test_quantities.py ->  md docs/modules/tests/nlp/test_quantities.md
 
 ```bash
 python src/knowledge/build/run_all.py     # rebuild data/canonical from the raw downloads (~5 min)
+streamlit run src/ui/streamlit_app.py    # the prototype UI (http://localhost:8501)
 python -m pytest                          # run all tests
 python -m pytest tests/nlp -q             # one package
 python src/evaluation/build_benchmark.py  # freeze the synthetic benchmark (refuses if already frozen)

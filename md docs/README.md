@@ -42,5 +42,5 @@ Oct 2026 — implementation under way.
 | Explainer (`src/explain/`): facts → templates → optional validated LLM paraphrase | done; template text complete without an LLM; paraphrase 30/32 sections accepted live |
 | App service layer (`src/app/`): pantry review, profile, plan, grocery box, steps | done |
 | Mid-week replanning (`optimizer/replan.py`; reject / skip a dinner, roll the pantry forward) | done (alternatives-with-trade-offs and counterfactual diffs not built) |
-| UI | not started |
+| UI prototype (`src/ui/`, Streamlit) | done: pantry review, profile, week, shopping list, re-plan; run with `streamlit run src/ui/streamlit_app.py` |
 
