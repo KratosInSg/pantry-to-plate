@@ -28,6 +28,7 @@ from __future__ import annotations
 
 import argparse
 import sys
+from collections import Counter
 from concurrent.futures import ProcessPoolExecutor
 from dataclasses import dataclass, replace
 from datetime import datetime
@@ -98,9 +99,73 @@ def adoption_failures(summary: pd.DataFrame, baseline: str, candidate: str) -> l
 def parse_candidates(spec: str) -> tuple["SweepConfig", ...]:
     """``"1:1,3:1,6:2"`` -> candidates (preference multiplier : nutrition multiplier). The default (1:1) is always
     first, because every comparison is against it."""
-    configs = [SweepConfig(float(p), float(n)) for p, n in (pair.split(":") for pair in spec.split(",") if pair)]
+    configs = []
+    for pair in (s for s in spec.split(",") if s):
+        parts = pair.split(":")
+        if len(parts) not in (2, 4):
+            raise ValueError(f"candidate {pair!r}: expected 'pref:nutrition' or 'pref:nutrition:variety:cap'")
+        configs.append(SweepConfig(float(parts[0]), float(parts[1]),
+                                   float(parts[2]) if len(parts) == 4 else 1.0,
+                                   int(parts[3]) if len(parts) == 4 else 4))
     default = SweepConfig()
     return (default, *[c for c in configs if c != default])
+
+
+# A week with this many dinners of one protein type reads as "chicken every night". Used to *report* how common that
+# is (``samey_weeks``) and in the variety rule below.
+SAMEY_WEEK_MEALS = 5
+
+# --- choosing a variety setting (declared before the run, like the others) --------------------------------------
+# Context: reading the first real plans in the UI showed 7 poultry dinners for a pantry containing chicken, under the
+# ORIGINAL weights as well as the adopted ones. The objective counts distinct grocery items, so repeating one protein
+# is cheap, and the variety penalty (0.7 per dinner beyond 4 of one type) is weak. Candidates are compared with a
+# reference (the adopted weights) on the same scenarios.
+VARIETY_CRITERIA = {
+    "samey_weeks_drop": 0.25,              # share of one-protein weeks must fall by at least this much (absolute)
+    "grocery_items": 1.0,                  # at most +1.0 extra grocery items vs the reference
+    "nutrition_in_range_pct": -3.0,        # at most 3 points fewer dinners in the calorie band
+    "liked_cuisine_rate": -0.03,           # at most 3 points fewer liked-cuisine dinners
+    "waste_g": 0.05,                       # at most 5 % more waste
+    "violations": 0.0,
+    "complete": 0.0,
+}
+
+
+def variety_failures(summary: pd.DataFrame, reference: str, candidate: str) -> list[str]:
+    """Which ``VARIETY_CRITERIA`` ``candidate`` misses against ``reference`` (empty = an acceptable fix)."""
+    r, c = summary.loc[reference], summary.loc[candidate]
+    missed: list[str] = []
+    if r["samey_weeks"] - c["samey_weeks"] < VARIETY_CRITERIA["samey_weeks_drop"] - 1e-9:
+        missed.append("still too many one-protein weeks")
+    if c["grocery_items"] - r["grocery_items"] > VARIETY_CRITERIA["grocery_items"] + 1e-9:
+        missed.append("too many extra grocery items")
+    if c["nutrition_in_range_pct"] - r["nutrition_in_range_pct"] < VARIETY_CRITERIA["nutrition_in_range_pct"] - 1e-9:
+        missed.append("calorie fit fell")
+    if c["liked_cuisine_rate"] - r["liked_cuisine_rate"] < VARIETY_CRITERIA["liked_cuisine_rate"] - 1e-9:
+        missed.append("liked cuisines fell")
+    if c["waste_g"] > r["waste_g"] * (1 + VARIETY_CRITERIA["waste_g"]) + 1e-9:
+        missed.append("waste rose")
+    if c["violations"] > VARIETY_CRITERIA["violations"] + 1e-9:
+        missed.append("rule violations")
+    if c["complete"] < r["complete"] + VARIETY_CRITERIA["complete"] - 1e-9:
+        missed.append("shorter weeks")
+    return missed
+
+
+def choose_variety(summary: pd.DataFrame, reference: str) -> tuple[str, dict[str, list[str]]]:
+    """The variety setting to adopt: the lowest mean ``max_protein_type_meals`` among candidates with no failures;
+    ties go to the smaller change; if none qualifies, ``reference`` is kept. Returns ``(name, failures)``."""
+    failures = {n: variety_failures(summary, reference, n) for n in summary.index if n != reference}
+    passing = [n for n, broken in failures.items() if not broken]
+    if not passing:
+        return reference, failures
+
+    def key(name: str) -> tuple[float, float]:
+        row = summary.loc[name]
+        change = abs(row["variety_x"] - 1.0) + abs(row["protein_cap"] - 4.0)
+        return (round(float(row["max_protein_type_meals"]), 2), float(change))
+
+    return min(passing, key=key), failures
 
 
 @dataclass(frozen=True)
@@ -109,23 +174,31 @@ class SweepConfig:
 
     preference: float = 1.0
     nutrition: float = 1.0
+    variety: float = 1.0                 # multiplier on the per-meal penalty beyond a variety cap
+    protein_cap: int = 4                 # most dinners of one protein type before that penalty applies
 
     @property
     def name(self) -> str:
-        return f"pref x{self.preference:g}, nutrition x{self.nutrition:g}"
+        base = f"pref x{self.preference:g}, nutrition x{self.nutrition:g}"
+        if self.variety == 1.0 and self.protein_cap == 4:
+            return base                  # unchanged names: earlier recorded runs stay comparable
+        return f"{base}, variety x{self.variety:g}, cap {self.protein_cap}"
 
     @property
     def is_default(self) -> bool:
-        return self.preference == 1.0 and self.nutrition == 1.0
+        return self == SweepConfig()
 
 
 GRID = tuple(SweepConfig(p, n) for p in PREFERENCE_MULTIPLIERS for n in NUTRITION_MULTIPLIERS)
 
 
-#: The hand-set weights the sweep started from (preference 1.0). Multipliers are relative to THIS, not to
-#: ``DEFAULT_WEIGHTS``: once a candidate is adopted ``DEFAULT_WEIGHTS`` changes, and "x3" must keep meaning x3 of the
-#: starting point or the sweep would stop being reproducible (x3 of an adopted x3 is x9).
-SWEEP_BASE = replace(DEFAULT_WEIGHTS, preference=1.0)
+#: The hand-set weights the sweep started from. Multipliers are relative to THIS, not to ``DEFAULT_WEIGHTS``: once a
+#: candidate is adopted ``DEFAULT_WEIGHTS`` changes, and "x3" must keep meaning x3 of the starting point or the sweep
+#: would stop being reproducible (x3 of an adopted x3 is x9). Every weight the grid scales is written out here by
+#: value on purpose - deriving any of them from ``DEFAULT_WEIGHTS`` is the bug this constant exists to prevent (it
+#: happened once: only ``preference`` was pinned, so adopting nutrition x2 silently turned the grid's x2 into x4).
+SWEEP_BASE = replace(DEFAULT_WEIGHTS, preference=1.0, kcal_deviation=4.0, protein_deviation=2.0, variety=0.7,
+                     protein_type_cap=4)
 
 
 def weights_for(config: SweepConfig) -> OptimizerWeights:
@@ -133,7 +206,8 @@ def weights_for(config: SweepConfig) -> OptimizerWeights:
     return replace(SWEEP_BASE,
                    preference=SWEEP_BASE.preference * config.preference,
                    kcal_deviation=SWEEP_BASE.kcal_deviation * config.nutrition,
-                   protein_deviation=SWEEP_BASE.protein_deviation * config.nutrition)
+                   protein_deviation=SWEEP_BASE.protein_deviation * config.nutrition,
+                   variety=SWEEP_BASE.variety * config.variety, protein_type_cap=config.protein_cap)
 
 
 # ==================================================================================================================
@@ -153,7 +227,7 @@ def _run_config(args: tuple[SweepConfig, str, int | None, Path]) -> list[dict]:
     from evaluation.runner import _stratified_head
     from evaluation.scenarios import load_split
     from optimizer.planning import make_context, prepare
-    from optimizer.weekly import WeeklyPlanner
+    from optimizer.weekly import WeeklyPlanner, protein_type
 
     ctx = make_context()
     scenarios = load_split(split, eval_dir)
@@ -165,10 +239,15 @@ def _run_config(args: tuple[SweepConfig, str, int | None, Path]) -> list[dict]:
         prepared = prepare(sc, ctx)
         plan = planner.plan(sc)
         m = evaluate_plan(sc, plan, ctx, prepared)
-        cuisines = [ctx.catalog.cuisine[ctx.catalog.index_of(r)] for r in plan.recipe_ids]
+        indices = [ctx.catalog.index_of(r) for r in plan.recipe_ids]
+        cuisines = [ctx.catalog.cuisine[i] for i in indices]
+        types = Counter(protein_type(ctx.catalog, i) for i in indices)
         rows.append({**m.__dict__, "config": config.name, "preference_x": config.preference,
-                     "nutrition_x": config.nutrition,
-                     "liked_cuisine_rate": liked_cuisine_rate(cuisines, sc.profile.liked_cuisines)})
+                     "nutrition_x": config.nutrition, "variety_x": config.variety, "protein_cap": config.protein_cap,
+                     "liked_cuisine_rate": liked_cuisine_rate(cuisines, sc.profile.liked_cuisines),
+                     # variety as a user sees it: the most dinners sharing one protein type, and how many types
+                     "max_protein_type_meals": max(types.values()) if types else 0,
+                     "distinct_protein_types": len(types)})
     return rows
 
 
@@ -192,9 +271,14 @@ def run_sweep(split: str = "validation", limit: int | None = 48, workers: int = 
 def summarise(df: pd.DataFrame) -> pd.DataFrame:
     """Mean of each metric per candidate (``liked_cuisine_rate`` over the scenarios where it is defined)."""
     cols = ["preference_mean", "disliked_rate", "liked_cuisine_rate", "waste_g", "grocery_items",
-            "nutrition_in_range_pct", "protein_ok_pct", "violations", "complete"]
-    means = df.groupby("config", sort=False)[cols].mean()
-    return means.join(df.groupby("config", sort=False)[["preference_x", "nutrition_x"]].first())
+            "nutrition_in_range_pct", "protein_ok_pct", "violations", "complete", "max_protein_type_meals",
+            "distinct_protein_types"]
+    means = df.groupby("config", sort=False)[[c for c in cols if c in df.columns]].mean()
+    if "max_protein_type_meals" in df.columns:        # the share of weeks a user would call "the same thing all week"
+        samey = (df.max_protein_type_meals >= SAMEY_WEEK_MEALS).groupby(df.config, sort=False).mean()
+        means = means.join(samey.rename("samey_weeks"))
+    keys = [c for c in ("preference_x", "nutrition_x", "variety_x", "protein_cap") if c in df.columns]
+    return means.join(df.groupby("config", sort=False)[keys].first())
 
 
 def guardrail_failures(summary: pd.DataFrame, baseline: str) -> dict[str, list[str]]:
@@ -250,6 +334,9 @@ def main() -> None:
                          "included). Omit for the full grid. --limit 0 uses every validation scenario")
     ap.add_argument("--confirm", default=None, metavar="PREF:NUTRITION",
                     help="also check this candidate against ADOPTION_CRITERIA (must be among the candidates)")
+    ap.add_argument("--variety-reference", default=None, metavar="SPEC",
+                    help="compare the other candidates with this one (e.g. '6:2:1:4' = the adopted weights) under "
+                         "VARIETY_CRITERIA")
     ap.add_argument("--save", action="store_true", help="write per-scenario rows to data/evaluation/runs/")
     args = ap.parse_args()
 
@@ -265,6 +352,13 @@ def main() -> None:
     for name, broken in failures.items():
         print(f"  {name:<28} {'PASS' if not broken else 'FAIL: ' + ', '.join(broken)}")
     print(f"\nchosen by the pre-declared rule: {best}")
+    if args.variety_reference:
+        ref = parse_candidates(args.variety_reference)[-1].name
+        pick, why = choose_variety(summary, ref)
+        print(f"\n=== variety candidates vs {ref} ===")
+        for name, broken in why.items():
+            print(f"  {name:<46} {'ok' if not broken else 'FAIL: ' + ', '.join(broken)}")
+        print(f"  -> variety choice by the pre-declared rule: {pick}")
     if args.confirm:
         pref, nut = (float(x) for x in args.confirm.split(":"))
         target = SweepConfig(pref, nut).name

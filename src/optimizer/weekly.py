@@ -70,11 +70,14 @@ class OptimizerWeights:
     waste_per_100g: float = 1.0        # cost of 100 g of (urgency-weighted) expiring stock left unused
     grocery_item: float = 1.0          # cost of each distinct item that must be bought
     grocery_per_100g: float = 0.3      # cost of 100 g bought
-    kcal_deviation: float = 4.0        # per 1.0 of (daily kcal outside the band / dinner target), summed over days
-    protein_deviation: float = 2.0     # per 1.0 of (protein shortfall / minimum), summed over days
-    # per meal, times (1 - preference score). Was 1.0; x3 chosen on the VALIDATION split by the pre-declared rule in
-    # ``evaluation/weight_sweep.py`` (liked-cuisine dinners +7 pts for +0.4 grocery items; see md docs/evaluation.md).
-    preference: float = 3.0
+    # per 1.0 of (daily kcal outside the band / dinner target), summed over days. Was 4.0; x2 adopted together with
+    # preference x6 after confirmation on all 120 validation scenarios (md docs/evaluation.md "Weight sweep").
+    kcal_deviation: float = 8.0
+    protein_deviation: float = 4.0     # per 1.0 of (protein shortfall / minimum), summed over days. Was 2.0 (x2)
+    # per meal, times (1 - preference score). Was 1.0, then 3.0; x6 adopted on 2026-10-13 after confirmation on all 120
+    # VALIDATION scenarios against criteria fixed beforehand (``evaluation/weight_sweep.py``): liked-cuisine dinners
+    # +15 pts, dinners in the calorie band +14 pts, for +2.8 extra grocery items a week.
+    preference: float = 6.0
     weekday_time: float = 1.5          # per weekday meal, times fraction over the cooking-time limit
     variety: float = 0.7               # per meal beyond a variety cap
     cuisine_cap: int = 2               # at most this many meals of one cuisine before variety is penalised
@@ -281,7 +284,7 @@ class WeeklyPlanner:
             c = cat.cuisine[int(idx)]
             if c is not None:
                 groups[f"cuisine:{c}"].append(k)
-            groups[f"type:{_protein_type(cat, int(idx))}"].append(k)
+            groups[f"type:{protein_type(cat, int(idx))}"].append(k)
         excess_vars: list[int] = []
         for key, members in groups.items():
             cap = w.cuisine_cap if key.startswith("cuisine:") else w.protein_type_cap
@@ -332,8 +335,9 @@ class WeeklyPlanner:
         }
 
 
-def _protein_type(cat, idx: int) -> str:
-    """Coarse protein category used by the variety cap."""
+def protein_type(cat, idx: int) -> str:
+    """Coarse protein category of recipe row ``idx`` (poultry / meat / seafood / vegetarian): what the variety
+    cap counts, and what the evaluation uses to measure "the same protein every night"."""
     if cat.flag("contains_poultry")[idx]:
         return "poultry"
     if cat.flag("contains_meat")[idx]:

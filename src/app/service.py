@@ -211,8 +211,12 @@ class PantryToPlateService:
     def review_pantry(self, text: str, today: date | None = None, horizon_days: int = HORIZON_DAYS) -> PantryReview:
         """Parse free text into rows the user can confirm or fix. Never raises for odd input."""
         parse = self._parser.parse(text, today)
-        entries = [self._entry_for(item, horizon_days) for item in parse.items]
-        return PantryReview(source_text=text, entries=entries, unparsed=list(parse.unparsed))
+        # a fragment with no letters ("!!! ???", "12345") names no food: report it as unread, not as an unknown food
+        # the user is asked to identify
+        named = [i for i in parse.items if any(ch.isalpha() for ch in (i.name_text or i.raw_text))]
+        stray = [i.raw_text for i in parse.items if i not in named]
+        entries = [self._entry_for(item, horizon_days) for item in named]
+        return PantryReview(source_text=text, entries=entries, unparsed=list(parse.unparsed) + stray)
 
     def add_pantry_entry(self, ingredient_id: int, grams: float, days_left: int | None = None, urgent: bool = False,
                          horizon_days: int = HORIZON_DAYS) -> PantryEntry:
@@ -268,8 +272,11 @@ class PantryToPlateService:
         status = _STATUS_OF_SKIP.get(reason, ENTRY_UNKNOWN)
         if status in (ENTRY_UNKNOWN, ENTRY_CHOOSE) and not common["suggestions"]:
             common["suggestions"] = self.search_ingredients(item.name_text, limit=3)    # "kimchi" -> "cabbage kimchi"
-        # an ambiguous / unrecognised row has no ingredient yet; the user picks one of the suggestions
-        return PantryEntry(**{**common, "ingredient_id": None, "name": None, "status": status,
+        # an ambiguous / unrecognised row has no ingredient yet (the user picks one of the suggestions); a row that
+        # is only missing an amount, or was flagged unsafe, is a known ingredient and keeps its identity
+        known = status in (ENTRY_NO_AMOUNT, ENTRY_UNSAFE) and item.ingredient_id is not None
+        return PantryEntry(**{**common, "ingredient_id": item.ingredient_id if known else None,
+                              "name": item.canonical_name if known else None, "status": status,
                               "problem": _PROBLEMS.get(status, reason)})
 
     @staticmethod

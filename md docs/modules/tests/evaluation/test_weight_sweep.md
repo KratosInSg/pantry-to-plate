@@ -7,7 +7,7 @@ against tuning on the test split. No solving: the rule is a pure function of a s
 | --- | --- |
 | `test_grid_is_small_and_contains_the_default` | 6 candidates, all ≥ the default multipliers |
 | `test_multipliers_scale_the_starting_weights_and_nothing_else` | only the preference and nutrition weights move, relative to `SWEEP_BASE` |
-| `test_the_adopted_default_is_the_candidate_the_recorded_sweep_chose` | `DEFAULT_WEIGHTS` = start with preference ×3 and nothing else changed — fails if the default is edited without a sweep |
+| `test_the_adopted_default_is_the_candidate_the_recorded_sweep_chose` | `DEFAULT_WEIGHTS` = start with preference ×6 and nutrition ×2 and nothing else changed — fails if the default is edited without a sweep |
 | `test_multipliers_do_not_compound_when_the_default_has_moved` | "×3" stays ×3 of the starting point, not ×9 |
 | `test_liked_cuisine_rate` | the visible-effect metric and its "not measurable" cases |
 | `test_the_candidate_with_the_largest_visible_effect_that_passes_is_chosen` | the rule |
@@ -26,3 +26,4 @@ against tuning on the test split. No solving: the rule is a pure function of a s
 
 - 2026-10-13 — Created.
 - 2026-10-13 — Added the confirmation-mode tests.
+- 2026-10-13 — The pinned default is now preference ×6 with nutrition ×2 (confirmed adoption).

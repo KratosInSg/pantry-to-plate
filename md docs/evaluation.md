@@ -34,6 +34,10 @@ All methods run on the same scenarios, so comparisons are paired: mean differenc
 
 ## Results so far
 
+> **Note (2026-10-13):** the tables below, up to "Weight sweep", were produced with the original hand-set weights
+> (preference 1.0, kcal 4.0, protein 2.0). The optimiser now defaults to preference 6.0, kcal 8.0, protein 4.0
+> (see "Weight sweep"), so re-running them gives different optimiser rows.
+
 *Frozen benchmark v1 · **validation split only** (120 scenarios, 15 per family) · default optimiser weights, **not
 tuned** · run on 2026-10-12 with `python src/evaluation/runner.py --split validation --planners
 random,greedy,optimiser --baseline greedy --save`. The test split has not been run.*
@@ -125,7 +129,7 @@ in 31 / 48 scenarios. Both beat greedy by the same margins as in the n = 120 run
 
 ### Weight sweep: making preferences visible (validation only)
 
-*Frozen benchmark v1 · **validation split only** · 48 scenarios (6 per family), all of which state a liked cuisine ·
+*Exploration: frozen benchmark v1 · **validation split only** · 48 scenarios (6 per family), all of which state a liked cuisine ·
 run on 2026-10-13 with `python src/evaluation/weight_sweep.py --limit 48 --workers 6 --save` (rows in
 `data/evaluation/runs/20261013_121922_weight_sweep_validation.csv`). Test split not touched.*
 
@@ -146,16 +150,57 @@ Paired difference vs the start, 95 % bootstrap CI (n = 48):
 Absolute at the start: 10.7 % of dinners in a liked cuisine, 58.0 % in the calorie band, 52.1 % reaching the protein
 minimum, 13.3 extra grocery items.
 
-* **Adopted: preference ×3** (`OptimizerWeights.preference` 1.0 → 3.0). Real and statistically clear, but modest:
-  from about 0.7 to about 1.25 liked-cuisine dinners in a week. Waste, nutrition and rule violations are
-  indistinguishable from unchanged.
-* **Stronger taste matching is available at a price.** ×6 gives about 1.9 liked-cuisine dinners a week for about
-  one extra grocery item a week; it failed the pre-declared 0.5-item guardrail, so it was not adopted. That is a
-  *product* choice (a "how much should my tastes matter" setting), not a modelling one.
-* **Nutrition is a separate trade-off.** Doubling the nutrition weights lifts dinners-in-band from 58 % to 71 % and
-  protein-ok from 52 % to 58 %, for about two extra grocery items a week, with waste unchanged. It was not adopted
-  because it failed the same guardrail; it is the single biggest lever on how "on target" the plans look.
-* Results above in this document (n = 120 and n = 48 tables) were produced with preference 1.0.
+* **First adoption: preference ×3**, by the pre-declared rule (liked-cuisine dinners +7 pts for +0.4 grocery
+  items). It was later superseded; see the confirmation below.
+* **Stronger settings failed the 0.5-item grocery guardrail**, which is a *product* limit, not a modelling one.
+  Preference ×6 gives about 1.9 liked-cuisine dinners a week for about one extra item; nutrition ×2 lifts
+  dinners-in-band from 58 % to 71 % for about two. The project owner decided both were worth it (2026-10-13), and
+  the combination was re-measured as below.
+
+#### Confirmation on all 120 validation scenarios (preference ×6 with nutrition ×2)
+
+The owner's decision came *after* the 48-scenario sweep had been seen, so the exact candidate was re-measured on
+every validation scenario (72 of which the sweep never used) against criteria fixed in `weight_sweep.py` *before* the
+run. `python src/evaluation/weight_sweep.py --limit 0 --candidates "3:1,6:2" --confirm 6:2 --workers 3 --save`;
+rows in `data/evaluation/runs/20261013_124746_weight_sweep_validation.csv`. Paired difference vs the start, 95 %
+bootstrap CI (n = 120):
+
+| Measure | Start | Preference ×6 + nutrition ×2 | Difference | Criterion | Met |
+| --- | --- | --- | --- | --- | --- |
+| Dinners in a liked cuisine | 12.6 % | 27.6 % | **+15.0 pts** [+11.8, +18.2] | ≥ +10 | yes |
+| Dinners in the calorie band | 57.0 % | 70.7 % | **+13.7 pts** [+10.5, +17.1] | ≥ +8 | yes |
+| Dinners reaching the protein minimum | 52.7 % | 59.4 % | +6.7 pts [+4.0, +9.3] | – | – |
+| Extra grocery items | 12.9 | 15.7 | **+2.78** [+2.33, +3.27] | ≤ +3.5 | yes |
+| Waste (g) | 710 | 722 | +11.9 [+3.1, +22.1] (+1.7 %) | ≤ +5 % | yes |
+| Disliked meals | 2.3 % | 1.0 % | −1.3 pts [−3.1, −0.1] | ≤ +2 | yes |
+| Rule violations / shorter weeks | 0 / 0 | 0 / 0 | – | none | yes |
+
+**Adopted** (`OptimizerWeights`: preference 6.0, kcal 8.0, protein 4.0). It meets every criterion. Every one of the
+eight families improved: dinners-in-band +10 to +20 pts, extra grocery items +2.1 to +3.9 (largest in
+`conflicting_preferences` and `infeasible_combo`). Two things to keep in mind: the added waste is statistically
+distinguishable from zero though small (+1.7 %), and the grocery cost is real (about 16 items a week instead of about
+13, still roughly a third fewer than greedy's 24). This is a tuned-on-validation result; the test split has not been
+run and remains the only unbiased estimate.
+
+#### Variety: one protein all week (validation, n = 120, 2026-10-13)
+
+Found by looking at the first real plan in the UI: seven chicken dinners for a pantry containing chicken. The sweeps
+above never measured variety. Share of weeks with **5 or more dinners of one protein type**:
+
+| Setting | One-protein weeks | Mean max same-type dinners | Extra grocery items | Liked-cuisine dinners |
+| --- | --- | --- | --- | --- |
+| Start weights | 84 % | 6.1 | 12.9 | 12.4 % |
+| Adopted (pref x6, nutrition x2) | 83 % | 6.1 | 15.7 | 27.4 % |
+| + variety x3 | 64 % | 5.6 | 16.3 | 21.5 % |
+| + cap 3 | 83 % | 6.0 | 15.7 | 27.4 % |
+| + variety x3, cap 3 | 62 % | 5.5 | 16.4 | 21.1 % |
+| + variety x6, cap 3 | 53 % | 5.2 | 17.3 | 20.7 % |
+
+**No candidate met the pre-declared criteria** (`VARIETY_CRITERIA`), so the adopted weights stand. The problem is
+structural, not a weight: the objective counts *distinct* grocery items, so one protein bought once and used all week
+is cheap, and the four-way protein taxonomy (poultry / meat / seafood / vegetarian) is coarse. A structural fix (a
+per-main-ingredient cap, or charging repeated main ingredients) is open work. The new defaults did **not** cause it
+(84 % vs 83 %). Rows: `data/evaluation/runs/20261013_131852_weight_sweep_validation.csv`.
 
 ### How to read this
 

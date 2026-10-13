@@ -83,3 +83,5 @@ used) against `ADOPTION_CRITERIA`, which are fixed in code before the run:
 - 2026-10-13 — Created. First (and recorded) run adopted preference ×3: `OptimizerWeights.preference` 1.0 → 3.0.
 - 2026-10-13 — Added the confirmation mode (`ADOPTION_CRITERIA`, `adoption_failures`, `parse_candidates`, `--candidates`,
   `--confirm`, `--limit 0` = all validation scenarios). Tooling only: `DEFAULT_WEIGHTS` is unchanged by this entry.
+- 2026-10-13 — The first confirmation run adopted preference ×6 with nutrition ×2: `OptimizerWeights` preference 6.0,
+  kcal 8.0, protein 4.0 (all criteria met on 120 validation scenarios).

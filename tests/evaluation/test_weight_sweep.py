@@ -8,9 +8,10 @@ from __future__ import annotations
 import pandas as pd
 import pytest
 
-from evaluation.weight_sweep import (GRID, GUARDRAILS, SWEEP_BASE, SweepConfig, adoption_failures, choose,
-                                     guardrail_failures, liked_cuisine_rate, parse_candidates, run_sweep, summarise,
-                                     weights_for)
+from evaluation.weight_sweep import (GRID, GUARDRAILS, SWEEP_BASE, VARIETY_CRITERIA, SweepConfig,
+                                     adoption_failures, choose, choose_variety, guardrail_failures,
+                                     liked_cuisine_rate, parse_candidates, run_sweep, summarise,
+                                     variety_failures, weights_for)
 from optimizer.weekly import DEFAULT_WEIGHTS
 
 BASE = SweepConfig().name
@@ -40,15 +41,20 @@ def test_multipliers_scale_the_starting_weights_and_nothing_else():
 
 
 def test_the_adopted_default_is_the_candidate_the_recorded_sweep_chose():
-    """Pins what was decided: preference x3 of the hand-set start, nothing else moved. If this fails, the default was
-    changed without a sweep (or the sweep was redone and the docs not updated)."""
+    """Pins what was decided: preference x6 and nutrition x2 of the hand-set start, nothing else moved (confirmed on
+    all 120 validation scenarios, 2026-10-13). If this fails, the default was changed without a sweep, or the sweep was
+    redone and the docs not updated."""
     assert SWEEP_BASE.preference == 1.0
-    assert DEFAULT_WEIGHTS == weights_for(SweepConfig(preference=3.0, nutrition=1.0))
+    assert DEFAULT_WEIGHTS == weights_for(SweepConfig(preference=6.0, nutrition=2.0))
 
 
 def test_multipliers_do_not_compound_when_the_default_has_moved():
-    """The bug this guards: x3 of an already-adopted x3 would be x9 and the sweep would stop being reproducible."""
-    assert weights_for(SweepConfig(preference=3.0)).preference == pytest.approx(3.0)
+    """The bug this guards: x3 of an already-adopted x3 would be x9 and the sweep would stop being reproducible.
+    Every scaled weight is pinned by value, not just the first one that happened to be adopted (the nutrition weights
+    were not, and adopting nutrition x2 turned the grid's x2 into x4 until the pin test above caught it)."""
+    assert SWEEP_BASE.preference == 1.0 and SWEEP_BASE.kcal_deviation == 4.0 and SWEEP_BASE.protein_deviation == 2.0
+    w = weights_for(SweepConfig(preference=3.0, nutrition=2.0))
+    assert (w.preference, w.kcal_deviation, w.protein_deviation) == pytest.approx((3.0, 8.0, 4.0))
 
 
 def test_liked_cuisine_rate():
@@ -141,3 +147,62 @@ def test_each_adoption_criterion_is_enforced(change, missed):
     good = {"liked_cuisine_rate": 0.35, "nutrition_in_range_pct": 70.0, "grocery_items": 15.0}
     s = _summary({BASE: {}, "c": {**good, **change}})
     assert adoption_failures(s, BASE, "c") == [missed]
+
+
+# --------------------------------------------------------------------------- variety (one protein all week)
+REF = SweepConfig(6.0, 2.0).name
+
+
+def _variety_summary(rows: dict) -> pd.DataFrame:
+    base = dict(preference_mean=0.6, disliked_rate=0.01, liked_cuisine_rate=0.27, waste_g=720.0, grocery_items=15.7,
+                nutrition_in_range_pct=70.0, protein_ok_pct=59.0, violations=0.0, complete=1.0,
+                max_protein_type_meals=5.0, distinct_protein_types=2.0, samey_weeks=0.60,
+                preference_x=6.0, nutrition_x=2.0, variety_x=1.0, protein_cap=4)
+    return pd.DataFrame({n: {**base, **v} for n, v in rows.items()}).T
+
+
+def test_variety_dimensions_have_stable_names_and_scale_the_pinned_start():
+    assert SweepConfig(6.0, 2.0).name == "pref x6, nutrition x2"                    # earlier runs stay comparable
+    c = SweepConfig(6.0, 2.0, variety=3.0, protein_cap=3)
+    assert c.name == "pref x6, nutrition x2, variety x3, cap 3"
+    w = weights_for(c)
+    assert w.variety == pytest.approx(0.7 * 3) and w.protein_type_cap == 3
+    assert (SWEEP_BASE.variety, SWEEP_BASE.protein_type_cap) == (0.7, 4)
+
+
+def test_candidates_can_name_variety_and_cap():
+    assert parse_candidates("6:2:3:3")[-1] == SweepConfig(6.0, 2.0, 3.0, 3)
+    with pytest.raises(ValueError, match="expected"):
+        parse_candidates("6:2:3")
+
+
+def test_the_variety_candidate_that_removes_the_samey_weeks_at_acceptable_cost_is_chosen():
+    s = _variety_summary({REF: {}, "cap3": {"samey_weeks": 0.10, "max_protein_type_meals": 3.4, "grocery_items": 16.3},
+                          "both": {"samey_weeks": 0.05, "max_protein_type_meals": 3.1, "grocery_items": 16.5}})
+    best, failures = choose_variety(s, REF)
+    assert best == "both" and failures == {"cap3": [], "both": []}
+
+
+def test_a_variety_fix_that_costs_too_much_or_breaks_something_is_rejected():
+    s = _variety_summary({REF: {},
+                          "pricey": {"samey_weeks": 0.0, "grocery_items": 17.0},                 # +1.3 items > 1.0
+                          "bland": {"samey_weeks": 0.0, "nutrition_in_range_pct": 60.0},         # -10 pts
+                          "weak": {"samey_weeks": 0.50}})                                        # only -10 pts of samey
+    best, failures = choose_variety(s, REF)
+    assert best == REF
+    assert failures["pricey"] == ["too many extra grocery items"]
+    assert failures["bland"] == ["calorie fit fell"]
+    assert failures["weak"] == ["still too many one-protein weeks"]
+
+
+@pytest.mark.parametrize("change, missed", [
+    ({"liked_cuisine_rate": 0.23}, "liked cuisines fell"), ({"waste_g": 720 * 1.06}, "waste rose"),
+    ({"violations": 0.01}, "rule violations"), ({"complete": 0.99}, "shorter weeks")])
+def test_each_remaining_variety_criterion_trips_on_its_own(change, missed):
+    s = _variety_summary({REF: {}, "x": {"samey_weeks": 0.1, **change}})
+    assert variety_failures(s, REF, "x") == [missed]
+
+
+def test_variety_criteria_are_documented_for_every_rule_the_code_checks():
+    assert set(VARIETY_CRITERIA) == {"samey_weeks_drop", "grocery_items", "nutrition_in_range_pct",
+                                     "liked_cuisine_rate", "waste_g", "violations", "complete"}

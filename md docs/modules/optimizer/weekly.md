@@ -40,10 +40,12 @@ Indices: recipe `k` in the shortlist, day `d`, ingredient `i`.
 `factor[i]` raises the cost of wasting stock that expires sooner and, for *estimated* deadlines, scales it by the
 estimate's confidence (a guess is chased less hard than a stated date).
 
-Defaults: waste 1.0 / 100 g, item 1.0, grocery 0.3 / 100 g, kcal 4.0, protein 2.0, **preference 3.0**, weekday time
-1.5, variety 0.7 (cuisine cap 2, protein-type cap 4). Hand-set except preference, which was raised from 1.0 to 3.0 by a
-bounded sweep on the validation split (`evaluation/weight_sweep.py`; results in `md docs/evaluation.md`). Further
-tuning: **validation** only.
+Defaults: waste 1.0 / 100 g, item 1.0, grocery 0.3 / 100 g, **kcal 8.0, protein 4.0, preference 6.0**, weekday time
+1.5, variety 0.7 (cuisine cap 2, protein-type cap 4). Hand-set except the three in bold, which were doubled /
+sextupled from 4.0 / 2.0 / 1.0 by a bounded sweep on the validation split and then confirmed on all 120 validation
+scenarios against pre-declared criteria (`evaluation/weight_sweep.py`; results in `md docs/evaluation.md`). The price
+is about +2.8 extra grocery items a week for +15 pts liked-cuisine dinners and +14 pts dinners in the calorie band.
+Further tuning: **validation** only.
 
 ## Public API
 
@@ -103,3 +105,6 @@ date and the command that produced them, so they cannot drift from this file.
   solver's own objective terms. The model, constraints and objective are unchanged; no plan changes.
 - 2026-10-13 — **Default `preference` weight 1.0 → 3.0** (bounded validation sweep; +7 pts liked-cuisine dinners for
   +0.4 grocery items). Earlier benchmark tables were produced with 1.0 and say so.
+- 2026-10-13 — **Defaults changed again: preference 3.0 → 6.0, kcal deviation 4.0 → 8.0, protein deviation 2.0 → 4.0.** The
+  project owner accepted about +3 grocery items for stronger likes and a better calorie fit; the exact combination
+  met every pre-declared criterion on all 120 validation scenarios (+15.0 / +13.7 pts, +2.78 items, waste +1.7 %).
