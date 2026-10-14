@@ -33,9 +33,15 @@ week_view             ── tabs, marks, [Re-plan the remaining days] → repla
 
 Calls `logging_setup.configure_logging()` before `main()`. It is idempotent, so Streamlit re-running the script on each interaction does not duplicate lines. Logs go to the terminal running `streamlit run`. Use `PTP_LOG_LEVEL=DEBUG` for the detailed trace and `PTP_LOG_FILE=...` to keep it.
 
+## Today and the language model
+
+* **Today** is `logic.local_today(st.context.timezone, now, $PTP_TIMEZONE)`, not `date.today()`. Set `PTP_TIMEZONE` (e.g. `Asia/Singapore`) on a host whose visitors' browsers might not report a zone.
+* **LLM switch**: `llm_reachable(LlmConfig.from_env())` probes the configured model (cached `LLM_PROBE_TTL_S` = 300 s). When nothing answers (a cloud host), the switch is not shown and the service is rules-only. Starting Ollama locally shows the switch within five minutes.
+
 ## Change log
 
 - 2026-10-13 — Created.
 - 2026-10-13 — Page shell: stylesheet, hero (replaces `st.title`), step strip, toasts after planning and re-planning.
 - 2026-10-14 — Configures logging at start-up (`logging_setup.configure_logging`).
 - 2026-10-14 — Profile notes and validation errors are escaped with `logic.md_escape` (they quote what the user typed). `.streamlit/config.toml` now hides tracebacks (`showErrorDetails = "none"`) and developer menu items.
+- 2026-10-14 — "Today" comes from the visitor's browser timezone; the LLM switch is shown only when a model is reachable.

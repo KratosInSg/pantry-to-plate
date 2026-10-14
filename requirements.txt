@@ -15,6 +15,9 @@ httpx>=0.27
 ortools>=9.10
 # front end (src/ui): the Streamlit prototype
 streamlit>=1.40
+# IANA timezone data for zoneinfo where the OS has none (Windows, slim containers): the UI computes "today" in the
+# visitor's timezone (src/ui/logic.py local_today).
+tzdata
 # Security floors for transitive dependencies (pip-audit / OSV, 2026-10-14): older versions have published advisories.
 # gitpython comes with streamlit, urllib3 with requests, anyio with httpx.
 gitpython>=3.1.62

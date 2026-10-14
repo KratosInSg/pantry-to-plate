@@ -37,7 +37,12 @@ The decisions behind the UI that are worth testing, kept free of Streamlit so th
 
 `md_escape(text)` backslash-escapes every punctuation character that Markdown or Streamlit's extensions (`:color[...]`, `:material/...:`, `$` LaTeX) could act on, and folds newlines to spaces. Use it on any user- or dataset-derived string placed inside `st.markdown` / `st.warning` / `st.error`. HTML needs no escaping there (Streamlit strips it); the HTML helpers in `ui.theme` use `html.escape`.
 
+## The user's today
+
+`local_today(browser_timezone, now_utc, configured_timezone=None) -> (date, source)` returns the calendar date where the user is. Order: the browser's IANA zone (`st.context.timezone`), then `PTP_TIMEZONE`, then the server's own date. `source` says which one was used. The browser value is client-supplied, so an unknown or malformed name is ignored rather than raising. Why it matters: "today" sets the plan's weekday names and how many days a stated use-by leaves, and a cloud host runs on UTC (a day behind Singapore from 00:00 to 08:00).
+
 ## Change log
 
 - 2026-10-13 — Created.
 - 2026-10-14 — Added `md_escape` (security review: typed links and images were rendered).
+- 2026-10-14 — Added `local_today` (the user's date from the browser timezone; fixes weekday names on a UTC server).

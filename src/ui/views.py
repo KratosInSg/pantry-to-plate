@@ -52,8 +52,12 @@ def _html(markup: str, where=None) -> None:
 # ==================================================================================================================
 # sidebar: who is cooking
 # ==================================================================================================================
-def sidebar_profile(service: PantryToPlateService) -> tuple[dict, bool]:
-    """Render the profile form; return the raw values for ``service.build_profile`` and the LLM switch."""
+def sidebar_profile(service: PantryToPlateService, offer_llm: bool = True) -> tuple[dict, bool]:
+    """Render the profile form; return the raw values for ``service.build_profile`` and the LLM switch.
+
+    ``offer_llm=False`` (no language model reachable, e.g. on a cloud host) hides the switch entirely and returns
+    ``False`` for it: a visitor should not be offered a feature that cannot work.
+    """
     sb = st.sidebar
     sb.markdown("## 👋 About you")
     sb.caption("Tell us once; every plan respects it.")
@@ -82,10 +86,12 @@ def sidebar_profile(service: PantryToPlateService) -> tuple[dict, bool]:
         protein = st.number_input("Protein per dinner (g)", 0, 100, 20, step=5, key="min_protein")
         minutes = st.slider("Weeknight cooking time (min)", 10, 120, 45, step=5, key="weekday_minutes")
 
-    with sb.expander("⚙️  Advanced"):
-        use_llm = st.checkbox("Use the local language model when it is running", value=True, key="use_llm",
-                              help="Re-reads pantry text the rules cannot understand and can reword the "
-                                   "explanations. Everything works without it.")
+    use_llm = False
+    if offer_llm:
+        with sb.expander("⚙️  Advanced"):
+            use_llm = st.checkbox("Use the language model", value=True, key="use_llm",
+                                  help="Re-reads pantry text the rules cannot understand and can reword the "
+                                       "explanations. Everything works without it.")
     return dict(diet=diet, allergens=allergens, avoid_pork=avoid_pork, avoid_alcohol=avoid_alcohol,
                 liked_cuisines=liked, disliked_cuisines=disliked, liked_foods=_split(liked_foods),
                 disliked_foods=_split(disliked_foods), excluded_foods=_split(never_foods),

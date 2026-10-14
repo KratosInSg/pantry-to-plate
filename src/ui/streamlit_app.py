@@ -8,8 +8,10 @@ state wiring and the page shell (``ui.theme`` for the look, ``ui.views`` for eac
 """
 from __future__ import annotations
 
+import logging
+import os
 import sys
-from datetime import date
+from datetime import date, datetime, timezone
 from pathlib import Path
 
 # Streamlit puts only this script's folder on sys.path; the project's packages live one level up (src/).
@@ -18,11 +20,16 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import streamlit as st  # noqa: E402
 
 from app.service import PantryToPlateService  # noqa: E402
-from llm.client import LlmClient  # noqa: E402
+from llm.client import LlmClient, LlmConfig  # noqa: E402
 from logging_setup import configure_logging  # noqa: E402
 from ui import logic, theme, views  # noqa: E402
 
+logger = logging.getLogger(__name__)
+
 TITLE = "Pantry to Plate"
+# How long a "is a language model reachable?" answer is reused. Short enough that starting Ollama during local
+# development is picked up within minutes; long enough that a cloud host is not probed on every click.
+LLM_PROBE_TTL_S = 300
 TAGLINE = "A week of dinners built around what you already have — less waste, fewer groceries, every choice explained."
 PROMISES = ("🥫 Uses your pantry first", "🛒 Fewer trips to the shop", "💡 Every choice explained")
 
@@ -31,6 +38,17 @@ PROMISES = ("🥫 Uses your pantry first", "🛒 Fewer trips to the shop", "💡
 def get_service(use_llm: bool) -> PantryToPlateService:
     """One service per process and LLM setting: it holds the dataset and the parser's fuzzy index."""
     return PantryToPlateService(llm=LlmClient() if use_llm else None)
+
+
+@st.cache_data(ttl=LLM_PROBE_TTL_S, show_spinner=False)
+def llm_reachable(config: LlmConfig) -> bool:
+    """Whether the configured language model answers (cached per config). False on a cloud host with no model, which
+    hides the LLM switch instead of offering something that cannot work."""
+    client = LlmClient(config)
+    try:
+        return client.is_available()
+    finally:
+        client.close()
 
 
 def current_step() -> int:
@@ -46,14 +64,20 @@ def main() -> None:
     st.markdown(theme.hero_html(TITLE, TAGLINE, PROMISES), unsafe_allow_html=True)
 
     # the profile form needs the service for the cuisine list, and the service depends on the LLM checkbox, so the
-    # checkbox's previous value is read from state before the sidebar is drawn
-    service = get_service(bool(st.session_state.get("use_llm", True)))
-    profile_values, use_llm = views.sidebar_profile(service)
-    if use_llm != bool(st.session_state.get("use_llm", True)):
+    # checkbox's previous value is read from state before the sidebar is drawn. With no model reachable the checkbox
+    # is not shown at all and the service is the rules-only one.
+    offer_llm = llm_reachable(LlmConfig.from_env())
+    wants_llm = offer_llm and bool(st.session_state.get("use_llm", True))
+    service = get_service(wants_llm)
+    profile_values, use_llm = views.sidebar_profile(service, offer_llm=offer_llm)
+    if use_llm != wants_llm:
         st.rerun()
 
     stepper = st.empty()                 # filled at the end, once this run has decided which step we are on
-    today = date.today()
+    # the visitor's date, not the server's (a cloud host runs on UTC); see logic.local_today
+    today, today_source = logic.local_today(st.context.timezone, datetime.now(timezone.utc),
+                                            os.environ.get(logic.ENV_TIMEZONE))
+    logger.debug("today is %s (%s timezone %s)", today, today_source, st.context.timezone)
     pantry_entries = views.pantry_step(service, today)
 
     st.markdown(theme.section_html("Plan the week", "Seven dinners, one shopping list."), unsafe_allow_html=True)

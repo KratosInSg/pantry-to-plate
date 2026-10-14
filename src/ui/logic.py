@@ -16,10 +16,48 @@ from __future__ import annotations
 import re
 from collections.abc import Sequence
 from dataclasses import dataclass
+from datetime import date, datetime
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from app.models import (ENTRY_ASSUMED, ENTRY_CHOOSE, ENTRY_NO_AMOUNT, ENTRY_OK, ENTRY_UNKNOWN, ENTRY_UNSAFE,
                         PantryEntry)
 from explain.facts import WEEKDAY_NAMES
+
+# ---------------------------------------------------------------------------------------------------- the user's today
+# Optional IANA zone (e.g. "Asia/Singapore") used when the browser does not report one. Without either, the server's
+# own date is used - on a cloud host that is UTC, which is a day behind in Singapore between 00:00 and 08:00.
+ENV_TIMEZONE = "PTP_TIMEZONE"
+TODAY_FROM_BROWSER = "browser"
+TODAY_FROM_CONFIG = "configured"
+TODAY_FROM_SERVER = "server"
+
+
+def local_today(browser_timezone: str | None, now_utc: datetime,
+                configured_timezone: str | None = None) -> tuple[date, str]:
+    """The calendar date *where the user is*, and where that answer came from.
+
+    "Today" decides the plan's weekday names and how many days a stated use-by ("use by friday") leaves, so it must be
+    the user's date, not the server's.
+
+    Args:
+        browser_timezone: IANA name the browser reported (``st.context.timezone``), or ``None``. It comes from the
+            client, so it is untrusted: an unknown or malformed name is ignored, never an error.
+        now_utc: the current instant, timezone-aware (pass ``datetime.now(timezone.utc)``; tests pass a fixed one).
+        configured_timezone: the operator's fallback zone (``PTP_TIMEZONE``), or ``None``.
+
+    Returns:
+        ``(date, source)`` with ``source`` one of ``"browser"``, ``"configured"``, ``"server"``, so the caller can log
+        which one was used (the server date is a fallback, not a silent guess).
+    """
+    for name, source in ((browser_timezone, TODAY_FROM_BROWSER), (configured_timezone, TODAY_FROM_CONFIG)):
+        if not name:
+            continue
+        try:
+            return now_utc.astimezone(ZoneInfo(name)).date(), source
+        except (ZoneInfoNotFoundError, ValueError):       # unknown zone, or a malformed / path-like name
+            continue
+    return now_utc.astimezone().date(), TODAY_FROM_SERVER
+
 
 # ---------------------------------------------------------------------------------------------------- markdown safety
 # Every ASCII punctuation character that Markdown, or Streamlit's own extensions (":gray[...]" colour directives,

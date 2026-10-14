@@ -47,6 +47,15 @@ def test_the_first_page_loads_without_errors_and_asks_for_a_pantry():
     assert "p2p-steps" in _texts(at)                                     # the step strip
 
 
+def test_the_llm_switch_is_hidden_when_no_model_is_reachable(monkeypatch):
+    # a cloud host has no local model: offering the switch there would promise something that cannot work
+    monkeypatch.setenv("PTP_LLM_BASE_URL", "http://127.0.0.1:9")          # nothing listens on the discard port
+    at = AppTest.from_file(APP, default_timeout=TIMEOUT).run()
+    assert not at.exception
+    assert "use_llm" not in {c.key for c in at.sidebar.checkbox}
+    assert "Diet" in [s.label for s in at.sidebar.selectbox]             # the rest of the form is still there
+
+
 def test_the_profile_form_offers_every_diet_allergen_and_cuisine():
     at = _app()
     # AppTest exposes the labels the user sees (the form formats values for display)

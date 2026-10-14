@@ -2,12 +2,14 @@
 from __future__ import annotations
 
 import re
+from datetime import date, datetime, timezone
 
 import pytest
 
 from app.models import ENTRY_ASSUMED, ENTRY_CHOOSE, ENTRY_NO_AMOUNT, ENTRY_OK, ENTRY_UNKNOWN, ENTRY_UNSAFE, PantryEntry
 from ui.logic import (DAY_COOKED, display_name, DAY_MARKS, DAY_PLANNED, DAY_REJECTED, DAY_SKIPPED, apply_use_by, build_replan_request,
-                      current_use_by_index, md_escape, needs_choice, status_label, use_by_choices, weekday_label)
+                      current_use_by_index, local_today, md_escape, needs_choice, status_label, use_by_choices,
+                      weekday_label)
 
 IDS = [101, 102, 103, 104, 105, 106, 107]
 
@@ -165,3 +167,25 @@ def test_md_escape_keeps_the_visible_text_and_flattens_lines():
     assert "\n" not in out and "\\#" in out                # no new block can start; "#" is literal
     # removing one backslash before each escaped character gives back what was typed (newline folded to a space)
     assert re.sub(r"\\(.)", r"\1", out) == "line one # heading \\ end [x](y)"
+
+
+# ---------------------------------------------------------------------------------------------------- the user's today
+# 20:30 UTC on Wednesday 14 Oct 2026 = 04:30 on Thursday 15 Oct in Singapore: the hours where the server's UTC date was
+# a day behind the user.
+LATE_UTC = datetime(2026, 10, 14, 20, 30, tzinfo=timezone.utc)
+
+
+def test_today_is_the_browsers_date_not_the_servers():
+    assert local_today("Asia/Singapore", LATE_UTC) == (date(2026, 10, 15), "browser")
+    assert local_today("America/New_York", LATE_UTC) == (date(2026, 10, 14), "browser")
+
+
+@pytest.mark.parametrize("bad", ["Mars/Olympus_Mons", "../../etc/passwd", "", None])
+def test_an_unusable_browser_timezone_falls_back_to_the_configured_one(bad):
+    # the browser's value is client-supplied: anything unknown or malformed is ignored, never an error
+    assert local_today(bad, LATE_UTC, configured_timezone="Asia/Singapore") == (date(2026, 10, 15), "configured")
+
+
+def test_without_any_timezone_the_server_date_is_used_and_says_so():
+    day, source = local_today(None, LATE_UTC, configured_timezone="Not/AZone")
+    assert source == "server" and day == LATE_UTC.astimezone().date()
