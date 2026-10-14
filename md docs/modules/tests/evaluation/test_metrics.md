@@ -19,3 +19,4 @@ DataFrames.
 ## Change log
 
 - 2026-10-12 — Created.
+- 2026-10-14 — Added `test_waste_is_split_into_avoidable_and_unavoidable` (vegan user, chicken vs spinach).

@@ -53,8 +53,13 @@ only differ in the plan they hand in, never in how they are judged.
 
 [`tests/evaluation/test_metrics.py`](../tests/evaluation/test_metrics.md)
 
+## Avoidable vs unavoidable waste
+
+`avoidable_waste_g` is the part of `waste_g` that some recipe **allowed for this user** could have used. `unavoidable_waste_g` is the rest: pantry stock that no recipe passing the user's hard rules contains (`unusable_ingredients(scenario, ctx, prepared)`), such as meat in a vegan pantry or an allergen. Every planner wastes that stock, so it only dilutes comparisons. Added after it turned out to be about 70 % of all waste in `restrictive_diet` (the generator seeds pantries from any recipe, ignoring the diet). `avoidable_waste_g` is in `HIGHER_IS_BETTER` (lower is better); `unavoidable_waste_g` is context only, identical across planners on a scenario.
+
 ## Change log
 
 - 2026-10-12 — Created. A `known_expiry_violation_g` metric was built and then removed: the replay can never schedule
   expired stock, so it flagged stranded stock rather than a constraint breach and would have shown a misleading
   "must be 0". The guarantee is tested structurally in `tests/optimizer/test_weekly.py`.
+- 2026-10-14 — Added `avoidable_waste_g` / `unavoidable_waste_g` and `unusable_ingredients`.

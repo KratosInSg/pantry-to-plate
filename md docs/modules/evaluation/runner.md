@@ -48,3 +48,4 @@ Add a method by adding a branch to `build_planner` — the planner only has to i
 - 2026-10-13 — `build_planner` routes any name starting `optimiser` / `opt_` to the weekly factory, so the `_cpsat`
   suffix variants work.
 - 2026-10-14 — `--log-level` flag; progress line moved from `print` to the log.
+- 2026-10-14 — Reports `avoidable_waste_g` (overall, per family, paired); metric lists named `KEY_METRICS`, `FAMILY_TABLE_METRICS`, `PAIRED_METRICS`, `PER_FAMILY_METRICS`.

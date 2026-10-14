@@ -82,6 +82,10 @@ used) against `ADOPTION_CRITERIA`, which are fixed in code before the run:
 
 `main()` calls `configure_logging()` for the parent process. The worker processes keep Python's default (WARNING and above), so a solver that returns no plan still shows up. The tables stay `print`.
 
+## Waste weight (2026-10-14)
+
+`SweepConfig.waste` multiplies `waste_per_100g` (pinned at 1.0 in `SWEEP_BASE`); spec `pref:nutrition:variety:cap:waste`, e.g. `6:2:1:4:3`. Names only mention the waste part when it is not 1, so earlier runs keep their names. `--waste-reference 6:2` compares the candidates with a different waste multiplier against the adopted weights under `WASTE_CRITERIA`. The criteria were written before the 120-scenario run: avoidable waste at least 5 % lower, at most +1.0 grocery item, at most 3 points less calorie fit, protein and liked-cuisine dinners, no violations and no shorter weeks. `choose_waste` picks the lowest avoidable waste among passing candidates and otherwise keeps the reference. Why: see `md docs/evaluation.md`, "restrictive_diet waste".
+
 ## Change log
 
 - 2026-10-13 — Created. First (and recorded) run adopted preference ×3: `OptimizerWeights.preference` 1.0 → 3.0.
@@ -90,3 +94,4 @@ used) against `ADOPTION_CRITERIA`, which are fixed in code before the run:
 - 2026-10-13 — The first confirmation run adopted preference ×6 with nutrition ×2: `OptimizerWeights` preference 6.0,
   kcal 8.0, protein 4.0 (all criteria met on 120 validation scenarios).
 - 2026-10-14 — Configures logging at start-up (parent process only).
+- 2026-10-14 — Waste-weight dimension, `WASTE_CRITERIA`, `waste_failures`, `choose_waste`, `--waste-reference`; summaries include `avoidable_waste_g`.

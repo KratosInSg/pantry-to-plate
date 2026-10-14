@@ -27,3 +27,4 @@ against tuning on the test split. No solving: the rule is a pure function of a s
 - 2026-10-13 — Created.
 - 2026-10-13 — Added the confirmation-mode tests.
 - 2026-10-13 — The pinned default is now preference ×6 with nutrition ×2 (confirmed adoption).
+- 2026-10-14 — Added waste-weight tests: stable names, pinned scaling, choice rule, each criterion tripping alone.

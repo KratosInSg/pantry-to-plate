@@ -124,3 +124,24 @@ def test_summarise_groups_by_planner():
                        {**full, "planner": "B", "waste_g": 5.0}])
     s = summarise(df)
     assert s.loc["A", "waste_g"] == 15.0 and s.loc["B", "waste_g"] == 5.0
+
+
+def test_waste_is_split_into_avoidable_and_unavoidable(ctx):
+    # a vegan user: chicken can never be cooked (no permitted recipe has it), spinach could have been
+    from domain.models import Diet
+    from optimizer.hard_rules import feasible_mask
+
+    store, cat = ctx.store, ctx.catalog
+    chicken = store.ingredient_by_name("chicken breast").ingredient_id
+    spinach = store.ingredient_by_name("spinach").ingredient_id
+    profile = UserProfile(diet=Diet.VEGAN)
+    ok = feasible_mask(cat, profile)
+    dinner = next(i for i in np.flatnonzero(ok) if not {chicken, spinach} & set(cat.ingredients(int(i))[0].tolist()))
+    pantry = [PantryItem(ingredient_id=chicken, grams=300.0, last_use_day=0, expiry_known=True),
+              PantryItem(ingredient_id=spinach, grams=200.0, last_use_day=0, expiry_known=True)]
+    sc = Scenario(scenario_id="m-avoid", horizon_days=1, profile=profile, pantry=pantry)
+    m = evaluate_plan(sc, _plan(ctx, int(dinner)), ctx)
+    assert m.waste_g == pytest.approx(500.0)
+    assert m.unavoidable_waste_g == pytest.approx(300.0)          # the chicken: wasted by every possible plan
+    assert m.avoidable_waste_g == pytest.approx(200.0)            # the spinach: a better plan could have used it
+    assert m.violations == 0

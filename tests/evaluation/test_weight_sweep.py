@@ -8,10 +8,10 @@ from __future__ import annotations
 import pandas as pd
 import pytest
 
-from evaluation.weight_sweep import (GRID, GUARDRAILS, SWEEP_BASE, VARIETY_CRITERIA, SweepConfig,
-                                     adoption_failures, choose, choose_variety, guardrail_failures,
+from evaluation.weight_sweep import (GRID, GUARDRAILS, SWEEP_BASE, VARIETY_CRITERIA, WASTE_CRITERIA, SweepConfig,
+                                     adoption_failures, choose, choose_variety, choose_waste, guardrail_failures,
                                      liked_cuisine_rate, parse_candidates, run_sweep, summarise,
-                                     variety_failures, weights_for)
+                                     variety_failures, waste_failures, weights_for)
 from optimizer.weekly import DEFAULT_WEIGHTS
 
 BASE = SweepConfig().name
@@ -206,3 +206,61 @@ def test_each_remaining_variety_criterion_trips_on_its_own(change, missed):
 def test_variety_criteria_are_documented_for_every_rule_the_code_checks():
     assert set(VARIETY_CRITERIA) == {"samey_weeks_drop", "grocery_items", "nutrition_in_range_pct",
                                      "liked_cuisine_rate", "waste_g", "violations", "complete"}
+
+
+# ---------------------------------------------------------------------------------------------------- waste weight
+ADOPTED = SweepConfig(6.0, 2.0)
+W2, W3 = SweepConfig(6.0, 2.0, waste=2.0), SweepConfig(6.0, 2.0, waste=3.0)
+
+
+def _waste_summary(w2: dict | None = None, w3: dict | None = None) -> pd.DataFrame:
+    """The adopted weights (250 g avoidable waste) plus the given waste candidates; other metrics = baseline."""
+    rows = {ADOPTED.name: dict(avoidable_waste_g=250.0, waste_x=1.0)}
+    for config, values in ((W2, w2), (W3, w3)):
+        if values is not None:
+            rows[config.name] = {"waste_x": config.waste, **values}
+    return _summary(rows)
+
+
+def test_waste_dimension_has_a_stable_name_and_scales_the_pinned_start():
+    assert ADOPTED.name == "pref x6, nutrition x2"                      # earlier runs keep their names
+    assert W3.name == "pref x6, nutrition x2, waste x3"
+    assert SWEEP_BASE.waste_per_100g == 1.0                             # pinned by value, like every scaled weight
+    assert weights_for(W3).waste_per_100g == 3.0 and weights_for(W3).preference == 6.0
+    assert parse_candidates("6:2:1:4:3")[-1] == W3
+
+
+def test_the_waste_candidate_with_the_least_avoidable_waste_that_passes_is_chosen():
+    s = _waste_summary(w2=dict(avoidable_waste_g=230.0), w3=dict(avoidable_waste_g=210.0))
+    pick, why = choose_waste(s, ADOPTED.name)
+    assert pick == W3.name and why == {W2.name: [], W3.name: []}
+
+
+def test_a_waste_candidate_that_costs_too_much_elsewhere_is_rejected():
+    s = _waste_summary(w2=dict(avoidable_waste_g=230.0), w3=dict(avoidable_waste_g=200.0, grocery_items=14.5))
+    assert choose_waste(s, ADOPTED.name)[0] == W2.name                  # x3 bought 1.5 more items: over the +1.0 cap
+
+
+def test_the_adopted_weights_are_kept_when_no_waste_candidate_qualifies():
+    s = _waste_summary(w2=dict(avoidable_waste_g=245.0), w3=dict(avoidable_waste_g=200.0, liked_cuisine_rate=0.15))
+    pick, why = choose_waste(s, ADOPTED.name)
+    assert pick == ADOPTED.name
+    assert why[W2.name] == ["avoidable waste did not fall enough"]       # -2 %, needs -5 %
+    assert why[W3.name] == ["liked cuisines fell"]                       # -5 pts, allowed -3
+
+
+@pytest.mark.parametrize("change, missed", [
+    (dict(grocery_items=14.01), "too many extra grocery items"),
+    (dict(nutrition_in_range_pct=53.9), "calorie fit fell"),
+    (dict(protein_ok_pct=46.9), "protein fell"),
+    (dict(violations=1.0), "rule violations"),
+    (dict(complete=0.99), "shorter weeks"),
+])
+def test_each_waste_criterion_trips_on_its_own(change, missed):
+    s = _waste_summary(w3=dict(avoidable_waste_g=200.0, **change))
+    assert waste_failures(s, ADOPTED.name, W3.name) == [missed]
+
+
+def test_waste_criteria_are_documented_for_every_rule_the_code_checks():
+    assert set(WASTE_CRITERIA) == {"avoidable_waste_drop", "grocery_items", "nutrition_in_range_pct", "protein_ok_pct",
+                                   "liked_cuisine_rate", "violations", "complete"}

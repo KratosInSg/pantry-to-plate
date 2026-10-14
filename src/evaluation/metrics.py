@@ -13,6 +13,10 @@ pantry_utilisation_pct     share of starting (non-staple) pantry grams cooked wi
 expiring_utilisation_pct   same, restricted to stock that truly expires inside the week
 waste_g / waste_pct        grams (and share of expiring stock) that spoiled unused - measured against the HIDDEN
                            true expiry, not the planner's estimate
+avoidable_waste_g          the part of ``waste_g`` that some recipe ALLOWED for this user could have used. The rest,
+                           ``unavoidable_waste_g``, is stock no permitted recipe contains (meat in a vegan pantry,
+                           an allergen): every planner wastes it, so it only dilutes comparisons (added 2026-10-14
+                           after it turned out to be ~70 % of the waste in ``restrictive_diet``)
 grocery_items / grocery_g  what must be bought: distinct items and grams
 violations                 hard-rule violations (diet/allergen/exclusion/...). Must be 0
 nutrition_in_range_pct     share of dinners inside the kcal band
@@ -44,7 +48,7 @@ from preference.scorer import disliked_mask
 
 HIGHER_IS_BETTER: dict[str, bool] = {
     "pantry_utilisation_pct": True, "expiring_utilisation_pct": True, "waste_g": False, "waste_pct": False,
-    "grocery_items": False, "grocery_g": False, "violations": False,
+    "avoidable_waste_g": False, "grocery_items": False, "grocery_g": False, "violations": False,
     "nutrition_in_range_pct": True, "nutrition_dev_pct": False, "protein_ok_pct": True, "preference_mean": True,
     "disliked_rate": False, "weekday_overtime_rate": False, "distinct_cuisines": True, "complete": True,
 }
@@ -63,6 +67,8 @@ class PlanMetrics:
     expiring_utilisation_pct: float
     waste_g: float
     waste_pct: float
+    avoidable_waste_g: float
+    unavoidable_waste_g: float          # identical for every planner on a scenario: context, not a score
     grocery_items: int
     grocery_g: float
     violations: int
@@ -77,6 +83,18 @@ class PlanMetrics:
 
 def _pct(num: float, den: float) -> float:
     return 100.0 * num / den if den > 1e-9 else 0.0
+
+
+def unusable_ingredients(scenario: Scenario, ctx: PlanningContext, prepared: Prepared) -> set[int]:
+    """Pantry ingredients that no recipe passing this user's hard rules contains.
+
+    No planner may cook with them, so their spoilage is the same for every method. Staples are excluded (they are
+    never pantry stock in the replay).
+    """
+    cat = ctx.catalog
+    return {item.ingredient_id for item in scenario.pantry
+            if item.ingredient_id not in ctx.ignore_ids
+            and not prepared.feasible[cat.recipes_using(item.ingredient_id)].any()}
 
 
 def evaluate_plan(scenario: Scenario, plan: WeekPlan, ctx: PlanningContext,
@@ -110,12 +128,15 @@ def evaluate_plan(scenario: Scenario, plan: WeekPlan, ctx: PlanningContext,
 
     expiring = inv.expiring_pantry_g
     expiring_used = sum(inv.consumed_g.get(i, 0.0) for i in inv.expiring_ids)
+    unusable = unusable_ingredients(scenario, ctx, prepared)
+    unavoidable = sum(g for i, g in inv.waste_g.items() if i in unusable)
     return PlanMetrics(
         scenario_id=scenario.scenario_id, family=scenario.family, planner=plan.planner, n_meals=n,
         complete=float(n >= scenario.horizon_days),
         pantry_utilisation_pct=_pct(inv.total_consumed_g, inv.total_pantry_g),
         expiring_utilisation_pct=_pct(expiring_used, expiring),
         waste_g=inv.total_waste_g, waste_pct=_pct(inv.total_waste_g, expiring),
+        avoidable_waste_g=inv.total_waste_g - unavoidable, unavoidable_waste_g=unavoidable,
         grocery_items=inv.n_grocery_items, grocery_g=inv.total_groceries_g,
         violations=count_violations(cat, profile, idx),
         nutrition_in_range_pct=float(in_range), nutrition_dev_pct=dev, protein_ok_pct=protein_ok,

@@ -33,8 +33,12 @@ from optimizer.planning import Planner, PlanningContext, make_context, prepare
 
 logger = logging.getLogger(__name__)
 
-KEY_METRICS = ["waste_g", "grocery_items", "pantry_utilisation_pct", "nutrition_in_range_pct", "preference_mean",
-               "weekday_overtime_rate", "violations", "complete"]
+KEY_METRICS = ["waste_g", "avoidable_waste_g", "grocery_items", "pantry_utilisation_pct", "nutrition_in_range_pct",
+               "preference_mean", "weekday_overtime_rate", "violations", "complete"]
+FAMILY_TABLE_METRICS = ["waste_g", "avoidable_waste_g", "grocery_items", "pantry_utilisation_pct",
+                        "nutrition_in_range_pct", "weekday_overtime_rate", "complete"]
+PAIRED_METRICS = ["waste_g", "avoidable_waste_g", "grocery_items", "pantry_utilisation_pct", "nutrition_in_range_pct",
+                  "preference_mean"]
 
 
 def build_planner(name: str, ctx: PlanningContext) -> Planner:
@@ -82,7 +86,7 @@ def _stratified_head(scenarios, limit: int):
     return [s for fam in by_family.values() for s in fam[:per]]
 
 
-PER_FAMILY_METRICS = ["waste_g", "grocery_items", "nutrition_in_range_pct", "preference_mean"]
+PER_FAMILY_METRICS = ["waste_g", "avoidable_waste_g", "grocery_items", "nutrition_in_range_pct", "preference_mean"]
 
 
 def per_family_comparison(df: pd.DataFrame, planner: str, baseline: str,
@@ -109,15 +113,14 @@ def report(df: pd.DataFrame, baseline: str | None = None) -> None:
     print("\n=== overall (mean over scenarios) ===")
     print(summarise(df)[KEY_METRICS].to_string())
     print("\n=== by family ===")
-    print(summarise(df, ["family", "planner"])[["waste_g", "grocery_items", "pantry_utilisation_pct",
-                                              "nutrition_in_range_pct", "weekday_overtime_rate", "complete"]].to_string())
+    print(summarise(df, ["family", "planner"])[FAMILY_TABLE_METRICS].to_string())
     planners = sorted(df.planner.unique())
     if baseline and baseline in planners and len(planners) > 1:
         print(f"\n=== paired comparison vs '{baseline}' (mean difference, 95% bootstrap CI) ===")
         for other in planners:
             if other == baseline:
                 continue
-            for m in ["waste_g", "grocery_items", "pantry_utilisation_pct", "nutrition_in_range_pct", "preference_mean"]:
+            for m in PAIRED_METRICS:
                 r = paired_bootstrap(df, m, other, baseline)
                 arrow = "better" if (r["mean_diff"] > 0) == HIGHER_IS_BETTER[m] else "worse"
                 print(f"  {other:<10} {m:<26} {r['mean_diff']:+9.2f}  [{r['ci_low']:+.2f}, {r['ci_high']:+.2f}]  "
