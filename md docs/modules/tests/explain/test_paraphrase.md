@@ -26,3 +26,4 @@ rate is a measurement recorded in the module doc, not a test.
 ## Change log
 
 - 2026-10-13 — Created.
+- 2026-10-14 — The transport-failure test also checks that exactly one WARNING is logged, not one per section.

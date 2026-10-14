@@ -25,6 +25,7 @@ needing attention). Closing vocabulary gaps is a curation job: add a row to ``re
 """
 from __future__ import annotations
 
+import logging
 import re
 from typing import Any, Protocol
 
@@ -32,6 +33,8 @@ from nlp.pantry_parser import PantryParser
 from nlp.quantities import FRACTION_WORDS, NUMBER_WORDS, UNIT_ALIASES, parse_number_token
 from nlp.schemas import MatchStatus, ParsedItem, ParseResult, Urgency
 from nlp.urgency import find_urgency
+
+logger = logging.getLogger(__name__)
 
 NO_UNIT = "none"
 
@@ -107,12 +110,15 @@ class LlmPantryFallback:
         if not fragments:
             return result
         source = "; ".join(fragments)
+        logger.info("asking the LLM to re-read %d fragment(s) the rules could not understand", len(fragments))
         try:
             answer = self._client.complete_json(_messages(source), extraction_schema(source))
-        except Exception:                    # noqa: BLE001 - any LLM failure means "keep the rules result"
+        except Exception as exc:             # noqa: BLE001 - any LLM failure means "keep the rules result"
+            logger.warning("LLM re-read failed (%s: %s); keeping the rules result", type(exc).__name__, exc)
             return result
         raw_items = answer.get("items") if isinstance(answer, dict) else None
         if not isinstance(raw_items, list):
+            logger.warning("LLM answer has no 'items' list; keeping the rules result")
             return result
 
         items = list(result.items)
@@ -121,9 +127,12 @@ class LlmPantryFallback:
         for raw in raw_items:
             checked = _validate(raw, fragments)
             if checked is None:
+                logger.debug("dropped LLM item %r: not supported by the user's words", raw)
                 continue
             reparsed = [i for i in self._rules.parse(_sentence(checked)).items if i.match_status is MatchStatus.MATCHED]
             if len(reparsed) != 1:
+                logger.debug("LLM item %r still does not resolve to one ingredient: kept the rules' version",
+                             _sentence(checked))
                 continue                     # unresolved or oddly split: keep the rules' version
             new = reparsed[0]
             slot = _find_slot(checked["name"], items, replaced)
@@ -134,6 +143,7 @@ class LlmPantryFallback:
                     new.urgency, new.urgency_cue = original.urgency, original.urgency_cue
                     new.days_left_hint, new.days_left_explicit = original.days_left_hint, original.days_left_explicit
                 new.warnings.append(WARNING)
+                logger.debug("LLM re-read %r as %r -> %s", original.raw_text, _sentence(checked), new.canonical_name)
                 items[slot] = new
                 replaced.add(slot)
                 continue
@@ -144,9 +154,13 @@ class LlmPantryFallback:
                 new.urgency, new.urgency_cue = cue.level, cue.cue
                 new.days_left_hint, new.days_left_explicit = cue.days_left, cue.explicit
             new.warnings.append(WARNING)
+            logger.debug("LLM found %r -> %s", new.raw_text, new.canonical_name)
             items.append(new)
             if leftover is not None:
                 unparsed.remove(leftover)
+        added = len(items) - len(result.items)
+        logger.info("LLM re-read: %d item(s) replaced, %d added, %d of %d suggestion(s) not used", len(replaced),
+                    added, len(raw_items) - len(replaced) - added, len(raw_items))
         return ParseResult(source_text=result.source_text, items=items, unparsed=unparsed)
 
 
@@ -255,7 +269,12 @@ def parser_with_llm(client: JsonLlm | None, store=None, resolver=None) -> Pantry
     """
     rules = PantryParser(store=store, resolver=resolver)
     available = getattr(client, "is_available", None)
-    if client is None or (callable(available) and not available()):
+    if client is None:
+        logger.info("pantry parser: rules only (no LLM configured)")
         return rules
+    if callable(available) and not available():
+        logger.warning("pantry parser: the LLM is not reachable, so parsing uses the rules only")
+        return rules
+    logger.info("pantry parser: rules + LLM fallback for fragments the rules cannot read")
     return PantryParser(store=rules._store, resolver=rules._resolver,        # noqa: SLF001 - share the built index
                         llm_fallback=LlmPantryFallback(client, rules))

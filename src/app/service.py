@@ -23,6 +23,9 @@ Typical use::
 """
 from __future__ import annotations
 
+import logging
+import time
+from collections import Counter
 from collections.abc import Iterable, Sequence
 from dataclasses import dataclass, field, replace
 from datetime import date
@@ -39,6 +42,7 @@ from explain.facts import build_facts
 from explain.paraphrase import Paraphraser, build_paraphraser, paraphrase_explanation
 from explain.render import Explanation, render
 from llm.client import LlmClient
+from logging_setup import timed
 from nlp.pantry_parser import PantryParser
 from nlp.llm_fallback import parser_with_llm
 from nlp.resolver import IngredientResolver, normalise_name
@@ -48,6 +52,8 @@ from optimizer.inventory import account_inventory, visible_deadlines
 from optimizer.planning import PlanningContext, make_context
 from optimizer.replan import roll_forward
 from optimizer.weekly import DEFAULT_WEIGHTS, OptimizerWeights, WeeklyPlanner
+
+logger = logging.getLogger(__name__)
 
 DEFAULT_SHORTLIST = 120          # candidate recipes handed to the solver (~6 s per plan; see optimizer/weekly.py)
 DEFAULT_TIME_LIMIT_S = 8.0
@@ -103,6 +109,8 @@ class PantryToPlateService:
                                       time_limit_s=time_limit_s, mip_rel_gap=mip_rel_gap, backend=backend)
         self._paraphraser: Paraphraser | None = None
         self._paraphraser_tried = False
+        logger.info("service ready: backend %s, shortlist %d, time limit %.0f s, LLM %s", backend, shortlist_size,
+                    time_limit_s, "configured" if llm is not None else "off")
 
     # ------------------------------------------------------------------------------------------------ vocabulary
     def cuisines(self) -> list[str]:
@@ -205,18 +213,29 @@ class PantryToPlateService:
             max_weekday_minutes=max_weekday_minutes, daily_kcal_target=daily_kcal_target,
             dinner_kcal_share=dinner_kcal_share, kcal_tolerance=kcal_tolerance,
             min_protein_g_per_dinner=min_protein_g_per_dinner)
+        logger.debug("profile: %s, allergens %s, %d liked / %d disliked / %d excluded food(s) resolved; %d unresolved, "
+                     "%d ambiguous", diet_value.value, sorted(allergen_set) or "none", len(profile.liked_ingredient_ids),
+                     len(profile.disliked_ingredient_ids), len(profile.excluded_ingredient_ids), len(res.unresolved),
+                     len(res.ambiguous))
         return ProfileBuild(profile=profile, resolution=res, notes=notes)
 
     # ------------------------------------------------------------------------------------------------ the pantry
     def review_pantry(self, text: str, today: date | None = None, horizon_days: int = HORIZON_DAYS) -> PantryReview:
         """Parse free text into rows the user can confirm or fix. Never raises for odd input."""
+        started = time.perf_counter()
+        logger.debug("pantry text: %r", text)                          # the user's words: DEBUG only
         parse = self._parser.parse(text, today)
         # a fragment with no letters ("!!! ???", "12345") names no food: report it as unread, not as an unknown food
         # the user is asked to identify
         named = [i for i in parse.items if any(ch.isalpha() for ch in (i.name_text or i.raw_text))]
         stray = [i.raw_text for i in parse.items if i not in named]
         entries = [self._entry_for(item, horizon_days) for item in named]
-        return PantryReview(source_text=text, entries=entries, unparsed=list(parse.unparsed) + stray)
+        review = PantryReview(source_text=text, entries=entries, unparsed=list(parse.unparsed) + stray)
+        statuses = Counter(e.status for e in entries)
+        logger.info("pantry reviewed in %.2f s: %d row(s) (%s), %d fragment(s) not understood",
+                    time.perf_counter() - started, len(entries),
+                    ", ".join(f"{n} {s}" for s, n in sorted(statuses.items())) or "none", len(review.unparsed))
+        return review
 
     def add_pantry_entry(self, ingredient_id: int, grams: float, days_left: int | None = None, urgent: bool = False,
                          horizon_days: int = HORIZON_DAYS) -> PantryEntry:
@@ -298,15 +317,21 @@ class PantryToPlateService:
     def plan_week(self, scenario: Scenario, paraphrase: bool = False) -> PlannedWeek:
         """Plan, explain and present. ``paraphrase=True`` also asks the LLM to reword the reasons (~20 s; validated,
         and the template text is kept wherever a rewrite is rejected or the model is unavailable)."""
+        logger.info("planning %d day(s) from %d pantry item(s)", scenario.horizon_days, len(scenario.pantry))
+        started = time.perf_counter()
         plan = self._planner.plan(scenario)
-        return self._present(scenario, plan, paraphrase=paraphrase)
+        planned = self._present(scenario, plan, paraphrase=paraphrase)
+        _log_planned(planned, time.perf_counter() - started)
+        return planned
 
     def reword(self, planned: PlannedWeek) -> PlannedWeek:
         """Reword an already-planned week's reasons with the LLM. A no-op if the model is not reachable."""
         paraphraser = self._get_paraphraser()
         if paraphraser is None:
+            logger.info("reword skipped: no language model reachable")
             return planned
-        explanation = paraphrase_explanation(planned.explanation, paraphraser)
+        with timed(logger, "rewording the explanation", logging.INFO):
+            explanation = paraphrase_explanation(planned.explanation, paraphraser)
         days = tuple(replace(d, explanation=explanation.section(f"day:{d.day}") or d.explanation) for d in planned.days)
         return replace(planned, explanation=explanation, days=days)
 
@@ -325,17 +350,25 @@ class PantryToPlateService:
         Past days are never touched: they are outside the new problem. Food a skipped or rejected dinner would
         have used is still in the pantry, one day closer to its deadline, which is what the waste term chases.
         """
+        started = time.perf_counter()
         rolled = roll_forward(planned.scenario, cooked, self.ctx)
         scenario = rolled.scenario
         rejected_ids = frozenset(int(r) for r in rejected)
+        logger.info("re-planning: %d day(s) passed (%d cooked), %d recipe(s) rejected, %d day(s) left",
+                    rolled.elapsed_days, sum(c is not None for c in cooked), len(rejected_ids), scenario.horizon_days)
         if rejected_ids:
             profile = scenario.profile.model_copy(update={
                 "excluded_recipe_ids": scenario.profile.excluded_recipe_ids | rejected_ids})
             scenario = scenario.model_copy(update={"profile": profile})
         plan = self._planner.plan(scenario)
         expired = {self._name(i): g for i, g in rolled.expired_g.items()}
-        return self._present(scenario, plan, paraphrase=paraphrase, day_offset=planned.day_offset + rolled.elapsed_days,
-                             expired=expired)
+        if expired:
+            logger.info("went off while those days passed: %s",
+                        ", ".join(f"{g:.0f} g {name}" for name, g in expired.items()))
+        replanned = self._present(scenario, plan, paraphrase=paraphrase,
+                                  day_offset=planned.day_offset + rolled.elapsed_days, expired=expired)
+        _log_planned(replanned, time.perf_counter() - started)
+        return replanned
 
     # ------------------------------------------------------------------------------------------------ LLM
     def llm_available(self) -> bool:
@@ -398,3 +431,11 @@ class PantryToPlateService:
             grocery_box=build_grocery_box(report, ctx.store, scenario.start_weekday), explanation=explanation,
             status=plan.status, complete=facts.complete, solve_seconds=float(plan.diagnostics.get("solve_seconds", 0.0)),
             day_offset=day_offset, expired=expired or {})
+
+
+def _log_planned(planned: PlannedWeek, seconds: float) -> None:
+    """One INFO line per plan: the outcome a user sees, and where the time went."""
+    level = logging.INFO if planned.complete else logging.WARNING
+    logger.log(level, "plan %s: %d of %d dinner(s), %d grocery item(s); solver %.1f s, total %.1f s",
+               planned.status, len(planned.days), planned.scenario.horizon_days, len(planned.grocery_box.items),
+               planned.solve_seconds, seconds)

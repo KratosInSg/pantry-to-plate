@@ -19,12 +19,15 @@ This module is pure: the input scenario is never modified.
 """
 from __future__ import annotations
 
+import logging
 from collections.abc import Sequence
 from dataclasses import dataclass, field
 
 from domain.models import PantryItem, Scenario
 from optimizer.inventory import account_inventory, deadlines_from_pantry
 from optimizer.planning import PlanningContext
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True)
@@ -85,5 +88,8 @@ def roll_forward(scenario: Scenario, cooked_recipe_ids: Sequence[int | None], ct
     rolled = scenario.model_copy(update={
         "scenario_id": f"{scenario.scenario_id}+d{elapsed}", "pantry": new_pantry, "horizon_days": remaining,
         "start_weekday": (scenario.start_weekday + elapsed) % 7, "true_last_use_day": truth})
+    logger.debug("rolled %s forward %d day(s) (%d skipped): %d day(s) left, %d pantry item(s), %.0f g used, "
+                 "%.0f g expired", scenario.scenario_id, elapsed, sum(r is None for r in cooked_recipe_ids), remaining,
+                 len(new_pantry), sum(report.consumed_g.values()), sum(report.waste_g.values()))
     return RolledForward(scenario=rolled, elapsed_days=elapsed, consumed_g=dict(report.consumed_g),
                          expired_g=dict(report.waste_g))

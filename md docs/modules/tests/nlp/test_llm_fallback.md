@@ -24,3 +24,4 @@ parser, resolver and store are the real ones, so re-parsing, grams and labels ar
 ## Change log
 
 - 2026-10-12 — Created.
+- 2026-10-14 — Added `test_llm_failure_is_logged_as_a_warning`; the server-down test also checks its WARNING line.

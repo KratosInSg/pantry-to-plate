@@ -92,6 +92,10 @@ date and the command that produced them, so they cannot drift from this file.
 
 [`tests/optimizer/test_weekly.py`](../tests/optimizer/test_weekly.md)
 
+## Logging
+
+Logger `optimizer.weekly`. DEBUG: shortlist size, model size (variables, integers, constraints), backend; then status, seconds, objective, gap and every cost term at the chosen plan. INFO: too few feasible recipes to optimise. WARNING: no recipe passes the hard rules, or the solver returned no plan. Per-plan lines are DEBUG because the benchmark runner plans hundreds of scenarios; `app.service` writes the INFO line for the app.
+
 ## Change log
 
 - 2026-10-12 — Created. Index bug fixed (shortlist position vs catalogue row). Speed tuned: shortlist 120, 8 s limit,
@@ -108,3 +112,4 @@ date and the command that produced them, so they cannot drift from this file.
 - 2026-10-13 — **Defaults changed again: preference 3.0 → 6.0, kcal deviation 4.0 → 8.0, protein deviation 2.0 → 4.0.** The
   project owner accepted about +3 grocery items for stronger likes and a better calorie fit; the exact combination
   met every pre-declared criterion on all 120 validation scenarios (+15.0 / +13.7 pts, +2.78 items, waste +1.7 %).
+- 2026-10-14 — Logging: model size, solve outcome and cost terms at DEBUG; no-candidate / no-solution at WARNING.

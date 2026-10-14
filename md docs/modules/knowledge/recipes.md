@@ -48,8 +48,13 @@ catalogue answers "which recipes exist and what is in them?". It reads `data/can
 
 [`tests/knowledge/test_recipes.py`](../tests/knowledge/test_recipes.md)
 
+## Logging
+
+Logger `knowledge.recipes`. INFO: reading `recipe.parquet` and `recipe_ingredient.parquet`, with durations (the largest one-off costs of a session). DEBUG: reading `recipe_step.parquet`. WARNING: the step table is missing, so recipes are shown without steps.
+
 ## Change log
 
 - 2026-10-12 — Created.
 - 2026-10-13 — Added `steps(idx)` (the build already kept them; there was no runtime accessor) and the
   `non_dinner_like` heuristic array.
+- 2026-10-14 — Logging: table-read durations; a WARNING when the step table is missing.

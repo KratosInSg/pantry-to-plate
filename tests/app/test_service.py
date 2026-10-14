@@ -5,6 +5,7 @@ re-plan. They assert behaviour a user would notice, and that everything shown ag
 """
 from __future__ import annotations
 
+import logging
 from datetime import date
 
 import pytest
@@ -272,6 +273,19 @@ class _StubLlm:
 
     def complete_json(self, messages, schema):                           # pantry re-read: never needed here
         return {"items": []}
+
+
+def test_each_step_logs_one_info_line_that_names_its_outcome(service, caplog):
+    # the INFO log is the developer's timeline of a session: one line per step, not one per fragment or variable
+    with caplog.at_level(logging.INFO, logger="app.service"):
+        review = service.review_pantry("500g chicken breast, 6 eggs, 2 lbs potatoes", today=TODAY)
+        profile = service.build_profile().profile
+        service.plan_week(service.make_scenario(profile, service.pantry_items(review.entries), today=TODAY))
+    messages = [r.getMessage() for r in caplog.records if r.name == "app.service" and r.levelno == logging.INFO]
+    assert any(m.startswith("pantry reviewed in ") and "3 row(s)" in m for m in messages)
+    assert any(m.startswith("planning 7 day(s) from 3 pantry item(s)") for m in messages)
+    assert any(m.startswith("plan ") and "of 7 dinner(s)" in m for m in messages)
+    assert not any("chicken" in m for m in messages)          # the user's own text is DEBUG only
 
 
 def test_without_an_llm_everything_works_and_nothing_is_reworded(service, week):

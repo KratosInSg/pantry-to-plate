@@ -30,6 +30,11 @@ No dedicated test: the functions it calls (`build_benchmark`, `freeze_benchmark`
 [`tests/evaluation/test_scenarios.py`](../tests/evaluation/test_scenarios.md), including a check that the committed
 benchmark loads and is balanced.
 
+## Logging
+
+`main()` calls `configure_logging()`, so the dataset and catalogue loads are visible. The summary stays `print`.
+
 ## Change log
 
 - 2026-10-12 — Created; ran once to freeze v1.
+- 2026-10-14 — Configures logging at start-up.

@@ -50,6 +50,7 @@ Decisions worth knowing
 """
 from __future__ import annotations
 
+import logging
 from collections import defaultdict
 from dataclasses import dataclass, replace
 
@@ -61,6 +62,8 @@ from optimizer.candidates import ShortlistConfig, shortlist, urgency_weight
 from optimizer.inventory import deadlines_from_pantry
 from optimizer.linear_model import LinearModel
 from optimizer.planning import PlanningContext, plan_from_indices, prepare
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True, slots=True)
@@ -156,20 +159,30 @@ class WeeklyPlanner:
         horizon = scenario.horizon_days
         feasible = prepared.feasible_indices
         if len(feasible) == 0:
+            logger.warning("%s: no recipe passes the hard rules for scenario %s", self.name, scenario.scenario_id)
             return plan_from_indices(self.name, ctx, [], horizon, status="no_candidates", n_feasible=0)
         if len(feasible) <= horizon:           # nothing to optimise: cook everything that is allowed
+            logger.info("%s: only %d feasible recipe(s) for %d day(s) - nothing to optimise", self.name,
+                        len(feasible), horizon)
             return plan_from_indices(self.name, ctx, feasible.tolist(), horizon, n_feasible=len(feasible))
 
         cand = shortlist(ctx.catalog, scenario.profile, scenario.pantry, prepared.feasible, prepared.preference,
                          ctx.ignore_ids, self._shortlist_cfg)
         model, handles = self._build(scenario, cand, prepared.preference)
+        logger.debug("%s: shortlist %d of %d feasible; model %d vars (%d integer), %d constraints; backend %s",
+                     self.name, len(cand), len(feasible), model.n_vars, model.n_integer, model.n_constraints,
+                     self.backend)
         result = self._solve(model, self._time_limit, self._gap)
         if result.x is None:
+            logger.warning("%s: solver returned no plan (status %s, %.1f s): %s", self.name, result.status,
+                           result.seconds, result.message)
             return plan_from_indices(self.name, ctx, [], horizon, status=result.status, n_feasible=len(feasible),
                                      n_candidates=len(cand), solve_seconds=round(result.seconds, 2))
 
         chosen = [int(cand[k]) for k in self._extract(result, handles, horizon)]   # shortlist position -> catalogue row
         diag = self._diagnostics(result, handles, cand, len(feasible))
+        logger.debug("%s: %s in %.2f s, objective %.3f (gap %s); %s", self.name, result.status, result.seconds,
+                     diag["objective"], diag["mip_gap"], ", ".join(f"{t} {diag['cost_' + t]:.2f}" for t in COST_TERMS))
         return plan_from_indices(self.name, ctx, chosen, horizon, status=result.status, **diag)
 
     # ---------------------------------------------------------------------------------------------- model build

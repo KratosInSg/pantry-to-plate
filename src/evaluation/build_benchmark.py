@@ -20,6 +20,7 @@ from evaluation.scenarios import (BENCHMARK_VERSION, DEFAULT_BASE_SEED, DEFAULT_
                                   freeze_benchmark)
 from knowledge.recipes import get_default_catalog
 from knowledge.store import DEFAULT_DATA_DIR, get_default_store
+from logging_setup import configure_logging
 from optimizer.hard_rules import feasible_mask
 
 
@@ -29,6 +30,7 @@ def main() -> None:
     ap.add_argument("--n-per-family", type=int, default=30)
     ap.add_argument("--seed", type=int, default=DEFAULT_BASE_SEED)
     args = ap.parse_args()
+    configure_logging()
 
     catalog, store = get_default_catalog(), get_default_store()
     scenarios = build_benchmark(catalog, store, args.n_per_family, args.seed)

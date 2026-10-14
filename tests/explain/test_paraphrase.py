@@ -2,6 +2,8 @@
 facts cannot support; the paraphraser degrades to the template on any failure; safety sections never reach the model."""
 from __future__ import annotations
 
+import logging
+
 import pytest
 
 from explain.paraphrase import (GENERIC_WORDS, Paraphraser, build_paraphraser, check_paraphrase,
@@ -163,12 +165,15 @@ def test_the_prompt_contains_only_the_sections_own_facts():
     assert "Uses 300 g spinach" in stub.sent[0] and TITLE in stub.sent[0]
 
 
-def test_after_a_transport_failure_the_model_is_not_called_again():
+def test_after_a_transport_failure_the_model_is_not_called_again(caplog):
     stub = _Stub(RuntimeError("connection refused"))
     p = Paraphraser(stub, VOCAB)
-    assert p.rewrite(_section()).text is None
-    assert p.rewrite(_section()).problems == ("language model unavailable",)
+    with caplog.at_level(logging.WARNING, logger="explain.paraphrase"):
+        assert p.rewrite(_section()).text is None
+        assert p.rewrite(_section()).problems == ("language model unavailable",)
     assert stub.calls == 1
+    warnings = [r for r in caplog.records if r.levelno == logging.WARNING]
+    assert len(warnings) == 1 and "template text kept" in warnings[0].getMessage()   # one line, not one per section
 
 
 def test_safety_sections_are_never_sent_to_the_model(ctx, optimised_week):

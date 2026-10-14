@@ -71,7 +71,12 @@ Latency: 3–5 s per call on the RTX 5050 (model warm).
 
 [`tests/nlp/test_llm_fallback.py`](../tests/nlp/test_llm_fallback.md)
 
+## Logging
+
+Logger `nlp.llm_fallback`. INFO: which parser was built (rules only / rules + LLM); how many fragments were sent; how many items were replaced, added or not used. WARNING: the LLM is unreachable at start-up, the call failed, or the answer had no `items` list. In each case the rules result is kept. DEBUG: each LLM item dropped by validation or still unresolved, and each accepted replacement.
+
 ## Change log
 
 - 2026-10-12 — Created. First live run exposed the "pounds → pint" enum failure; fixed by building the unit enum per
   call and validating unit and number against the item's own fragment. Urgency taken away from the model after review.
+- 2026-10-14 — Logging: fallback outcomes at INFO, degradations at WARNING, per-item validation at DEBUG.

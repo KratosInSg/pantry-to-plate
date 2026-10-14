@@ -34,7 +34,7 @@ from explain.render import TERM_LABELS, fmt_g
 from ui import logic, theme
 
 KIND_ICON = {"ok": "✅", "assumed": "🟡", "choose": "❓", "unknown": "❌", "amount": "❓", "unsafe": "⚠️"}
-DIET_ICON = {"omnivore": "🍽️", "pescatarian": "🐟", "vegetarian": "🥕", "vegan": "🌱"}
+DIET_ICON = {"vegetarian": "🥕", "omnivore": "🍽️", "pescatarian": "🐟", "vegan": "🌱"}
 
 
 def _html(markup: str, where=None) -> None:

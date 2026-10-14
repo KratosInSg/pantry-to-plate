@@ -40,6 +40,11 @@ A rejection is a hard rule on the profile (`excluded_recipe_ids`), applied by th
 
 [`tests/optimizer/test_replan.py`](../tests/optimizer/test_replan.md)
 
+## Logging
+
+Logger `optimizer.replan`. DEBUG: one line per roll-forward: days elapsed and skipped, days left, pantry items carried, grams used and grams expired.
+
 ## Change log
 
 - 2026-10-13 — Created.
+- 2026-10-14 — Logging: DEBUG summary of each roll-forward.

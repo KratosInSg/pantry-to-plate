@@ -72,6 +72,11 @@ explanation (an unreachable server costs one timeout, not eight).
 stub, safety sections never sent, circuit breaker. The live acceptance rate above is a measurement, not a test (it
 needs a running model).
 
+## Logging
+
+Logger `explain.paraphrase`. INFO: how many sections were accepted per explanation. WARNING: the LLM is unreachable when building the paraphraser, or failed mid-explanation (logged once, as the paraphraser stops calling it). DEBUG: each rejected rewrite with its problems (the same text as `Section.note`).
+
 ## Change log
 
 - 2026-10-13 — Created. Prompt, vocabulary exclusions and zero-word handling all tuned against the real model.
+- 2026-10-14 — Logging: accepted-count INFO, LLM failure WARNING (once), rejection reasons at DEBUG.

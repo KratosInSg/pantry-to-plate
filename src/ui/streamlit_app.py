@@ -19,6 +19,7 @@ import streamlit as st  # noqa: E402
 
 from app.service import PantryToPlateService  # noqa: E402
 from llm.client import LlmClient  # noqa: E402
+from logging_setup import configure_logging  # noqa: E402
 from ui import theme, views  # noqa: E402
 
 TITLE = "Pantry to Plate"
@@ -95,4 +96,6 @@ def _plan(service: PantryToPlateService, profile_values: dict, entries: list, to
         st.session_state["toast"] = ("Your week is ready — bon appétit!", "🎉")
 
 
+# Streamlit re-runs this script on every interaction; configure_logging is idempotent (no duplicated lines).
+configure_logging()
 main()

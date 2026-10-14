@@ -29,7 +29,12 @@ week_view             ── tabs, marks, [Re-plan the remaining days] → repla
 
 [`tests/ui/test_app.py`](../tests/ui/test_app.md)
 
+## Logging
+
+Calls `logging_setup.configure_logging()` before `main()`. It is idempotent, so Streamlit re-running the script on each interaction does not duplicate lines. Logs go to the terminal running `streamlit run`. Use `PTP_LOG_LEVEL=DEBUG` for the detailed trace and `PTP_LOG_FILE=...` to keep it.
+
 ## Change log
 
 - 2026-10-13 — Created.
 - 2026-10-13 — Page shell: stylesheet, hero (replaces `st.title`), step strip, toasts after planning and re-planning.
+- 2026-10-14 — Configures logging at start-up (`logging_setup.configure_logging`).

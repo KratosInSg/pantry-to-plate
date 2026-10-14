@@ -21,12 +21,17 @@ Design notes
 """
 from __future__ import annotations
 
+import logging
 import os
 from dataclasses import dataclass
 from functools import cached_property, lru_cache
 from pathlib import Path
 
 import pandas as pd
+
+from logging_setup import timed
+
+logger = logging.getLogger(__name__)
 
 # The project root is two levels above this file: <root>/src/knowledge/store.py
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -105,7 +110,8 @@ class KnowledgeStore:
 
     # ------------------------------------------------------------------ loading
     def _read(self, relative: str) -> pd.DataFrame:
-        return pd.read_parquet(self.data_dir / relative)
+        with timed(logger, f"read {relative}"):          # each table is read once per store; the timing shows which is slow
+            return pd.read_parquet(self.data_dir / relative)
 
     @cached_property
     def _ingredients(self) -> pd.DataFrame:

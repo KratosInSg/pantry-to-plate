@@ -20,6 +20,7 @@ Ingredient quantities are *estimates* (see data/canonical/README.md). The catalo
 """
 from __future__ import annotations
 
+import logging
 import os
 import re
 from dataclasses import dataclass
@@ -30,6 +31,9 @@ import numpy as np
 import pandas as pd
 
 from knowledge.store import DATA_DIR_ENV_VAR, DEFAULT_DATA_DIR
+from logging_setup import timed
+
+logger = logging.getLogger(__name__)
 
 # Boolean per-recipe flags available through ``RecipeCatalog.flag``.
 FLAG_COLUMNS = (
@@ -76,7 +80,8 @@ class RecipeCatalog:
     # ------------------------------------------------------------------ loading
     @cached_property
     def _recipes(self) -> pd.DataFrame:
-        return pd.read_parquet(self.data_dir / "recipes" / "recipe.parquet").sort_values("recipe_id").reset_index(drop=True)
+        with timed(logger, "read recipes/recipe.parquet", logging.INFO):     # the largest one-off cost of a session
+            return pd.read_parquet(self.data_dir / "recipes" / "recipe.parquet").sort_values("recipe_id").reset_index(drop=True)
 
     @cached_property
     def n(self) -> int:
@@ -155,8 +160,9 @@ class RecipeCatalog:
     @cached_property
     def _ingredient_arrays(self) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
         """(ingredient_ids, grams, offsets): CSR-style flat arrays; recipe ``i`` owns ``[offsets[i]:offsets[i+1]]``."""
-        ri = pd.read_parquet(self.data_dir / "recipes" / "recipe_ingredient.parquet",
-                             columns=["recipe_id", "ingredient_id", "grams_per_serving"])
+        with timed(logger, "read recipes/recipe_ingredient.parquet", logging.INFO):
+            ri = pd.read_parquet(self.data_dir / "recipes" / "recipe_ingredient.parquet",
+                                 columns=["recipe_id", "ingredient_id", "grams_per_serving"])
         ri = ri.sort_values("recipe_id", kind="stable")
         # offsets by searching the sorted recipe ids of ``ri`` for each catalogue recipe id
         rid = ri.recipe_id.to_numpy()
@@ -218,8 +224,10 @@ class RecipeCatalog:
         """recipe_id -> cooking instructions, loaded on first use (they are for display only, never for planning)."""
         path = self.data_dir / "recipes" / "recipe_step.parquet"
         if not path.exists():
+            logger.warning("no %s: recipes will be shown without cooking steps", path.name)
             return {}
-        df = pd.read_parquet(path)
+        with timed(logger, "read recipes/recipe_step.parquet"):
+            df = pd.read_parquet(path)
         return {int(r): tuple(str(s) for s in steps) for r, steps in zip(df.recipe_id, df.steps)}
 
     def steps(self, idx: int) -> tuple[str, ...]:

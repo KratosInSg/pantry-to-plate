@@ -14,6 +14,7 @@ A planner is anything with a ``name`` and ``plan(scenario) -> WeekPlan``. It is 
 """
 from __future__ import annotations
 
+import logging
 from dataclasses import dataclass
 from typing import Protocol
 
@@ -24,6 +25,8 @@ from knowledge.recipes import RecipeCatalog, get_default_catalog
 from knowledge.store import KnowledgeStore, get_default_store
 from optimizer.hard_rules import feasible_mask
 from preference.scorer import PreferenceWeights, DEFAULT_WEIGHTS, score_recipes
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True)
@@ -43,6 +46,7 @@ def make_context(catalog: RecipeCatalog | None = None, store: KnowledgeStore | N
     catalog = catalog or get_default_catalog()
     tbl = store.all_ingredients()
     ignore = frozenset(int(i) for i in tbl.loc[tbl.is_assumed_available, "ingredient_id"])
+    logger.debug("planning context: %d ingredients, %d assumed-available staples", len(tbl), len(ignore))
     return PlanningContext(catalog=catalog, store=store, ignore_ids=ignore, preference_weights=preference_weights)
 
 
@@ -62,9 +66,12 @@ class Prepared:
 def prepare(scenario: Scenario, ctx: PlanningContext) -> Prepared:
     """Apply the hard rules and score preferences for this scenario's user."""
     profile: UserProfile = scenario.profile
+    feasible = feasible_mask(ctx.catalog, profile)
+    logger.debug("scenario %s: %d of %d recipes pass the hard rules", scenario.scenario_id, int(feasible.sum()),
+                 len(feasible))
     return Prepared(
         scenario=scenario,
-        feasible=feasible_mask(ctx.catalog, profile),
+        feasible=feasible,
         preference=score_recipes(ctx.catalog, profile, ignore_for_likes=ctx.ignore_ids,
                                  weights=ctx.preference_weights))
 

@@ -4,6 +4,8 @@ A scripted stub stands in for the LLM; the rules parser is the real one (so re-p
 """
 from __future__ import annotations
 
+import logging
+
 import pytest
 
 from llm.client import LlmError
@@ -144,6 +146,13 @@ def test_llm_failure_keeps_the_rules_result(rules):
     assert _with_llm(rules, stub).parse("two-ish pounds potatoes").items == baseline.items
 
 
+def test_llm_failure_is_logged_as_a_warning(rules, caplog):
+    # the degradation is silent in the UI by design, so the log is where a developer sees it happened
+    with caplog.at_level(logging.WARNING, logger="nlp.llm_fallback"):
+        _with_llm(rules, StubLlm(error=LlmError("server down"))).parse("two-ish pounds potatoes")
+    assert any(r.levelno == logging.WARNING and "keeping the rules result" in r.getMessage() for r in caplog.records)
+
+
 def test_garbage_answer_keeps_the_rules_result(rules):
     class Garbage(StubLlm):
         def complete_json(self, messages, schema):
@@ -167,11 +176,13 @@ def test_the_model_cannot_create_urgency(rules):
     assert result.items[0].urgency is Urgency.NONE
 
 
-def test_parser_with_llm_degrades_to_rules_when_the_server_is_down(rules):
+def test_parser_with_llm_degrades_to_rules_when_the_server_is_down(rules, caplog):
     down = StubLlm([_item("potatoes", 2, "pounds")], available=False)
-    parser = parser_with_llm(down, store=rules._store, resolver=rules._resolver)       # noqa: SLF001
+    with caplog.at_level(logging.WARNING, logger="nlp.llm_fallback"):
+        parser = parser_with_llm(down, store=rules._store, resolver=rules._resolver)   # noqa: SLF001
     result = parser.parse("two-ish pounds potatoes")
     assert down.calls == [] and result.items[0].match_status is MatchStatus.UNKNOWN
+    assert any("not reachable" in r.getMessage() for r in caplog.records)
 
 
 def test_parser_with_llm_attaches_the_fallback_when_available(rules):

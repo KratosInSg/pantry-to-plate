@@ -14,6 +14,7 @@ frozen; the runner prints a loud reminder when it is used.
 from __future__ import annotations
 
 import argparse
+import logging
 import sys
 import time
 from datetime import datetime
@@ -27,7 +28,10 @@ import pandas as pd
 from evaluation.metrics import HIGHER_IS_BETTER, PlanMetrics, evaluate_plan, paired_bootstrap, summarise, to_frame
 from evaluation.scenarios import DEFAULT_EVAL_DIR, load_split
 from optimizer.baselines import GreedyIngredientMatchPlanner, RandomFeasiblePlanner
+from logging_setup import configure_logging
 from optimizer.planning import Planner, PlanningContext, make_context, prepare
+
+logger = logging.getLogger(__name__)
 
 KEY_METRICS = ["waste_g", "grocery_items", "pantry_utilisation_pct", "nutrition_in_range_pct", "preference_mean",
                "weekday_overtime_rate", "violations", "complete"]
@@ -63,7 +67,7 @@ def run(split: str, planner_names: list[str], limit: int | None = None, eval_dir
             timing[p.name] += time.time() - t
             rows.append(evaluate_plan(sc, plan, ctx, prepared))
         if verbose and (k + 1) % 20 == 0:
-            print(f"  ... {k + 1}/{len(scenarios)} scenarios", flush=True)
+            logger.info("%d/%d scenarios done", k + 1, len(scenarios))
     df = to_frame(rows)
     df.attrs["seconds_per_plan"] = {n: t / max(1, len(scenarios)) for n, t in timing.items()}
     return df
@@ -133,7 +137,9 @@ def main() -> None:
     ap.add_argument("--baseline", default="greedy")
     ap.add_argument("--save", action="store_true", help="write the per-scenario results to data/evaluation/runs/")
     ap.add_argument("--eval-dir", type=Path, default=DEFAULT_EVAL_DIR, help="folder holding the frozen benchmark")
+    ap.add_argument("--log-level", default=None, help="DEBUG | INFO | WARNING (default: $PTP_LOG_LEVEL, else INFO)")
     args = ap.parse_args()
+    configure_logging(args.log_level)
     if args.split == "test":
         print("!! TEST SPLIT: run this once, after weights are frozen. Never tune on it. !!")
     df = run(args.split, args.planners.split(","), args.limit, args.eval_dir)

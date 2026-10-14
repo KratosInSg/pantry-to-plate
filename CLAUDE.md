@@ -41,6 +41,7 @@ must work (more bluntly) without it, and every LLM answer is validated against t
 | `src/app/` | `PantryToPlateService`: the one object a UI calls (pantry review, profile, plan, grocery box, re-plan) | Orchestrates and presents; decides nothing |
 | `src/ui/` | The Streamlit prototype (`streamlit run src/ui/streamlit_app.py`) | Layout and state only; every decision is the service's |
 | `src/evaluation/` | Scenario generator, simulator-backed metrics, benchmark runner | Measures plans; never produces the app's plan |
+| `src/logging_setup.py` | `configure_logging()` + `timed()`: where log lines go and how many | Only entry points call `configure_logging` |
 | `data/evaluation/` | Frozen synthetic scenarios + split (+ SHA-256 freeze file) | Frozen: regenerate only by bumping the version |
 | `tests/` | Mirrors `src/` (`tests/nlp/test_x.py` tests `src/nlp/x.py`) | Every module ships with tests |
 | `md docs/` | Project-level design docs | Update when a design decision changes |
@@ -76,12 +77,18 @@ tests/nlp/test_quantities.py ->  md docs/modules/tests/nlp/test_quantities.md
 - No silent fallbacks. If the code guesses (assumed quantity, fuzzy match, category-level shelf life) it records that it
   guessed, in the returned object, so the explainer and the evaluation can see it.
 - Keep functions small and pure where possible; I/O (reading parquet, calling an LLM) lives at the edges.
+- Logging: each module does `logger = logging.getLogger(__name__)` and never configures handlers; only entry points
+  call `logging_setup.configure_logging()`. DEBUG = detail inside a step, INFO = one line per user-visible step,
+  WARNING = a degradation (LLM fallback, no plan). Use %-style arguments (`logger.info("x %d", n)`), not f-strings.
+  Never log API keys, LLM prompts/answers, or the user's text above DEBUG. The log is for developers: anything the
+  explainer or evaluation needs still goes in the returned object. See `md docs/modules/logging_setup.md`.
 
 ## Commands
 
 ```bash
 python src/knowledge/build/run_all.py     # rebuild data/canonical from the raw downloads (~5 min)
 streamlit run src/ui/streamlit_app.py    # the prototype UI (http://localhost:8501)
+PTP_LOG_LEVEL=DEBUG streamlit run src/ui/streamlit_app.py   # same, with the step-by-step trace in the terminal
 python -m pytest                          # run all tests
 python -m pytest tests/nlp -q             # one package
 python src/evaluation/build_benchmark.py  # freeze the synthetic benchmark (refuses if already frozen)

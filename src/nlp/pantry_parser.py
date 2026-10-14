@@ -27,6 +27,7 @@ Design principles
 from __future__ import annotations
 
 import dataclasses
+import logging
 from datetime import date
 from typing import Protocol
 
@@ -37,6 +38,8 @@ from nlp.resolver import IngredientResolver, Resolution
 from nlp.schemas import GramsSource, MatchStatus, ParsedItem, ParseResult, Urgency
 from nlp.segmenter import split_items
 from nlp.urgency import UrgencyCue, find_urgency
+
+logger = logging.getLogger(__name__)
 
 # Words that tell us *how the item is kept*; used later to pick the right FoodKeeper row (freezer vs fridge ...).
 _STORAGE_FROM_MODIFIER = {
@@ -110,11 +113,19 @@ class PantryParser:
             new_items = self._parse_fragment(fragment, remainder, cue)
             if new_items:
                 items.extend(new_items)
+                for it in new_items:
+                    logger.debug("%r -> %s (%s, %s, match %.2f); %s g (%s); urgency %s", fragment,
+                                 it.canonical_name or "?", it.match_status.value, it.match_method, it.match_confidence,
+                                 it.grams, it.grams_source.value, it.urgency.value)
             else:
+                logger.debug("%r -> nothing that names a food", fragment)
                 unparsed.append(fragment)
 
         result = ParseResult(source_text=text, items=items, unparsed=unparsed)
+        logger.debug("rules parse: %d fragment(s) -> %d item(s), %d unparsed", len(fragments), len(items),
+                     len(unparsed))
         if self._llm is not None and self._needs_llm(result):
+            logger.debug("some fragments are unresolved or low-confidence: handing them to the LLM fallback")
             result = self._llm.refine(text, result)
         return result
 

@@ -79,8 +79,13 @@ nutrition); single-worker CP-SAT is much worse. **HiGHS stays the default.** Sum
 [`tests/optimizer/test_linear_model_and_backends.py`](../tests/optimizer/test_linear_model_and_backends.md) — every
 solver behaviour is parametrised over both backends; CP-SAT tests skip where OR-Tools cannot be loaded.
 
+## Logging
+
+Logger `optimizer.backends`. DEBUG: HiGHS status, time and message; CP-SAT worker start (model size, params), its result, and its full stderr when it fails. WARNING: the CP-SAT worker timed out. The worker process itself does not log (it runs isolated with `python -I`).
+
 ## Change log
 
 - 2026-10-12 — Created. Records the OR-Tools → HiGHS deviation and its reason.
 - 2026-10-13 — Added `solve_cpsat` (child process, integer scaling), `BackendUnavailableError`, `BACKENDS`. Replaced
   the "Smart App Control blocks OR-Tools" explanation with the verified pyarrow DLL clash.
+- 2026-10-14 — Logging: per-solve DEBUG lines for both backends; WARNING when the CP-SAT worker times out.

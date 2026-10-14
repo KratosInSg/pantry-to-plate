@@ -37,9 +37,14 @@ Add a method by adding a branch to `build_planner` — the planner only has to i
 
 [`tests/evaluation/test_runner.py`](../tests/evaluation/test_runner.md)
 
+## Logging
+
+`main()` calls `configure_logging(--log-level)` (default: `PTP_LOG_LEVEL`, else INFO). The progress line (every 20 scenarios) is now an INFO log record from logger `evaluation.runner`; the report tables stay `print`, since they are the program's output. `--log-level DEBUG` shows every plan's model size, solve status and cost terms.
+
 ## Change log
 
 - 2026-10-12 — Created.
 - 2026-10-12 — Added `per_family_comparison` and the per-family section of the report.
 - 2026-10-13 — `build_planner` routes any name starting `optimiser` / `opt_` to the weekly factory, so the `_cpsat`
   suffix variants work.
+- 2026-10-14 — `--log-level` flag; progress line moved from `print` to the log.

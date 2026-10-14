@@ -41,6 +41,11 @@ lookup policies live in one place.
 
 [`tests/knowledge/test_store.py`](../tests/knowledge/test_store.md)
 
+## Logging
+
+Logger `knowledge.store`. DEBUG: each Parquet table read, with its duration (`timed`). Each table is read once per store, so these lines appear once per process.
+
 ## Change log
 
 - 2026-10-12 — Created (ingredients, aliases, unit weights, units, nutrition, default shelf life).
+- 2026-10-14 — Logging: DEBUG line with the duration of each table read.

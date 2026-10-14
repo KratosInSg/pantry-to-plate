@@ -36,6 +36,11 @@ A small, synchronous, provider-neutral client. Default: `qwen3:8b` served locall
 
 [`tests/llm/test_client.py`](../tests/llm/test_client.md)
 
+## Logging
+
+Logger `llm.client`. DEBUG only: liveness probe results, each request (provider, path, model, message count, JSON or text), failure type and elapsed time, and answer length and time. Prompts, answers and the API key are never logged. Failures are DEBUG because the caller decides how serious they are (and logs a WARNING when it falls back).
+
 ## Change log
 
 - 2026-10-12 — Created.
+- 2026-10-14 — Logging: DEBUG request/answer timings; no prompt, answer or key content.

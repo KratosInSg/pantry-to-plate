@@ -64,6 +64,11 @@ exactly what the waste term chases.
 
 [`tests/app/test_service.py`](../tests/app/test_service.md) — real dataset and optimiser (small shortlist).
 
+## Logging
+
+Logger `app.service`: the INFO timeline of a session. One line each for: service ready (backend, shortlist, LLM on/off); pantry reviewed (time, rows by status, fragments not understood); planning N days from M items; plan outcome (status, dinners, grocery items, solver and total seconds); re-planning (days passed/cooked, rejections, days left); what went off meanwhile; rewording. An incomplete week is logged at WARNING. DEBUG: the raw pantry text, and a profile summary. The user's text is never at INFO (tested).
+
 ## Change log
 
 - 2026-10-13 — Created.
+- 2026-10-14 — Logging: one INFO line per step (review, plan, re-plan, reword); raw pantry text at DEBUG only.

@@ -24,11 +24,15 @@ as "no LLM": the rules-based result is kept and the feature degrades, never the 
 from __future__ import annotations
 
 import json
+import logging
 import os
+import time
 from dataclasses import dataclass, replace
 from typing import Any
 
 import httpx
+
+logger = logging.getLogger(__name__)
 
 DEFAULT_OLLAMA_URL = "http://127.0.0.1:11434"
 DEFAULT_MODEL = "qwen3:8b"
@@ -88,9 +92,12 @@ class LlmClient:
         """Cheap liveness probe (never raises). Use it to decide whether to attach the LLM at all."""
         path = "/api/version" if self.config.provider == "ollama" else "/models"
         try:
-            return self._http.get(path, timeout=timeout_s).status_code < 400
-        except httpx.HTTPError:
+            ok = self._http.get(path, timeout=timeout_s).status_code < 400
+        except httpx.HTTPError as exc:
+            logger.debug("LLM probe %s%s failed: %s", self.config.base_url, path, type(exc).__name__)
             return False
+        logger.debug("LLM probe %s%s: %s", self.config.base_url, path, "up" if ok else "error status")
+        return ok
 
     def complete_json(self, messages: list[dict[str, str]], schema: dict[str, Any]) -> dict[str, Any]:
         """Ask for a JSON object that conforms to ``schema`` and return it parsed.
@@ -142,11 +149,17 @@ class LlmClient:
             if schema is not None:
                 body["response_format"] = {"type": "json_schema",
                                            "json_schema": {"name": "answer", "schema": schema, "strict": True}}
+        # Prompts and answers are not logged: they hold the user's pantry text and can be long. Size and time are enough
+        # to see the flow; the caller logs whether the answer was used.
+        logger.debug("LLM request: %s %s, model %s, %d message(s), %s", cfg.provider, path, cfg.model, len(messages),
+                     "JSON schema" if schema is not None else "text")
+        started = time.perf_counter()
         try:
             response = self._http.post(path, json=body)
             response.raise_for_status()
             data = response.json()
         except httpx.HTTPError as exc:
+            logger.debug("LLM request failed after %.1f s: %s", time.perf_counter() - started, type(exc).__name__)
             raise LlmError(f"LLM request failed ({type(exc).__name__}): {exc}") from exc
         except ValueError as exc:                                  # body was not JSON at all
             raise LlmError("LLM server returned a non-JSON body") from exc
@@ -156,4 +169,5 @@ class LlmClient:
             raise LlmError(f"unexpected LLM response shape: {str(data)[:120]}") from exc
         if not isinstance(content, str) or not content.strip():
             raise LlmError("LLM returned an empty answer")
+        logger.debug("LLM answer: %d chars in %.1f s", len(content), time.perf_counter() - started)
         return content

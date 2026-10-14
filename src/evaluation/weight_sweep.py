@@ -41,6 +41,7 @@ import numpy as np
 import pandas as pd
 
 from evaluation.scenarios import DEFAULT_EVAL_DIR
+from logging_setup import configure_logging
 from optimizer.weekly import DEFAULT_WEIGHTS, OptimizerWeights
 
 # Candidate weights are multiples of the starting weights (``SWEEP_BASE``). 1.0 = unchanged.
@@ -339,6 +340,7 @@ def main() -> None:
                          "VARIETY_CRITERIA")
     ap.add_argument("--save", action="store_true", help="write per-scenario rows to data/evaluation/runs/")
     args = ap.parse_args()
+    configure_logging()       # this process only: the worker processes keep Python's default (WARNING and above)
 
     configs = parse_candidates(args.candidates) if args.candidates else GRID
     df = run_sweep(args.split, args.limit or None, args.workers, configs)

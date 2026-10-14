@@ -78,6 +78,10 @@ used) against `ADOPTION_CRITERIA`, which are fixed in code before the run:
 
 [`tests/evaluation/test_weight_sweep.py`](../tests/evaluation/test_weight_sweep.md)
 
+## Logging
+
+`main()` calls `configure_logging()` for the parent process. The worker processes keep Python's default (WARNING and above), so a solver that returns no plan still shows up. The tables stay `print`.
+
 ## Change log
 
 - 2026-10-13 — Created. First (and recorded) run adopted preference ×3: `OptimizerWeights.preference` 1.0 → 3.0.
@@ -85,3 +89,4 @@ used) against `ADOPTION_CRITERIA`, which are fixed in code before the run:
   `--confirm`, `--limit 0` = all validation scenarios). Tooling only: `DEFAULT_WEIGHTS` is unchanged by this entry.
 - 2026-10-13 — The first confirmation run adopted preference ×6 with nutrition ×2: `OptimizerWeights` preference 6.0,
   kcal 8.0, protein 4.0 (all criteria met on 120 validation scenarios).
+- 2026-10-14 — Configures logging at start-up (parent process only).

@@ -35,12 +35,15 @@ costs one timeout, not eight.
 """
 from __future__ import annotations
 
+import logging
 import re
 from dataclasses import dataclass, replace
 from typing import Protocol
 
 from explain.facts import WEEKDAY_NAMES
 from explain.render import Explanation, Section
+
+logger = logging.getLogger(__name__)
 
 # Section keys that may be paraphrased. ``rules`` and ``caveats`` are safety statements: never reworded.
 PARAPHRASE_KEYS = ("overview", "day:")
@@ -241,8 +244,12 @@ class Paraphraser:
             answer = self._client.complete_text(messages, self._max_tokens)
         except Exception as exc:                # noqa: BLE001 - any LLM failure means "keep the template"
             self._down = True
+            logger.warning("paraphrase: the LLM failed (%s: %s); template text kept for the rest of this explanation",
+                           type(exc).__name__, exc)
             return Paraphrase(None, (f"language model failed ({type(exc).__name__})",))
         problems = check_paraphrase(answer, section.title, facts, self._vocabulary)
+        if problems:
+            logger.debug("paraphrase of %r rejected: %s", section.key, "; ".join(problems))
         return Paraphrase(None, tuple(problems)) if problems else Paraphrase(answer.strip())
 
 
@@ -252,14 +259,18 @@ def paraphrase_explanation(explanation: Explanation, paraphraser: Paraphraser) -
     Rejected sections keep their template text and carry the reasons in ``Section.note``.
     """
     sections: list[Section] = []
+    tried = accepted = 0
     for section in explanation.sections:
         if section.statements and section.key.startswith(PARAPHRASE_KEYS):
+            tried += 1
             result = paraphraser.rewrite(section)
             if result.text is not None:
+                accepted += 1
                 section = replace(section, text=result.text, source="llm")
             else:
                 section = replace(section, note="paraphrase not used: " + "; ".join(result.problems))
         sections.append(section)
+    logger.info("paraphrase: %d of %d section(s) accepted; the rest keep their template text", accepted, tried)
     return replace(explanation, sections=tuple(sections))
 
 
@@ -269,5 +280,6 @@ def build_paraphraser(client: TextLlm | None, store) -> Paraphraser | None:
         return None
     available = getattr(client, "is_available", None)
     if callable(available) and not available():
+        logger.warning("paraphrase: the LLM is not reachable; explanations keep their template text")
         return None
     return Paraphraser(client, ingredient_vocabulary(store))

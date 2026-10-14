@@ -21,6 +21,7 @@ time limit makes either backend machine-speed dependent. Use ``workers=1`` when 
 from __future__ import annotations
 
 import json
+import logging
 import subprocess
 import sys
 import tempfile
@@ -33,6 +34,8 @@ from scipy.optimize import Bounds, LinearConstraint, milp
 
 from optimizer.cpsat_worker import SCALE as CPSAT_SCALE, WORKERS as CPSAT_WORKERS
 from optimizer.linear_model import LinearModel
+
+logger = logging.getLogger(__name__)
 
 _WORKER_SCRIPT = Path(__file__).with_name("cpsat_worker.py")
 # The solver stops itself at ``time_limit_s``; this is only a safety net for a hung child process (model build + python
@@ -72,6 +75,8 @@ def solve_highs(model: LinearModel, time_limit_s: float = 20.0, mip_rel_gap: flo
                options={"time_limit": time_limit_s, "mip_rel_gap": mip_rel_gap, "disp": False})
     seconds = time.time() - started
     gap = getattr(res, "mip_gap", None)
+    logger.debug("HiGHS: scipy status %s after %.2f s (limit %.0f s, gap target %g): %s", res.status, seconds,
+                 time_limit_s, mip_rel_gap, res.message)
     if res.x is not None and res.status == 0:
         return SolveResult("optimal", res.x, float(res.fun), seconds, gap, res.message)
     if res.x is not None:                                   # time limit with an incumbent
@@ -108,12 +113,17 @@ def solve_cpsat(model: LinearModel, time_limit_s: float = 20.0, mip_rel_gap: flo
                  integrality=integrality, lb=lb, ub=ub)
         # -I: no PYTHONPATH / user site / cwd on sys.path, so the child imports exactly NumPy + OR-Tools
         cmd = [sys.executable, "-I", str(_WORKER_SCRIPT), str(in_path), str(out_path), json.dumps(params)]
+        logger.debug("CP-SAT: starting worker process (%d vars, %d constraints, %s)", model.n_vars,
+                     model.n_constraints, params)
         try:
             proc = subprocess.run(cmd, capture_output=True, text=True, timeout=time_limit_s + _SUBPROCESS_GRACE_S)
         except subprocess.TimeoutExpired:
+            logger.warning("CP-SAT worker did not finish within %.0f s; no plan from this backend",
+                           time_limit_s + _SUBPROCESS_GRACE_S)
             return SolveResult("error", None, None, time.time() - started, None, "CP-SAT worker timed out")
         if proc.returncode != 0 or not out_path.exists():
             tail = (proc.stderr or "").strip().splitlines()[-1:] or ["no output"]
+            logger.debug("CP-SAT worker stderr (exit %s):\n%s", proc.returncode, proc.stderr)
             raise BackendUnavailableError(f"CP-SAT worker failed (exit {proc.returncode}): {tail[0]}")
         with np.load(out_path) as z:
             status, message = str(z["status"]), str(z["message"])
@@ -125,6 +135,7 @@ def solve_cpsat(model: LinearModel, time_limit_s: float = 20.0, mip_rel_gap: flo
     if status == "value_error":
         raise ValueError(message)
     seconds = time.time() - started
+    logger.debug("CP-SAT: %s after %.2f s (including process start-up): %s", status, seconds, message)
     if x is None:
         return SolveResult(status, None, None, seconds, None, message)
     return SolveResult(status, x, model.objective_value(x), seconds, None if np.isnan(gap) else gap, message)

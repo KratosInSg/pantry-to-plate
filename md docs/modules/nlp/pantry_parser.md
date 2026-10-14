@@ -65,8 +65,13 @@ Implemented by [`LlmPantryFallback`](llm_fallback.md) (local `qwen3:8b` via Olla
 [`tests/nlp/test_pantry_parser.py`](../tests/nlp/test_pantry_parser.md) — includes the proposal's demo sentence as an
 acceptance test, assumption labelling, urgency attachment, unknown items and the LLM-fallback trigger.
 
+## Logging
+
+Logger `nlp.pantry_parser`. DEBUG: one line per fragment (ingredient, match status/method/score, grams and how they were obtained, urgency), a parse summary, and when the LLM fallback is invoked. All DEBUG, because the LLM fallback re-runs this parser on its own sentences; `app.service` writes the INFO summary. The fragments are the user's words, which is a second reason to keep them at DEBUG.
+
 ## Change log
 
 - 2026-10-12 — Created. Added typo acceptance via edit distance (in the resolver) and preferred egg size.
 - 2026-10-12 — Carries `days_left_explicit` from the urgency cue onto the item (also for bare cues attached to the previous item).
 - 2026-10-12 — LLM fallback section updated: now implemented by `nlp/llm_fallback.py` (no change to this file's code).
+- 2026-10-14 — Logging: per-fragment DEBUG trace of match, grams source and urgency.

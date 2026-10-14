@@ -26,6 +26,11 @@ preparation every method reuses (hard-rule filter + preference scores + staples)
 
 [`tests/optimizer/test_planning_and_baselines.py`](../tests/optimizer/test_planning_and_baselines.md)
 
+## Logging
+
+Logger `optimizer.planning`. DEBUG: staples count when a context is built; how many recipes pass the hard rules for each scenario in `prepare`.
+
 ## Change log
 
 - 2026-10-12 — Created.
+- 2026-10-14 — Logging: DEBUG lines for context size and hard-rule pass count.

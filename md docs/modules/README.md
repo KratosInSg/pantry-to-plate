@@ -33,6 +33,12 @@ Tests · Change log**.
 | `src/ui/` | [ui/README.md](ui/README.md) | Streamlit prototype: pantry review, profile, week, shopping list, re-plan |
 | `src/llm/` | [llm/README.md](llm/README.md) | client done (Ollama native + OpenAI-compatible); decision record `md docs/llm.md` |
 
+## `src/` (top level)
+
+| Source | Doc |
+| --- | --- |
+| `logging_setup.py` | [logging_setup.md](logging_setup.md) |
+
 ## `src/knowledge/`
 
 | Source | Doc |
@@ -146,6 +152,7 @@ Tests · Change log**.
 | --- | --- |
 | `tests/conftest.py` | [tests/conftest.md](tests/conftest.md) |
 | `tests/test_docs_coverage.py` | [tests/test_docs_coverage.md](tests/test_docs_coverage.md) |
+| `tests/test_logging_setup.py` | [tests/test_logging_setup.md](tests/test_logging_setup.md) |
 | `tests/knowledge/test_ingredient_names.py` | [tests/knowledge/test_ingredient_names.md](tests/knowledge/test_ingredient_names.md) |
 | `tests/knowledge/test_store.py` | [tests/knowledge/test_store.md](tests/knowledge/test_store.md) |
 | `tests/knowledge/test_recipes.py` | [tests/knowledge/test_recipes.md](tests/knowledge/test_recipes.md) |
@@ -204,3 +211,5 @@ Tests · Change log**.
   `evaluation/weight_sweep.py` and their tests.
 - 2026-10-13 — Added `src/ui/` (Streamlit prototype: streamlit_app, views, logic) and its tests.
 - 2026-10-13 — Added `ui/theme.py` (UI redesign) and its tests.
+- 2026-10-14 — Added `src/logging_setup.py` (project-wide logging) and its tests; log calls added across the
+  runtime packages.

@@ -15,3 +15,4 @@ These are the flows the prototype needs; each asserts something a user would not
 ## Change log
 
 - 2026-10-13 — Created.
+- 2026-10-14 — Added `test_each_step_logs_one_info_line_that_names_its_outcome` (review, planning, plan outcome; no user text at INFO).
