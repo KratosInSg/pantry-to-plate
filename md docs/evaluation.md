@@ -36,7 +36,47 @@ All methods run on the same scenarios, so comparisons are paired: mean differenc
 
 > **Note (2026-10-13):** the tables below, up to "Weight sweep", were produced with the original hand-set weights
 > (preference 1.0, kcal 4.0, protein 2.0). The optimiser now defaults to preference 6.0, kcal 8.0, protein 4.0
-> (see "Weight sweep"), so re-running them gives different optimiser rows.
+> (see "Weight sweep"), so re-running them gives different optimiser rows. **The current reference is the next
+> section.**
+
+### Current reference run: adopted weights + vegetarian without eggs (2026-10-14)
+
+*Frozen benchmark v1 · **validation split only** (n = 120) · adopted weights (preference 6.0, kcal 8.0, protein 4.0) ·
+vegetarian = no meat, fish **or eggs** (rule changed 2026-10-14, dataset rebuilt) · `python src/evaluation/runner.py
+--split validation --planners random,greedy,optimiser --baseline greedy --save` → `data/evaluation/runs/
+20261014_153425_validation.csv`. The test split has still not been run.*
+
+| Method | Waste (g) | Extra grocery items | Pantry utilisation % | Dinners in kcal band % | Preference (0–1) | Weekday overtime | Violations | s / plan |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Random | 854 | 44.1 | 7.2 | 13.8 | 0.54 | 0.42 | 0 | 0.02 |
+| Greedy | 763 | 23.7 | **26.3** | 3.6 | 0.52 | 0.31 | 0 | 0.14 |
+| **Optimiser** | **722** | **15.6** | 17.6 | **71.6** | **0.61** | **0.13** | 0 | 5.8 |
+
+Optimiser − greedy, 95 % bootstrap CI (n = 120): waste **−41 g** [−65, −18] · groceries **−8.1 items** [−9.7, −6.6] ·
+utilisation −8.8 pts [−11.1, −6.4] (worse) · kcal-in-band **+68 pts** [+64, +72] · preference **+0.09** [+0.08, +0.11].
+Every week complete, zero violations. Per family, waste is clearly lower in `expiry_heavy`, `sparse_pantry` and
+`well_stocked`, indistinguishable in three families, and **higher than greedy in `restrictive_diet` (+48 g [+4, +95])
+and `infeasible_combo` (+39 g [+10, +76])**. With few allowed recipes, the weights favour nutrition and fewer
+groceries over using up stock.
+
+**What the vegetarian rule changed** (optimiser, same weights; before = the `pref x6, nutrition x2` rows of the
+2026-10-13 confirmation run; paired by scenario):
+
+| Group | Waste (g) | Grocery items | kcal-in-band (pts) | Protein ok (pts) |
+| --- | --- | --- | --- | --- |
+| Vegetarian scenarios (n = 30) | +4.8 [−5.4, +15.6] | −0.67 [−1.30, −0.17] | −1.9 [−6.2, +1.9] | 0.0 [−3.8, +4.8] |
+| Control: all other diets (n = 90) | −1.3 [−8.9, +4.7] | +0.12 [−0.03, +0.31] | +1.75 [+0.32, +3.65] | +0.5 [−0.6, +1.8] |
+
+* **The effect is small.** The vegetarian pool shrank by about a fifth (8,898 → 6,990 recipes) but is still large.
+  Only 5 of the 30 vegetarian scenarios had eggs in the pantry (21 g on average), so little stock became unusable.
+  Waste, calorie fit and protein are unchanged within the CIs. The one CI that excludes zero, −0.7 grocery items, is
+  small and is not explained here.
+* **The control moved slightly** (+1.75 in-band pts), although nothing changed for those users. The optimiser stops
+  at an 8 s wall-clock limit, so a busier or quieter machine finds slightly different plans. Treat differences of this
+  size as run-to-run noise. Greedy, which is deterministic, is identical on every control scenario that both runs share
+  (36 of 36), confirming the dataset rebuild changed nothing except the vegetarian flag.
+* Not re-run under the new rule: ablations, solver comparison and the weight sweeps below. The rule only touches 25 %
+  of scenarios and moved none of the headline measures, so their conclusions are not expected to change.
 
 *Frozen benchmark v1 · **validation split only** (120 scenarios, 15 per family) · default optimiser weights, **not
 tuned** · run on 2026-10-12 with `python src/evaluation/runner.py --split validation --planners
@@ -204,13 +244,15 @@ per-main-ingredient cap, or charging repeated main ingredients) is open work. Th
 
 ### How to read this
 
-* **Supported:** planning the week jointly needs ~45 % fewer extra grocery items than greedy, puts 57 % of dinners
-  inside the calorie band (greedy: 4 %), cuts weekday over-time dinners from 30 % to 11 %, with **zero hard-rule
-  violations** — in every family.
-* **Modest, not uniform:** waste falls ~7 % on average. It is clearly lower in 4 families, indistinguishable in 3, and
-  **higher in `infeasible_combo`** (+30 g): when the feasible pool is tiny the default weights spend the plan on
-  groceries and nutrition rather than on using up stock.
-* **Worse on utilisation:** the optimiser cooks with *less* of the pantry overall (17.7 % vs 26.4 %) because it prefers
+*(Numbers from the current reference run, 2026-10-14.)*
+
+* **Supported:** planning the week jointly needs ~34 % fewer extra grocery items than greedy (15.6 vs 23.7), puts 72 %
+  of dinners inside the calorie band (greedy: 4 %), cuts weekday over-time dinners from 31 % to 13 %, with **zero
+  hard-rule violations**, in every family.
+* **Modest, not uniform:** waste falls ~5 % on average (722 vs 763 g). It is clearly lower in 3 families,
+  indistinguishable in 3, and **higher in `restrictive_diet` and `infeasible_combo`** (+48 g, +39 g): when the
+  feasible pool is small the weights spend the plan on groceries and nutrition rather than on using up stock.
+* **Worse on utilisation:** the optimiser cooks with *less* of the pantry overall (17.6 % vs 26.3 %) because it prefers
   recipes that need few new items; it is not using up more of what expires. Read it with waste and groceries, not alone.
 * **Absolute waste is high for every method** (~700–850 g): a week of dinners cannot absorb a whole pantry. Compare
   methods, not the number.
