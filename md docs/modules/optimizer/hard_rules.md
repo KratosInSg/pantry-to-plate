@@ -10,7 +10,7 @@ evaluation ("must be zero"), so the logic is small, explicit and explainable.
 
 | Rule name | Passes when |
 | --- | --- |
-| `diet:<d>` | omnivore: always · pescatarian: no meat, no poultry · vegetarian: `is_vegetarian` · vegan: `is_vegan` |
+| `diet:<d>` | omnivore: always · pescatarian: no meat, no poultry · vegetarian: `is_vegetarian` (no meat, poultry, fish, shellfish, gelatin or **egg**; dairy fine) · vegan: `is_vegan` |
 | `allergen:<name>` | `contains_<name>` is False, for every allergen in the profile |
 | `pork` | `avoid_pork` off, or no pork product |
 | `alcohol` | `avoid_alcohol` off, or no alcohol |
@@ -55,3 +55,4 @@ would be the kind of rationalisation the project forbids. The heuristic is delib
 
 - 2026-10-12 — Created.
 - 2026-10-13 — Added `excluded_recipe` (rejected dinners, for re-planning) and the opt-in `not_dinner` rule.
+- 2026-10-14 — Vegetarian now excludes eggs (through the rebuilt `is_vegetarian` flag; no code change to the rule itself).

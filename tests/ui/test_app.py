@@ -54,7 +54,7 @@ def test_the_profile_form_offers_every_diet_allergen_and_cuisine():
     assert {"Peanut", "Tree Nut", "Gluten", "Shellfish"} <= set(at.sidebar.multiselect(key="allergens").options)
     cuisines = at.sidebar.multiselect(key="liked_cuisines").options
     assert "Italian" in cuisines and len(cuisines) > 20
-    assert at.sidebar.selectbox(key="diet").value == "omnivore"           # ...while the value stays the raw one
+    assert at.sidebar.selectbox(key="diet").value == "vegetarian"         # the default; the value stays the raw one
 
 
 # ---------------------------------------------------------------------------------------------------- the pantry

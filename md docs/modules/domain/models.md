@@ -16,7 +16,7 @@ UI / benchmark generator ───────────▶ UserProfile ──
 
 | Name | What |
 | --- | --- |
-| `Diet` | `omnivore`, `pescatarian`, `vegetarian`, `vegan` — each a hard rule |
+| `Diet` | `omnivore`, `pescatarian`, `vegetarian` (no meat, fish or eggs; dairy fine), `vegan` — each a hard rule |
 | `ALLERGENS` | The nine allergen names; each maps to a `contains_<name>` flag on ingredients and recipes |
 | `UserProfile` | Hard constraints (diet, allergens, pork, alcohol, excluded ingredients, **excluded recipes** (rejected dinners), optional time cap, **`dinner_only`**), soft preferences (likes/dislikes, cuisines, weekday time limit) and nutrition targets |
 | `PantryItem` | `ingredient_id`, `grams`, `last_use_day`, `expiry_known`, `expiry_confidence`, `urgency`, `quantity_assumed` |
@@ -49,3 +49,4 @@ UI / benchmark generator ───────────▶ UserProfile ──
 - 2026-10-13 — `UserProfile.excluded_recipe_ids` (a rejected dinner) and `dinner_only` (opt-in, default off so the
   frozen benchmark is unchanged); `PantryItem.quantity_assumed`. All additions have defaults, so stored scenarios
   still load.
+- 2026-10-14 — `Diet.VEGETARIAN` documented as no meat, fish or eggs.

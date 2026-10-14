@@ -15,8 +15,11 @@ layer behind the hard-constraint filter: a recipe is vegetarian only if *every* 
 ## Flags
 
 `contains_dairy · egg · gluten · peanut · tree_nut · soy · sesame · fish · shellfish · meat · poultry · pork ·
-alcohol · honey · gelatin`, plus derived `is_vegetarian` (no meat/poultry/fish/shellfish/gelatin) and `is_vegan`
-(vegetarian and no dairy/egg/honey).
+alcohol · honey · gelatin`, plus derived `is_vegetarian` (no meat/poultry/fish/shellfish/gelatin **and no egg**) and
+`is_vegan` (vegetarian and no dairy/honey).
+
+**Project definition of vegetarian:** no meat, no fish, no eggs; dairy is fine (lacto-vegetarian, as Indian
+cooking uses the word). This differs from the Western lacto-ovo convention on purpose.
 
 ## Design
 
@@ -43,3 +46,4 @@ heredoc becomes a literal backspace byte (it happened once here; fixed).
 
 - 2026-10-12 — Created (docs backfilled). Added parenthetical stripping, turkey-bacon / hot-dog-bun / steak-sauce /
   goat-cheese / oyster-mushroom guards, vegetarian guard.
+- 2026-10-14 — `is_vegetarian` now also excludes egg (project definition: no meat, fish or eggs; dairy fine). Dataset rebuilt.

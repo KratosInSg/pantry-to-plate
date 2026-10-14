@@ -20,3 +20,4 @@ quality numbers can never go stale.
 ## Change log
 
 - 2026-10-12 — Created (docs backfilled). Added `grams_basis`, `kcal_share`, interaction keys.
+- 2026-10-14 — `is_vegetarian` description now lists egg.

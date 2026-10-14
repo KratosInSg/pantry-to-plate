@@ -1,6 +1,6 @@
 # Pantry-to-Plate - canonical dataset
 
-*Built 2026-10-12 by `src/knowledge/build/run_all.py`. Everything the application uses lives here; raw downloads under `data/` are inputs only and can be ignored or deleted after a build.*
+*Built 2026-10-14 by `src/knowledge/build/run_all.py`. Everything the application uses lives here; raw downloads under `data/` are inputs only and can be ignored or deleted after a build.*
 
 ## At a glance
 
@@ -51,7 +51,7 @@ One row per dinner-eligible Food.com recipe that passed every quality gate. Per-
 | `n_ingredients` | int32 | number of food ingredients after canonicalisation (equipment such as skewers removed) |
 | `cuisine` | string | primary cuisine tag, most specific first (null when untagged) |
 | `tags` | list<string> | curated subset of Food.com tags |
-| `is_vegetarian` | bool | derived from ingredients (not the Food.com tag); no meat/poultry/fish/shellfish/gelatin |
+| `is_vegetarian` | bool | derived from ingredients (not the Food.com tag); no meat/poultry/fish/shellfish/gelatin/egg |
 | `is_vegan` | bool | vegetarian and no dairy/egg/honey |
 | `contains_dairy` | bool | any ingredient flagged dairy |
 | `contains_egg` | bool | any ingredient flagged egg |
@@ -186,7 +186,7 @@ The canonical ingredient master: USDA match, food group, allergen/diet flags, fr
 | `contains_alcohol` | bool | wine/beer/spirits/liqueur |
 | `contains_honey` | bool | honey |
 | `contains_gelatin` | bool | gelatin / marshmallow |
-| `is_vegetarian` | bool | derived from ingredients (not the Food.com tag); no meat/poultry/fish/shellfish/gelatin |
+| `is_vegetarian` | bool | derived from ingredients (not the Food.com tag); no meat/poultry/fish/shellfish/gelatin/egg |
 | `is_vegan` | bool | vegetarian and no dairy/egg/honey |
 | `n_recipes_pool` | int32 | recipes in this dataset using it |
 
@@ -431,7 +431,7 @@ Published planning ranges (FDA DV, Dietary Guidelines AMDR) with sources.  Key: 
 
 ### Pool composition
 
-Vegetarian 8,898 | vegan 2,654 | pescatarian-compatible 14,584 | gluten-free 23,177 | dairy-free 22,112 | nut-free 51,139. Cooking time p10/p50/p90 = 20/45/155 min; kcal per serving p10/p50/p90 = 189/391/740.
+Vegetarian 6,990 | vegan 2,654 | pescatarian-compatible 14,584 | gluten-free 23,177 | dairy-free 22,112 | nut-free 51,139. Cooking time p10/p50/p90 = 20/45/155 min; kcal per serving p10/p50/p90 = 189/391/740.
 
 ## Rebuild
 

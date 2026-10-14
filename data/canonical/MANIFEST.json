@@ -1,6 +1,6 @@
 {
   "dataset": "pantry-to-plate canonical dataset",
-  "built_on": "2026-10-12",
+  "built_on": "2026-10-14",
   "files": [
     {
       "path": "_meta/grams_estimation_report.json",
@@ -15,7 +15,7 @@
     {
       "path": "_meta/quality_gates.json",
       "bytes": 2296,
-      "sha256": "7f0d301177bc0e63f834156e363e68a5781955a2265dcbb2e941b836c63705ac"
+      "sha256": "e07131f8d2291e5d0e1802c04819ada3a1777da739046ee494f8b74b84e69c98"
     },
     {
       "path": "_meta/recipe_funnel.csv",
@@ -57,8 +57,8 @@
     },
     {
       "path": "ingredients/ingredient.parquet",
-      "bytes": 122154,
-      "sha256": "eb11846b570339e04f8ba742511955faa43f86740986fe03d23d4be33bb2da0a",
+      "bytes": 122169,
+      "sha256": "9de0fb8e1e01ecdb7107e98f72033248f90a1ce843a01d71152e9852f8075d3c",
       "rows": 3314,
       "columns": [
         "ingredient_id",
@@ -236,8 +236,8 @@
     },
     {
       "path": "recipes/recipe.parquet",
-      "bytes": 4563420,
-      "sha256": "79f2131e435d901c59650923f0b1215ef3dd1f7f1ec00927da92ba1ee28f4a01",
+      "bytes": 4562942,
+      "sha256": "5be29708ce4c7ca1897b2f0461af4aaf3c8b74f80ee6e74e9eebd51c2ae78f47",
       "rows": 54179,
       "columns": [
         "recipe_id",

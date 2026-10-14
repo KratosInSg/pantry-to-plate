@@ -44,3 +44,4 @@ Through [`tests/ui/test_app.py`](../tests/ui/test_app.md).
 
 - 2026-10-13 — Created.
 - 2026-10-13 — Redesign: card containers with keys (styled by `theme.py`), chips on each dinner, reasons/ingredients/steps behind expanders, grouped sidebar, shopping list in grouped cards, empty states.
+- 2026-10-14 — Diet selector defaults to vegetarian (`DEFAULT_DIET`) and has a help tooltip defining each diet (`DIET_HELP`), since vegetarian here excludes eggs.

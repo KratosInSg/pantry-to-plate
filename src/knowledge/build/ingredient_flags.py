@@ -228,6 +228,9 @@ def classify(name: str, usda_desc: str | None = None, usda_category: str | None 
     if re.search(r"\bbouillon\b|\bbroth\b|\bstock\b", n) and not re.search(r"\bvegetable|\bveggie|\bmushroom\b", n):
         meat = meat or poultry or "beef" in n
     non_veg = meat or poultry or fish or shellfish or gelatin
+    # Project definition (2026-10-14): vegetarian = no meat, no fish, no eggs; dairy is fine (lacto-vegetarian, as
+    # Indian cooking means it). So an egg is not vegetarian here, unlike the Western lacto-ovo convention.
+    vegetarian = not (non_veg or egg)
     return {
         "food_group": group,
         "contains_dairy": bool(dairy), "contains_egg": bool(egg), "contains_gluten": bool(gluten),
@@ -235,6 +238,6 @@ def classify(name: str, usda_desc: str | None = None, usda_category: str | None 
         "contains_sesame": bool(sesame), "contains_fish": bool(fish), "contains_shellfish": bool(shellfish),
         "contains_meat": bool(meat), "contains_poultry": bool(poultry), "contains_pork": bool(pork),
         "contains_alcohol": bool(alcohol), "contains_honey": bool(honey), "contains_gelatin": bool(gelatin),
-        "is_vegetarian": not non_veg,
-        "is_vegan": (not non_veg) and not (dairy or egg or honey),
+        "is_vegetarian": vegetarian,
+        "is_vegan": vegetarian and not (dairy or honey),
     }

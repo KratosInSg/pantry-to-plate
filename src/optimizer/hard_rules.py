@@ -12,8 +12,8 @@ Rules (a recipe must pass ALL)
 =================  ==========================================================================================
 rule               passes when
 =================  ==========================================================================================
-diet               omnivore: always; pescatarian: no meat and no poultry; vegetarian: ``is_vegetarian``;
-                   vegan: ``is_vegan``
+diet               omnivore: always; pescatarian: no meat and no poultry; vegetarian: ``is_vegetarian`` (no meat,
+                   poultry, fish, shellfish, gelatin **or eggs**; dairy is fine); vegan: ``is_vegan``
 allergen:<name>    the recipe's ``contains_<name>`` flag is False, for every allergen in the profile
 pork               ``avoid_pork`` is off, or the recipe has no pork product
 alcohol            ``avoid_alcohol`` is off, or the recipe has no alcohol
@@ -49,7 +49,7 @@ class Rule:
     """One named hard rule and a human-readable reason a recipe breaks it."""
 
     name: str          # e.g. "diet:vegetarian", "allergen:peanut", "excluded"
-    reason: str        # e.g. "contains meat or fish, which a vegetarian diet excludes"
+    reason: str        # e.g. "contains meat, fish or egg, which a vegetarian diet excludes"
 
 
 def _diet_violation_mask(catalog: RecipeCatalog, diet: Diet) -> np.ndarray | None:

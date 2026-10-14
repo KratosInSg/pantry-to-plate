@@ -70,7 +70,7 @@
     "low": 4.7
   },
   "pool_diet": {
-    "vegetarian": 8898,
+    "vegetarian": 6990,
     "vegan": 2654,
     "gluten_free": 23177,
     "dairy_free": 22112,
@@ -93,5 +93,5 @@
     "test": 3217
   },
   "interaction_users_train": 20350,
-  "built_on": "2026-10-12"
+  "built_on": "2026-10-14"
 }

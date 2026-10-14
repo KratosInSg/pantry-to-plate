@@ -50,7 +50,7 @@ COL_DOC = {
     "minutes_total": "total time in minutes (valid 5-1440)", "n_steps": "number of instruction steps",
     "n_ingredients": "number of food ingredients after canonicalisation (equipment such as skewers removed)",
     "cuisine": "primary cuisine tag, most specific first (null when untagged)", "tags": "curated subset of Food.com tags",
-    "is_vegetarian": "derived from ingredients (not the Food.com tag); no meat/poultry/fish/shellfish/gelatin",
+    "is_vegetarian": "derived from ingredients (not the Food.com tag); no meat/poultry/fish/shellfish/gelatin/egg",
     "is_vegan": "vegetarian and no dairy/egg/honey", "contains_dairy": "any ingredient flagged dairy",
     "contains_egg": "any ingredient flagged egg", "contains_gluten": "any ingredient flagged gluten (wheat, barley, rye ...)",
     "contains_peanut": "peanut", "contains_tree_nut": "tree nut (coconut excluded)", "contains_soy": "soy",

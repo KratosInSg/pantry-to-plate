@@ -28,6 +28,13 @@ def test_vegetarian_is_a_superset_of_vegan(catalog):
     assert np.all(veg[vegan]) and veg.sum() > vegan.sum()
 
 
+def test_vegetarian_recipes_have_no_meat_fish_or_egg(catalog):
+    ok = feasible_mask(catalog, UserProfile(diet=Diet.VEGETARIAN))
+    for flag in ("contains_meat", "contains_poultry", "contains_fish", "contains_shellfish", "contains_egg"):
+        assert not np.any(ok & catalog.flag(flag)), flag
+    assert np.any(ok & catalog.flag("contains_dairy"))               # dairy stays allowed
+
+
 def test_pescatarian_has_no_meat_or_poultry(catalog):
     ok = feasible_mask(catalog, UserProfile(diet=Diet.PESCATARIAN))
     assert not np.any(ok & (catalog.flag("contains_meat") | catalog.flag("contains_poultry")))

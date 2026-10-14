@@ -35,6 +35,11 @@ from ui import logic, theme
 
 KIND_ICON = {"ok": "✅", "assumed": "🟡", "choose": "❓", "unknown": "❌", "amount": "❓", "unsafe": "⚠️"}
 DIET_ICON = {"vegetarian": "🥕", "omnivore": "🍽️", "pescatarian": "🐟", "vegan": "🌱"}
+# The diet a new visitor starts with: the project's main audience is vegetarian (decided 2026-10-14).
+DEFAULT_DIET = Diet.VEGETARIAN
+# Shown next to the selector, because "vegetarian" here excludes eggs, unlike the common Western usage.
+DIET_HELP = ("Vegetarian: no meat, fish or eggs (dairy is fine). Vegan: no animal products at all. "
+             "Pescatarian: fish but no meat.")
 
 
 def _html(markup: str, where=None) -> None:
@@ -51,7 +56,8 @@ def sidebar_profile(service: PantryToPlateService) -> tuple[dict, bool]:
     sb.caption("Tell us once; every plan respects it.")
 
     with sb.expander("🥗  Diet & allergies", expanded=True):
-        diet = st.selectbox("Diet", [d.value for d in Diet], key="diet",
+        diets = [d.value for d in Diet]
+        diet = st.selectbox("Diet", diets, index=diets.index(DEFAULT_DIET.value), key="diet", help=DIET_HELP,
                             format_func=lambda d: f"{DIET_ICON.get(d, '')} {d.title()}".strip())
         allergens = st.multiselect("Allergies — never planned", list(ALLERGENS), key="allergens",
                                    format_func=lambda a: a.replace("_", " ").title())

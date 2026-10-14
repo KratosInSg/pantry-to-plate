@@ -25,6 +25,19 @@ def test_ingredient_lookup_and_flags(store):
     assert not chicken.is_vegetarian
 
 
+@pytest.mark.parametrize("name", ["egg", "mayonnaise", "egg noodle", "salmon", "shrimp", "chicken breast"])
+def test_vegetarian_means_no_meat_no_fish_no_eggs(store, name):
+    # project definition (CLAUDE.md): eggs are NOT vegetarian; dairy is
+    info = store.ingredient_by_name(name)
+    assert info is not None and not info.is_vegetarian and not info.is_vegan
+
+
+@pytest.mark.parametrize("name", ["milk", "paneer cheese", "butter", "eggplant", "spinach"])
+def test_dairy_and_plants_are_vegetarian(store, name):
+    info = store.ingredient_by_name(name)
+    assert info is not None and info.is_vegetarian                   # "eggplant" is not an egg
+
+
 def test_unknown_ingredient_returns_none(store):
     assert store.ingredient(-1) is None
     assert store.ingredient_by_name("zzz not a food") is None

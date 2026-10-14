@@ -7,6 +7,8 @@ Design background lives in `md docs/` (architecture, systemflow, data, evaluatio
 
 - The LLM only parses input and writes explanations. It never decides what goes in the plan — rules and the optimiser do.
 - Nutrition is always computed from grams × USDA per-100g values. Never estimate it.
+- **Vegetarian means no meat, no fish, no eggs** (dairy is fine). Not the Western lacto-ovo convention. It is enforced
+  through the dataset's `is_vegetarian` flag (`src/knowledge/build/ingredient_flags.py`). The UI defaults to it.
 - Known use-by dates are hard constraints; FoodKeeper ranges are soft, weighted by confidence.
 - Validation and test scenario splits are frozen before tuning weights. Never tune on the test set.
 - Explanations must trace back to an actual solver cost term or fired rule — never a rationalisation.

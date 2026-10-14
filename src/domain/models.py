@@ -38,7 +38,7 @@ class Diet(str, Enum):
 
     OMNIVORE = "omnivore"
     PESCATARIAN = "pescatarian"   # fish and shellfish are fine; no meat or poultry
-    VEGETARIAN = "vegetarian"     # eggs and dairy are fine
+    VEGETARIAN = "vegetarian"     # no meat, poultry, fish or eggs; dairy is fine (project definition, not lacto-ovo)
     VEGAN = "vegan"
 
 

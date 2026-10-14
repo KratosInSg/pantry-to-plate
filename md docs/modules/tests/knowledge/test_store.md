@@ -6,6 +6,8 @@ Tests [`knowledge/store.py`](../../knowledge/store.md) against the real `data/ca
 | --- | --- |
 | `test_missing_dataset_dir_raises` | clear `FileNotFoundError` instead of a Parquet error |
 | `test_ingredient_lookup_and_flags` | group, allergens, vegetarian/vegan flags |
+| `test_vegetarian_means_no_meat_no_fish_no_eggs` | egg, mayonnaise, egg noodle, salmon, shrimp, chicken are not vegetarian |
+| `test_dairy_and_plants_are_vegetarian` | milk, paneer, butter, eggplant, spinach are |
 | `test_unknown_ingredient_returns_none` | "not found" is `None`, never an exception |
 | `test_assumed_available_staples` | salt is assumed in every kitchen, chicken is not |
 | `test_alias_lookup_is_exact_and_lowercase` | the store does not guess; callers normalise |
@@ -20,3 +22,4 @@ Tests [`knowledge/store.py`](../../knowledge/store.md) against the real `data/ca
 ## Change log
 
 - 2026-10-12 — Created.
+- 2026-10-14 — Added the two vegetarian-definition tests.

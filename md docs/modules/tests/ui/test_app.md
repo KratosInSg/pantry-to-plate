@@ -28,3 +28,4 @@ widget's state after it was created). Unit tests of the logic could not have fou
 
 - 2026-10-13 — Created.
 - 2026-10-13 — Updated for the redesign (hero instead of `st.title`, emoji tab labels, reasons in expanders, chips).
+- 2026-10-14 — The profile-form test expects the vegetarian default.
