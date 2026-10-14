@@ -21,6 +21,25 @@ from app.models import (ENTRY_ASSUMED, ENTRY_CHOOSE, ENTRY_NO_AMOUNT, ENTRY_OK, 
                         PantryEntry)
 from explain.facts import WEEKDAY_NAMES
 
+# ---------------------------------------------------------------------------------------------------- markdown safety
+# Every ASCII punctuation character that Markdown, or Streamlit's own extensions (":gray[...]" colour directives,
+# ":material/icon:", "$" LaTeX), can give a meaning to. CommonMark renders a backslash-escaped punctuation character
+# literally, so escaping all of them is safe even where it is not strictly needed.
+_MD_SPECIAL = re.compile(r"""([\\`*_{}\[\]()#+\-.!|<>~:$&"'=^])""")
+
+
+def md_escape(text: str) -> str:
+    """``text`` made inert for ``st.markdown`` / ``st.warning`` etc.: shown exactly as typed, never as a link, image,
+    emphasis or colour directive.
+
+    Use it on anything a user typed, and on dataset text, before putting it inside a Markdown string (security review
+    2026-10-14: "![x](https://attacker.example/p.png)" typed into the pantry box loaded an outside image). HTML needs no
+    escaping here: Streamlit strips raw HTML from Markdown unless ``unsafe_allow_html`` is set, and the HTML-building
+    helpers in ``ui.theme`` use ``html.escape``. Newlines become spaces, so text cannot start a new Markdown block.
+    """
+    return _MD_SPECIAL.sub(r"\\\1", " ".join(text.split()))
+
+
 # ---------------------------------------------------------------------------------------------------- day marks
 DAY_PLANNED = "Planned"
 DAY_COOKED = "Cooked"

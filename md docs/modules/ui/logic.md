@@ -33,6 +33,11 @@ The decisions behind the UI that are worth testing, kept free of Streamlit so th
 
 [`tests/ui/test_logic.py`](../tests/ui/test_logic.md)
 
+## Markdown safety
+
+`md_escape(text)` backslash-escapes every punctuation character that Markdown or Streamlit's extensions (`:color[...]`, `:material/...:`, `$` LaTeX) could act on, and folds newlines to spaces. Use it on any user- or dataset-derived string placed inside `st.markdown` / `st.warning` / `st.error`. HTML needs no escaping there (Streamlit strips it); the HTML helpers in `ui.theme` use `html.escape`.
+
 ## Change log
 
 - 2026-10-13 — Created.
+- 2026-10-14 — Added `md_escape` (security review: typed links and images were rendered).

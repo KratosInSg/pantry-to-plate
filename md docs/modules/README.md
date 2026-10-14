@@ -193,7 +193,8 @@ Tests · Change log**.
 | --- | --- | --- |
 | `CLAUDE.md` | The rulebook: non-negotiables, folder rules, code + documentation conventions | a convention changes |
 | `pytest.ini` | Puts `src/` on the import path and sets `tests/` as the test root | the layout changes |
-| `requirements.txt` | Python dependencies (data build, runtime, optimiser) | a dependency is added/removed |
+| `requirements.txt` | Python dependencies (data build, runtime, optimiser), plus security minimums for transitive ones | a dependency is added/removed, or an audit flags one |
+| `.streamlit/config.toml` | Streamlit theme, and production safety (no tracebacks to visitors) | the look or deployment settings change |
 | `.gitignore` | Ignores raw downloads, caches, editor files. `data/canonical/` and `data/evaluation/` are tracked on purpose | a new large/generated folder appears |
 | `data/evaluation/` | The frozen benchmark (`scenarios_v1.jsonl`, `split_v1.json`, `FROZEN.json`) | never edited by hand; new version = new files |
 
@@ -213,3 +214,4 @@ Tests · Change log**.
 - 2026-10-13 — Added `ui/theme.py` (UI redesign) and its tests.
 - 2026-10-14 — Added `src/logging_setup.py` (project-wide logging) and its tests; log calls added across the
   runtime packages.
+- 2026-10-14 — Security review (`md docs/security.md`): input limits, Markdown escaping, Streamlit config, dependency floors.

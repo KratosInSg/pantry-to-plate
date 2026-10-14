@@ -38,3 +38,4 @@ Calls `logging_setup.configure_logging()` before `main()`. It is idempotent, so 
 - 2026-10-13 — Created.
 - 2026-10-13 — Page shell: stylesheet, hero (replaces `st.title`), step strip, toasts after planning and re-planning.
 - 2026-10-14 — Configures logging at start-up (`logging_setup.configure_logging`).
+- 2026-10-14 — Profile notes and validation errors are escaped with `logic.md_escape` (they quote what the user typed). `.streamlit/config.toml` now hides tracebacks (`showErrorDetails = "none"`) and developer menu items.

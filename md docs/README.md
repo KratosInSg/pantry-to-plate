@@ -21,6 +21,7 @@ MVP scope: one user, one week, mainly dinners.
 | [CLAUDE.md](../CLAUDE.md) | Non-negotiables, folder rules and code/documentation conventions (repo root) |
 | [modules/README.md](modules/README.md) | **One doc per source and test file**, mirroring `src/` and `tests/` |
 | [llm.md](llm.md) | LLM runtime decision: local Ollama + `qwen3:8b`, benchmark, schema rules |
+| [security.md](security.md) | Security review (attack surface, findings, fixes) and the **deployment checklist** |
 
 The week-by-week build plan (with the subagent/skill setup) lives in the [implementation roadmap](https://claude.ai/code/artifact/076c7456-5243-4511-ac52-b8f4a7cca012).
 

@@ -27,7 +27,7 @@ import pandas as pd
 import streamlit as st
 
 from app.models import ENTRY_ASSUMED, ENTRY_NO_AMOUNT, ENTRY_UNSAFE, DayPlan, PantryEntry, PlannedWeek
-from app.service import PantryToPlateService
+from app.service import MAX_PANTRY_CHARS, MAX_QUERY_CHARS, PantryToPlateService
 from domain.models import ALLERGENS, HORIZON_DAYS, Diet
 from explain.facts import KCAL_IN_RANGE
 from explain.render import TERM_LABELS, fmt_g
@@ -35,6 +35,9 @@ from ui import logic, theme
 
 KIND_ICON = {"ok": "✅", "assumed": "🟡", "choose": "❓", "unknown": "❌", "amount": "❓", "unsafe": "⚠️"}
 DIET_ICON = {"vegetarian": "🥕", "omnivore": "🍽️", "pescatarian": "🐟", "vegan": "🌱"}
+# Per food field in the profile form. Three fields of this length stay under the service's MAX_FOOD_NAMES in
+# ordinary use; a longer list gets the service's clear error, not a slow page.
+MAX_FOOD_FIELD_CHARS = 300
 # The diet a new visitor starts with: the project's main audience is vegetarian (decided 2026-10-14).
 DEFAULT_DIET = Diet.VEGETARIAN
 # Shown next to the selector, because "vegetarian" here excludes eggs, unlike the common Western usage.
@@ -69,9 +72,10 @@ def sidebar_profile(service: PantryToPlateService) -> tuple[dict, bool]:
         cuisines = service.cuisines()
         liked = st.multiselect("Cuisines I love", cuisines, key="liked_cuisines", format_func=_pretty)
         disliked = st.multiselect("Cuisines I'd skip", cuisines, key="disliked_cuisines", format_func=_pretty)
-        liked_foods = st.text_input("Foods I like", key="liked_foods", placeholder="basil, mushrooms")
-        disliked_foods = st.text_input("Foods I dislike", key="disliked_foods", placeholder="cilantro")
-        never_foods = st.text_input("Never serve me", key="never_foods", placeholder="liver")
+        limit = MAX_FOOD_FIELD_CHARS
+        liked_foods = st.text_input("Foods I like", key="liked_foods", max_chars=limit, placeholder="basil, mushrooms")
+        disliked_foods = st.text_input("Foods I dislike", key="disliked_foods", max_chars=limit, placeholder="cilantro")
+        never_foods = st.text_input("Never serve me", key="never_foods", max_chars=limit, placeholder="liver")
 
     with sb.expander("🎯  Targets"):
         kcal = st.number_input("Calories per day", 1200, 4500, 2000, step=50, key="daily_kcal")
@@ -96,6 +100,7 @@ def pantry_step(service: PantryToPlateService, today: date) -> list[PantryEntry]
     """Text box -> editable review rows. Returns the rows that will be planned with."""
     _html(theme.section_html("What's in your kitchen?", "Write it the way you'd say it."))
     st.text_area("Your pantry", key="pantry_text", height=120, label_visibility="collapsed",
+                 max_chars=MAX_PANTRY_CHARS,
                  placeholder="e.g. half a bag of spinach going off, 500g chicken breast, 6 eggs, leftover rice…")
     left, middle, _ = st.columns([1.1, 1.1, 3])
     read_clicked = left.button("✨ Read my pantry", type="primary", key="read_pantry")
@@ -147,7 +152,11 @@ def _queue_example() -> None:
 
 
 def _load_review(service: PantryToPlateService, text: str, today: date) -> None:
-    review = service.review_pantry(text, today=today)
+    try:
+        review = service.review_pantry(text, today=today)
+    except ValueError as exc:                        # over the length limit (the text box already caps it)
+        st.error(logic.md_escape(str(exc)))
+        return
     st.session_state["review_id"] = st.session_state.get("review_id", 0) + 1
     st.session_state["entries"] = list(review.entries)
     st.session_state["originals"] = [e.model_copy(deep=True) for e in review.entries]
@@ -167,11 +176,13 @@ def _entry_row(service: PantryToPlateService, i: int, entry: PantryEntry, origin
             return _choice_row(service, entry, key, kind, text, today)
 
         if entry.status == ENTRY_UNSAFE:                       # shown, never planned with, nothing to edit
-            st.markdown(f"{KIND_ICON.get(kind, '•')} **{entry.name or entry.raw_text}**  \n:gray[{text}]")
+            st.markdown(f"{KIND_ICON.get(kind, '•')} **{logic.md_escape(entry.name or entry.raw_text)}**  \n"
+                        f":gray[{text}]")
             return entry, False
 
         c_name, c_amt, c_use, c_keep = st.columns([3, 2, 3, 1.4], vertical_alignment="center")
-        c_name.markdown(f"{KIND_ICON.get(kind, '•')} **{logic.display_name(entry.name or entry.raw_text)}**  \n"
+        shown_name = logic.md_escape(logic.display_name(entry.name or entry.raw_text))
+        c_name.markdown(f"{KIND_ICON.get(kind, '•')} **{shown_name}**  \n"
                         f":gray[{text}]")
         shown = min(max(float(entry.grams), 0.1), 20000.0) if entry.grams else 100.0
         grams = c_amt.number_input("Amount (g)", min_value=0.1, max_value=20000.0, value=shown, step=10.0,
@@ -201,7 +212,8 @@ def _entry_row(service: PantryToPlateService, i: int, entry: PantryEntry, origin
 def _choice_row(service: PantryToPlateService, entry: PantryEntry, key: str, kind: str, text: str,
                 today: date) -> tuple[PantryEntry, bool]:
     """A row with no ingredient yet: pick one of the suggestions, or leave it out."""
-    st.markdown(f"{KIND_ICON.get(kind, '•')} **“{entry.raw_text}”**  \n:gray[{entry.problem or text}]")
+    st.markdown(f"{KIND_ICON.get(kind, '•')} **“{logic.md_escape(entry.raw_text)}”**  \n"
+                f":gray[{logic.md_escape(entry.problem or text)}]")
     options = [None] + [s.ingredient_id for s in entry.suggestions]
     names = {s.ingredient_id: s.name for s in entry.suggestions}
     picked = st.selectbox("Which one is it?", options, key=f"c_{key}", index=0,
@@ -216,7 +228,8 @@ def _choice_row(service: PantryToPlateService, entry: PantryEntry, key: str, kin
 
 def _add_item_form(service: PantryToPlateService, today: date) -> None:
     with st.expander("➕  Add something we missed"):
-        query = st.text_input("Search for an ingredient", key="add_query", placeholder="e.g. chickpeas")
+        query = st.text_input("Search for an ingredient", key="add_query", max_chars=MAX_QUERY_CHARS,
+                              placeholder="e.g. chickpeas")
         hits = service.search_ingredients(query, limit=6) if query else []
         names = {h.ingredient_id: h.name for h in hits}
         chosen = st.selectbox("Ingredient", [h.ingredient_id for h in hits], key="add_choice",
@@ -341,7 +354,7 @@ def _day_card(day: DayPlan, week: PlannedWeek, wid: int) -> str:
         with right.expander("👩‍🍳 How to cook it"):
             if day.steps:
                 for n, step in enumerate(day.steps, 1):
-                    st.markdown(f"{n}. {step}")
+                    st.markdown(f"{n}\\. {logic.md_escape(step)}")    # dataset text: stray "<a>" was dropped
             else:
                 st.caption("No instructions are available for this recipe.")
     return mark

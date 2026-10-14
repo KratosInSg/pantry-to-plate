@@ -1,11 +1,13 @@
 """Tests for ``ui/logic.py``: what marks on the week mean, and how a use-by choice is applied. No Streamlit."""
 from __future__ import annotations
 
+import re
+
 import pytest
 
 from app.models import ENTRY_ASSUMED, ENTRY_CHOOSE, ENTRY_NO_AMOUNT, ENTRY_OK, ENTRY_UNKNOWN, ENTRY_UNSAFE, PantryEntry
 from ui.logic import (DAY_COOKED, display_name, DAY_MARKS, DAY_PLANNED, DAY_REJECTED, DAY_SKIPPED, apply_use_by, build_replan_request,
-                      current_use_by_index, needs_choice, status_label, use_by_choices, weekday_label)
+                      current_use_by_index, md_escape, needs_choice, status_label, use_by_choices, weekday_label)
 
 IDS = [101, 102, 103, 104, 105, 106, 107]
 
@@ -140,3 +142,26 @@ def test_display_name_restores_the_possessive_food_com_dropped():
     assert display_name("all-purpose flour") == "All-Purpose Flour"
     assert display_name("easy mac and cheese") == "Easy Mac And Cheese"           # no lone "s": untouched
     assert display_name("  spinach  ") == "Spinach"
+
+
+# ---------------------------------------------------------------------------------------------------- markdown safety
+@pytest.mark.parametrize("payload", [
+    "![x](https://attacker.example/p.png)",                # image: would load an outside URL
+    "[click](javascript:alert(1))",                        # link
+    ":red[big] text",                                      # Streamlit colour directive
+    "**bold** _it_",
+    "$x^2$",                                               # LaTeX
+    "<b>tag</b> `code` # heading",
+])
+def test_md_escape_neutralises_markdown(payload):
+    # every character Markdown could act on is preceded by a backslash (an even run of backslashes would not count)
+    unescaped = re.findall(r"(?<!\\)(?:\\\\)*[\[\]()*_:$`<>#!]", md_escape(payload))
+    assert unescaped == []
+
+
+def test_md_escape_keeps_the_visible_text_and_flattens_lines():
+    typed = "line one\n# heading \\ end [x](y)"
+    out = md_escape(typed)
+    assert "\n" not in out and "\\#" in out                # no new block can start; "#" is literal
+    # removing one backslash before each escaped character gives back what was typed (newline folded to a space)
+    assert re.sub(r"\\(.)", r"\1", out) == "line one # heading \\ end [x](y)"

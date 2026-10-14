@@ -11,3 +11,4 @@ Tests [`ui/logic.py`](../../ui/logic.md). No Streamlit, no dataset.
 ## Change log
 
 - 2026-10-13 — Created.
+- 2026-10-14 — Added `test_md_escape_neutralises_markdown` and `test_md_escape_keeps_the_visible_text_and_flattens_lines`.

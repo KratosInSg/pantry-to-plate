@@ -59,6 +59,14 @@ DEFAULT_SHORTLIST = 120          # candidate recipes handed to the solver (~6 s 
 DEFAULT_TIME_LIMIT_S = 8.0
 DEFAULT_GAP = 0.02
 
+# Input limits (security review 2026-10-14). Parsing and name resolution run in the shared server process, and their
+# cost grows with input size: measured 22 s for a 57 KB pantry text and 42 s for 3,000 typed food names, so a few
+# requests could stall the app for everyone. The limits are far above real use (a full fridge described in words is
+# ~300-600 characters) and are enforced here, not only in the UI, so every caller gets them.
+MAX_PANTRY_CHARS = 2000          # ~180 items; parses in < 1 s
+MAX_FOOD_NAMES = 40              # liked + disliked + never-serve names in one profile; resolves in < 1 s
+MAX_QUERY_CHARS = 100            # autocomplete query; longer text names no food
+
 _PROBLEMS = {
     ENTRY_UNKNOWN: "We do not recognise this one. Pick the closest ingredient or leave it out.",
     ENTRY_CHOOSE: "Several ingredients could match. Which did you mean?",
@@ -119,7 +127,7 @@ class PantryToPlateService:
 
     def search_ingredients(self, query: str, limit: int = 8) -> list[IngredientChoice]:
         """Autocomplete: canonical ingredients matching ``query`` (prefix matches first, then fuzzy)."""
-        q = normalise_name(query)
+        q = normalise_name(query[:MAX_QUERY_CHARS])          # autocomplete only: a longer query names no food anyway
         if len(q) < 2:
             return []
         aliases, id_tuples = self.ctx.store.fuzzy_candidates
@@ -141,7 +149,14 @@ class PantryToPlateService:
         return out
 
     def resolve_names(self, names: Iterable[str]) -> NameResolution:
-        """Map typed food names ("basil", "peenut butter") to ingredient ids, flagging what could not be resolved."""
+        """Map typed food names ("basil", "peenut butter") to ingredient ids, flagging what could not be resolved.
+
+        Raises:
+            ValueError: more than ``MAX_FOOD_NAMES`` non-empty names (each one costs a fuzzy search).
+        """
+        names = [n for n in names if n.strip()]
+        if len(names) > MAX_FOOD_NAMES:
+            raise ValueError(f"too many food names ({len(names)}); please list at most {MAX_FOOD_NAMES}")
         ids: dict[str, int] = {}
         unresolved: list[str] = []
         ambiguous: dict[str, list[IngredientChoice]] = {}
@@ -179,8 +194,8 @@ class PantryToPlateService:
         dishes, doughs and batters that the dataset's "main-dish" tag lets through; the explanation says how many.
 
         Raises:
-            ValueError: an unknown diet / allergen / cuisine, or a number outside its allowed range. The message
-                says what is allowed.
+            ValueError: an unknown diet / allergen / cuisine, a number outside its allowed range, or more than
+                ``MAX_FOOD_NAMES`` food names in total. The message says what is allowed.
         """
         try:
             diet_value = Diet(diet.strip().lower())
@@ -221,7 +236,15 @@ class PantryToPlateService:
 
     # ------------------------------------------------------------------------------------------------ the pantry
     def review_pantry(self, text: str, today: date | None = None, horizon_days: int = HORIZON_DAYS) -> PantryReview:
-        """Parse free text into rows the user can confirm or fix. Never raises for odd input."""
+        """Parse free text into rows the user can confirm or fix. Never raises for odd input.
+
+        Raises:
+            ValueError: ``text`` is longer than ``MAX_PANTRY_CHARS`` (refused rather than truncated, so no item is
+                silently dropped).
+        """
+        if len(text) > MAX_PANTRY_CHARS:
+            raise ValueError(f"the pantry description is {len(text):,} characters; please keep it under "
+                             f"{MAX_PANTRY_CHARS:,}")
         started = time.perf_counter()
         logger.debug("pantry text: %r", text)                          # the user's words: DEBUG only
         parse = self._parser.parse(text, today)

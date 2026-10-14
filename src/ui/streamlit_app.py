@@ -20,7 +20,7 @@ import streamlit as st  # noqa: E402
 from app.service import PantryToPlateService  # noqa: E402
 from llm.client import LlmClient  # noqa: E402
 from logging_setup import configure_logging  # noqa: E402
-from ui import theme, views  # noqa: E402
+from ui import logic, theme, views  # noqa: E402
 
 TITLE = "Pantry to Plate"
 TAGLINE = "A week of dinners built around what you already have — less waste, fewer groceries, every choice explained."
@@ -82,10 +82,10 @@ def _plan(service: PantryToPlateService, profile_values: dict, entries: list, to
     try:
         built = service.build_profile(**profile_values)
     except ValueError as exc:                       # an out-of-range number, say: tell the user, do not crash
-        st.error(f"Please check your details: {exc}")
+        st.error(f"Please check your details: {logic.md_escape(str(exc))}")
         return
     for note in built.notes:
-        st.warning(note)
+        st.warning(logic.md_escape(note))           # notes quote the food names the user typed
     scenario = service.make_scenario(built.profile, service.pantry_items(entries), today=today)
     with st.spinner("Planning your week… weighing your pantry, targets and tastes."):
         week = service.plan_week(scenario)

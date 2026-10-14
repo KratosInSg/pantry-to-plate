@@ -12,7 +12,7 @@ import pytest
 
 from app.models import (ENTRY_ASSUMED, ENTRY_CHOOSE, ENTRY_NO_AMOUNT, ENTRY_OK, ENTRY_UNKNOWN, PantryEntry,
                         PlannedWeek)
-from app.service import PantryToPlateService
+from app.service import MAX_FOOD_NAMES, MAX_PANTRY_CHARS, PantryToPlateService
 from domain.models import Diet, PantryItem, UserProfile
 from nlp.schemas import Urgency
 from optimizer.hard_rules import count_violations
@@ -158,6 +158,26 @@ def test_pantry_items_carry_the_assumption_flag_to_the_planner(service, review):
 def test_garbage_text_does_not_raise(service):
     r = service.review_pantry("!!! ??? 12345", today=TODAY)
     assert r.usable_entries == []
+
+
+def test_oversized_pantry_text_is_refused_not_truncated(service):
+    # security review: a 57 KB text took 22 s of shared server time; refusing (not truncating) drops nothing silently
+    assert service.review_pantry("6 eggs, " * (MAX_PANTRY_CHARS // 8), today=TODAY).entries     # at the limit: fine
+    with pytest.raises(ValueError, match="under"):
+        service.review_pantry("x" * (MAX_PANTRY_CHARS + 1), today=TODAY)
+
+
+def test_too_many_food_names_are_refused(service):
+    # 3,000 names took 42 s; empty names do not count
+    assert service.resolve_names(["basil"] * MAX_FOOD_NAMES + ["", "  "]).ids == {"basil": service.resolve_names(
+        ["basil"]).ids["basil"]}
+    with pytest.raises(ValueError, match="at most"):
+        service.build_profile(liked_foods=[f"food{i}" for i in range(MAX_FOOD_NAMES + 1)])
+
+
+def test_autocomplete_tolerates_a_huge_query(service):
+    assert service.search_ingredients("spinach" + "x" * 100_000) == service.search_ingredients(
+        ("spinach" + "x" * 100_000)[:100])
 
 
 # --------------------------------------------------------------------------------------------- planning

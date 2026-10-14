@@ -57,6 +57,29 @@ def test_the_profile_form_offers_every_diet_allergen_and_cuisine():
     assert at.sidebar.selectbox(key="diet").value == "vegetarian"         # the default; the value stays the raw one
 
 
+# ---------------------------------------------------------------------------------------------------- security
+def test_typed_markdown_and_html_are_shown_as_text_not_rendered():
+    # security review 2026-10-14: these were rendered (an outside image loaded, a live link appeared)
+    at = _app()
+    payload = ("![track](https://attacker.example/p.png), [click](javascript:alert(1)), "
+               "<img src=x onerror=alert(2)>, 500g chicken breast")
+    at.text_area(key="pantry_text").set_value(payload).run()
+    at.button(key="read_pantry").click().run()
+    assert not at.exception
+    page = _texts(at)
+    assert "](" not in page                               # escaped as "\]\(": no image, no link
+    assert "attacker" in page and "javascript" in page    # ...but the user still sees what they typed
+    unsafe = [str(m.value) for m in at.markdown if getattr(m.proto, "allow_html", False)]
+    assert not any("onerror" in m or "<img" in m for m in unsafe)
+
+
+def test_text_boxes_have_length_limits():
+    at = _app()
+    assert at.text_area(key="pantry_text").proto.max_chars > 0
+    for key in ("liked_foods", "disliked_foods", "never_foods"):
+        assert at.sidebar.text_input(key=key).proto.max_chars > 0
+
+
 # ---------------------------------------------------------------------------------------------------- the pantry
 def test_reading_text_shows_honest_rows_and_asks_about_what_it_could_not_recognise():
     at = _app()

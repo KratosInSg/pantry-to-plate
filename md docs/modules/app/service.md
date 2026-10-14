@@ -68,7 +68,12 @@ exactly what the waste term chases.
 
 Logger `app.service`: the INFO timeline of a session. One line each for: service ready (backend, shortlist, LLM on/off); pantry reviewed (time, rows by status, fragments not understood); planning N days from M items; plan outcome (status, dinners, grocery items, solver and total seconds); re-planning (days passed/cooked, rejections, days left); what went off meanwhile; rewording. An incomplete week is logged at WARNING. DEBUG: the raw pantry text, and a profile summary. The user's text is never at INFO (tested).
 
+## Input limits
+
+`MAX_PANTRY_CHARS` (2,000), `MAX_FOOD_NAMES` (40, liked + disliked + never-serve together) and `MAX_QUERY_CHARS` (100) bound the work one request can cause. Parsing and fuzzy name resolution run in the shared server process; without limits a 57 KB text cost 22 s and 3,000 names 42 s. Over-limit pantry text and name lists raise `ValueError` with a message that says the limit. They are refused, not truncated, so no item is silently dropped. An autocomplete query is simply cut to 100 characters, since it decides nothing. See [`md docs/security.md`](../../security.md).
+
 ## Change log
 
 - 2026-10-13 — Created.
 - 2026-10-14 — Logging: one INFO line per step (review, plan, re-plan, reword); raw pantry text at DEBUG only.
+- 2026-10-14 — Input limits (`MAX_PANTRY_CHARS`, `MAX_FOOD_NAMES`, `MAX_QUERY_CHARS`) from the security review.

@@ -10,3 +10,10 @@ font = "sans serif"
 
 [browser]
 gatherUsageStats = false
+
+# Security review 2026-10-14: never show visitors a traceback (it reveals file paths and source code). Errors still
+# reach the terminal / log. Set to "full" locally if you want them on the page while developing.
+[client]
+showErrorDetails = "none"
+# Hide developer-only menu items (rerun / settings / "deploy") from visitors.
+toolbarMode = "viewer"
