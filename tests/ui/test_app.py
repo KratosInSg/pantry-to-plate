@@ -5,12 +5,14 @@ week, re-plan. The language model is switched off (the sidebar checkbox) so noth
 """
 from __future__ import annotations
 
+from pathlib import Path
+
 import pytest
 from streamlit.testing.v1 import AppTest
 
 from ui.logic import EXAMPLE_PANTRY
 
-APP = "src/ui/streamlit_app.py"
+APP = str(Path(__file__).resolve().parents[2] / "src" / "ui" / "streamlit_app.py")
 TIMEOUT = 120
 
 
