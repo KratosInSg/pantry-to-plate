@@ -56,3 +56,5 @@ would be the kind of rationalisation the project forbids. The heuristic is delib
 - 2026-10-12 — Created.
 - 2026-10-13 — Added `excluded_recipe` (rejected dinners, for re-planning) and the opt-in `not_dinner` rule.
 - 2026-10-14 — Vegetarian now excludes eggs (through the rebuilt `is_vegetarian` flag; no code change to the rule itself).
+
+- 2026-10-15 — `food_group:<group>` applies the existing recipe flags as hard exclusions with traceable reasons; no packaged-food safety guarantee.
