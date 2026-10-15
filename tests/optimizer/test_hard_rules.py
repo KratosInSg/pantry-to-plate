@@ -119,3 +119,26 @@ def test_dinner_only_removes_breakfast_dough_and_batter_dishes_and_is_off_by_def
     assert any("crusted" in n for n in kept) and any("glazed" in n for n in kept)
     assert [r.name for r in violated_rules(catalog, UserProfile(dinner_only=True), int(np.flatnonzero(removed)[0]))] \
         == ["not_dinner"]
+
+
+@pytest.mark.parametrize("group", ["meat","poultry","fish","shellfish","pork","egg","dairy","gluten","soy","sesame","peanut","tree_nut","alcohol"])
+def test_food_group_exclusion_matches_recipe_flag(catalog, group):
+    profile = UserProfile(excluded_food_groups=frozenset({group}))
+    allowed = feasible_mask(catalog, profile)
+    assert np.array_equal(allowed, ~catalog.flag(f"contains_{group}"))
+    blocked = np.flatnonzero(catalog.flag(f"contains_{group}"))
+    if len(blocked):
+        reasons = violated_rules(catalog, profile, int(blocked[0]))
+        assert reasons[0].name == f"food_group:{group}"
+        assert group in reasons[0].reason
+
+
+def test_unknown_food_group_rejected():
+    with pytest.raises(ValueError, match="unknown food group"):
+        UserProfile(excluded_food_groups=frozenset({"red_meat"}))
+
+
+def test_multiple_food_group_exclusions(catalog):
+    profile = UserProfile(excluded_food_groups=frozenset({"meat", "poultry", "fish"}))
+    expected = ~(catalog.flag("contains_meat") | catalog.flag("contains_poultry") | catalog.flag("contains_fish"))
+    assert np.array_equal(feasible_mask(catalog, profile), expected)
