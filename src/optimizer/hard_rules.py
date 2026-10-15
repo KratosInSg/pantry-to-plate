@@ -40,7 +40,7 @@ from dataclasses import dataclass
 
 import numpy as np
 
-from domain.models import Diet, UserProfile
+from domain.models import Diet, UserProfile, RESTRICTABLE_FOOD_FLAGS
 from knowledge.recipes import RecipeCatalog
 
 
@@ -74,6 +74,8 @@ def violation_masks(catalog: RecipeCatalog, profile: UserProfile) -> dict[str, n
         masks[f"diet:{profile.diet.value}"] = diet
     for allergen in sorted(profile.allergens):
         masks[f"allergen:{allergen}"] = catalog.flag(f"contains_{allergen}")
+    for group in sorted(profile.excluded_food_groups):
+        masks[f"food_group:{group}"] = catalog.flag(RESTRICTABLE_FOOD_FLAGS[group])
     if profile.avoid_pork:
         masks["pork"] = catalog.flag("contains_pork")
     if profile.avoid_alcohol:
@@ -114,6 +116,7 @@ def violated_rules(catalog: RecipeCatalog, profile: UserProfile, idx: int) -> li
 
 
 _REASONS = {
+    "food_group": "contains {detail}, which the user explicitly excludes",
     "diet": "is not compatible with a {detail} diet",
     "allergen": "contains {detail}, which is on the user's allergy list",
     "pork": "contains pork, which the user avoids",
