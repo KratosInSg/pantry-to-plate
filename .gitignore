@@ -5,6 +5,7 @@ __pycache__/
 .venv/
 venv/
 .env
+.venv-old
 
 # Raw downloads: large and reproducible from their sources (see data/canonical/README.md)
 data/FoodData_Central_csv_*/
