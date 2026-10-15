@@ -1,0 +1,20 @@
+{
+  "version": "v2",
+  "created": "2026-10-15",
+  "n_scenarios": 240,
+  "files": {
+    "scenarios_v2.jsonl": "8d647fb6767e1e706a47a19b69baea0616f2aa08ba7b43bbddfa67ae72e3a5d7",
+    "split_v2.json": "9b29b0b6e03847a233d67c37efaeb72d14dd29caf77e8f7ffd2ed9dc4223d9f5"
+  },
+  "dataset_manifest_sha256": "bdce58fb1da057ba1e5fc93dd799ad3f2ac7a6ceb687efdfdfd9ae889f8b81f0",
+  "provenance": {
+    "type": "rebaselined_committed_snapshot",
+    "original_commit": "29d1bff42b6beaab60aa0e5cd0f82a7b569d6e3a",
+    "original_files": [
+      "data/evaluation/scenarios_v1.jsonl",
+      "data/evaluation/split_v1.json"
+    ],
+    "reason": "Both committed v1 files fail the SHA-256 values recorded in original FROZEN.json. Rebaseline exact committed bytes, preserve v1 unmodified.",
+    "note": "No scenarios were regenerated, and this is not a new independent evaluation set."
+  }
+}
