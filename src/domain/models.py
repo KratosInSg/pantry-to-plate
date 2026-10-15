@@ -29,6 +29,23 @@ from nlp.schemas import Urgency
 # The allergen vocabulary. Each name maps to a ``contains_<name>`` flag on ingredients and recipes in the dataset.
 ALLERGENS: tuple[str, ...] = ("dairy", "egg", "gluten", "peanut", "tree_nut", "soy", "sesame", "fish", "shellfish")
 
+RESTRICTABLE_FOOD_FLAGS: dict[str, str] = {
+    "meat": "contains_meat",
+    "poultry": "contains_poultry",
+    "fish": "contains_fish",
+    "shellfish": "contains_shellfish",
+    "pork": "contains_pork",
+    "egg": "contains_egg",
+    "dairy": "contains_dairy",
+    "gluten": "contains_gluten",
+    "soy": "contains_soy",
+    "sesame": "contains_sesame",
+    "peanut": "contains_peanut",
+    "tree_nut": "contains_tree_nut",
+    "alcohol": "contains_alcohol",
+}
+# Explicit food exclusions are not independently certified allergen labels.
+
 HORIZON_DAYS = 7
 WEEKDAYS_PER_WEEK = 5  # day-of-week indices 0..4 are Monday..Friday
 
@@ -50,6 +67,7 @@ class UserProfile(BaseModel):
     allergens: frozenset[str] = frozenset()
     avoid_pork: bool = False
     avoid_alcohol: bool = False
+    excluded_food_groups: frozenset[str] = frozenset()
     excluded_ingredient_ids: frozenset[int] = frozenset()   # "never": the user will not eat it, ever
     excluded_recipe_ids: frozenset[int] = frozenset()       # Food.com recipe ids the user rejected ("not this one")
     max_total_minutes: int | None = None                    # optional absolute cap on a recipe's total time
@@ -74,6 +92,14 @@ class UserProfile(BaseModel):
         unknown = set(v) - set(ALLERGENS)
         if unknown:
             raise ValueError(f"unknown allergen(s) {sorted(unknown)}; expected a subset of {list(ALLERGENS)}")
+        return v
+
+    @field_validator("excluded_food_groups")
+    @classmethod
+    def _known_food_groups(cls, v: frozenset[str]) -> frozenset[str]:
+        unknown = set(v) - set(RESTRICTABLE_FOOD_FLAGS)
+        if unknown:
+            raise ValueError(f"unknown food group(s) {sorted(unknown)}")
         return v
 
     @property
