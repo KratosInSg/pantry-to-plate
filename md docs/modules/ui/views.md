@@ -47,3 +47,5 @@ Through [`tests/ui/test_app.py`](../tests/ui/test_app.md).
 - 2026-10-14 — Diet selector defaults to vegetarian (`DEFAULT_DIET`) and has a help tooltip defining each diet (`DIET_HELP`), since vegetarian here excludes eggs.
 - 2026-10-14 — Security: `max_chars` on every text box (`MAX_PANTRY_CHARS`, `MAX_FOOD_FIELD_CHARS` = 300, `MAX_QUERY_CHARS`); user and dataset text escaped with `logic.md_escape` before Markdown; over-limit text shows an error instead of failing.
 - 2026-10-14 — `sidebar_profile(service, offer_llm=True)`: `offer_llm=False` hides the LLM switch (returns `False`).
+
+- 2026-10-15 — Diet sidebar now exposes strict food exclusions separate from allergies.
