@@ -31,3 +31,5 @@ widget's state after it was created). Unit tests of the logic could not have fou
 - 2026-10-14 — The profile-form test expects the vegetarian default.
 - 2026-10-14 — Added `test_typed_markdown_and_html_are_shown_as_text_not_rendered` and `test_text_boxes_have_length_limits` (security review).
 - 2026-10-14 — Added `test_the_llm_switch_is_hidden_when_no_model_is_reachable`.
+
+- 2026-10-15 — Resolve the Streamlit entry point relative to the repository root via `Path(__file__)`, not the pytest working directory.
