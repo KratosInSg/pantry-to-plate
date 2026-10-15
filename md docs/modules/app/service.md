@@ -77,3 +77,5 @@ Logger `app.service`: the INFO timeline of a session. One line each for: service
 - 2026-10-13 — Created.
 - 2026-10-14 — Logging: one INFO line per step (review, plan, re-plan, reword); raw pantry text at DEBUG only.
 - 2026-10-14 — Input limits (`MAX_PANTRY_CHARS`, `MAX_FOOD_NAMES`, `MAX_QUERY_CHARS`) from the security review.
+
+- 2026-10-15 — `build_profile(excluded_food_groups=...)` forwards strict food exclusions to the validated profile.
