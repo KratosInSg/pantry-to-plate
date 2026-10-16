@@ -273,6 +273,15 @@ class WeeklyPlanner:
                 row[u] = row.get(u, 0.0) + 1.0
             m.add_constraint(row, lb=0.0)
 
+        # Expiring pantry ingredients absent from the candidate recipe pool still spoil.
+        # They are constant across plans, so omitting them did not change recipe selection,
+        # but it understated the reported MILP waste objective relative to GA replay.
+        for iid, item in stock.items():
+            if iid not in demand and item.last_use_day is not None:
+                factor = item.urgency_factor if w.urgency_weighting else 1.0
+                confidence = item.confidence if w.confidence_weighting else 1.0
+                constant_waste_cost += w.waste_per_100g * factor * confidence * item.grams / 100.0
+
         # --- nutrition: dinner kcal band and protein minimum --------------------------------------------------------
         dev_vars: list[tuple[int, int, int]] = []
         for d in range(horizon):
