@@ -29,3 +29,22 @@ def test_genetic_infeasible(ctx):
     plan = GeneticPlanner(ctx, GAConfig(population=8, generations=2)).plan(scenario)
     assert plan.recipe_ids == []
     assert plan.status == "no_candidates"
+
+
+def test_generation_budget_and_seed_variants(ctx):
+    from evaluation.runner import build_planner
+    short = build_planner("genetic_35_s1", ctx)
+    long = build_planner("genetic_350_s1", ctx)
+    assert short.config.generations == 35 and long.config.generations == 350
+    assert short.config.seed == long.config.seed == 1
+    assert short.name != long.name
+    with pytest.raises(ValueError):
+        build_planner("genetic_999_s1", ctx)
+
+
+def test_more_generations_do_not_worsen_best_fitness(ctx):
+    from evaluation.runner import build_planner
+    scenario = Scenario(scenario_id="budget-test", seed=20261012)
+    a = build_planner("genetic_35_s1", ctx).plan(scenario)
+    b = build_planner("genetic_350_s1", ctx).plan(scenario)
+    assert b.diagnostics["objective"] <= a.diagnostics["objective"] + 1e-4
