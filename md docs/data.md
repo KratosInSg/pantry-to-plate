@@ -9,8 +9,9 @@
 | USDA FoodKeeper | Shelf-life estimates (min-max, with confidence) | Public (US government) |
 | Synthetic pantry scenarios | Evaluation | Built in-house — a few hundred scenarios across 8 families, seeded generator, frozen validation/test split |
 | Labelled pantry sentences | NLP evaluation | Built in-house — 200-500 labelled messages |
+| MealRec (Li et al., 2022; Allrecipes.com reviews) | Real-taste preference evaluation: 100 users' dinner ratings (`data/evaluation/taste_v2/`, built by `src/evaluation/taste_users.py`) | Public research dataset, **no licence** (cite the paper); raw files and the derived user sets are git-ignored |
 
-Food.com's licence and reuse terms are checked before the dataset is locked in; academic evaluation is fine, a commercial product would need licensed recipe content.
+Food.com's licence and reuse terms are checked before the dataset is locked in; academic evaluation is fine, a commercial product would need licensed recipe content. The same applies to MealRec, which was scraped from Allrecipes and released for research (https://github.com/WUT-IDEA/MealRec): it holds only 4- and 5-star ratings (likes, no dislikes), its recipe ids are Allrecipes ids (bridged to ours through ingredients, cuisine tags and exact names), and its terms should be checked before the derived set is published.
 
 ## Canonical ingredient pipeline
 

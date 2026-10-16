@@ -121,6 +121,7 @@ Tests · Change log**.
 | Source | Doc |
 | --- | --- |
 | `preference/scorer.py` | [preference/scorer.md](preference/scorer.md) |
+| `preference/history.py` | [preference/history.md](preference/history.md) |
 
 ## `src/optimizer/`
 
@@ -152,6 +153,8 @@ Tests · Change log**.
 | `evaluation/ga_hyperparams.py` | [evaluation/ga_hyperparams.md](evaluation/ga_hyperparams.md) |
 | `evaluation/ga_multiseed.py` | [evaluation/ga_multiseed.md](evaluation/ga_multiseed.md) |
 | `evaluation/ga_objective_audit.py` | [evaluation/ga_objective_audit.md](evaluation/ga_objective_audit.md) |
+| `evaluation/taste_users.py` | [evaluation/taste_users.md](evaluation/taste_users.md) |
+| `evaluation/taste_eval.py` | [evaluation/taste_eval.md](evaluation/taste_eval.md) |
 
 ## `tests/`
 
@@ -187,6 +190,7 @@ Tests · Change log**.
 | `tests/domain/test_models.py` | [tests/domain/test_models.md](tests/domain/test_models.md) |
 | `tests/domain/test_pantry.py` | [tests/domain/test_pantry.md](tests/domain/test_pantry.md) |
 | `tests/preference/test_scorer.py` | [tests/preference/test_scorer.md](tests/preference/test_scorer.md) |
+| `tests/preference/test_history.py` | [tests/preference/test_history.md](tests/preference/test_history.md) |
 | `tests/optimizer/test_hard_rules.py` | [tests/optimizer/test_hard_rules.md](tests/optimizer/test_hard_rules.md) |
 | `tests/optimizer/test_inventory.py` | [tests/optimizer/test_inventory.md](tests/optimizer/test_inventory.md) |
 | `tests/optimizer/test_candidates.py` | [tests/optimizer/test_candidates.md](tests/optimizer/test_candidates.md) |
@@ -198,6 +202,8 @@ Tests · Change log**.
 | `tests/evaluation/test_runner.py` | [tests/evaluation/test_runner.md](tests/evaluation/test_runner.md) |
 | `tests/evaluation/test_robustness.py` | [tests/evaluation/test_robustness.md](tests/evaluation/test_robustness.md) |
 | `tests/evaluation/test_ga_hyperparams.py` | [tests/evaluation/test_ga_hyperparams.md](tests/evaluation/test_ga_hyperparams.md) |
+| `tests/evaluation/test_taste_users.py` | [tests/evaluation/test_taste_users.md](tests/evaluation/test_taste_users.md) |
+| `tests/evaluation/test_taste_eval.py` | [tests/evaluation/test_taste_eval.md](tests/evaluation/test_taste_eval.md) |
 
 ## Repo-level files
 
@@ -229,3 +235,4 @@ Tests · Change log**.
 - 2026-10-14 — Security review (`md docs/security.md`): input limits, Markdown escaping, Streamlit config, dependency floors.
 - 2026-10-16 — Added `optimizer/substitutions.py`, `evaluation/robustness.py` and their tests.
 - 2026-10-16 — Indexed the GA planner and experiments (`optimizer/genetic.py`, `evaluation/ga_*.py`), `explain/cards.py` and their tests.
+- 2026-10-16 — Added `preference/history.py`, `evaluation/taste_users.py`, `evaluation/taste_eval.py` (MealRec real-taste users) and their tests.

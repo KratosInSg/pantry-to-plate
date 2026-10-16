@@ -15,6 +15,7 @@ in `PlanFacts` and so cannot be said.
 | `PlanFacts` | Week totals, rule counts, `days: tuple[DayFacts]`, `leftovers`, `stranded`, `groceries`, `solver`, … |
 | `DayFacts` | One dinner: name, minutes, kcal and protein, kcal status/gap, protein gap, time over the weekday limit, `pantry_uses`, `groceries`, preference reasons |
 | `PantryUse`, `GroceryNeed`, `Leftover`, `Stranded`, `RuleFact`, `SolverFacts` | The leaf facts |
+| `DayFacts.similar_rated` | Names of up to 2 liked rated dinners this dinner is closest to — only when the scorer's history term raised its score (never as an after-the-fact reason) |
 | `SubstitutionFact` | A fired substitution rule on one dinner: `rule_key`, `replaced`, `replaced_g`, `uses` (name, grams), `note`; in `DayFacts.substitutions` |
 | `KCAL_IN_RANGE` / `KCAL_BELOW` / `KCAL_ABOVE`, `WEEKDAY_NAMES` | Constants |
 
@@ -59,3 +60,4 @@ in `PlanFacts` and so cannot be said.
 - 2026-10-13 — Created.
 - 2026-10-13 — Added assumed quantities (`PantryItem.quantity_assumed`), `GAP_TOLERANCE`, and `groceries_by_day` from the replay instead of recomputing shortfalls here.
 - 2026-10-16 — Facts come from `replay_with_substitutions`; added `SubstitutionFact` / `DayFacts.substitutions`.
+- 2026-10-16 — `DayFacts.similar_rated` from the rating-history term (`preference.scorer.history_term` > 0, names via `preference.history.nearest_rated`).

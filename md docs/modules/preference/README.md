@@ -16,7 +16,10 @@ but keeps the recipe eligible; use `UserProfile.excluded_ingredient_ids` for a t
 | File | Role | Doc |
 | --- | --- | --- |
 | `scorer.py` | `score_recipes`, `popularity`, `disliked_mask`, `PreferenceWeights` | [scorer.md](scorer.md) |
+| `history.py` | Preferences from a rating history: lift-based likes into the existing profile fields, and graded scores (average-dish similarity; nearest liked dishes + tags, the best on real users). Evaluation only so far | [history.md](history.md) |
 
 ## Change log
 
 - 2026-10-12 — Package created.
+- 2026-10-16 — Added `history.py` (preferences learned from meal ratings, no trained model).
+- 2026-10-16 — `history.py` gained `nearest_dish_scores` (nearest liked dishes, ingredients + tags).

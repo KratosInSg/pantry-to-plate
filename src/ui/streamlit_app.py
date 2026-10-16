@@ -89,6 +89,8 @@ def main() -> None:
         new = views.week_view(service, week)
         if new is not None:
             st.session_state["week"] = new
+            # dinners marked "Loved it" stay with this visitor's session, so the next "Plan my week" learns from them
+            st.session_state["rated_dinners"] = new.scenario.profile.rated_dinners
             st.session_state.pop("reworded", None)
             st.session_state["week_id"] = st.session_state.get("week_id", 0) + 1
             st.session_state["toast"] = ("Re-planned from what's left in your kitchen", "🔄")

@@ -14,6 +14,7 @@ language model attached, and it is the ground truth any paraphrase is validated 
 | `Section(key, title, statements, text, source, note)` | `key` is `overview`, `day:<n>`, `rules` or `caveats`. `text` is what is shown; `template_text` is the statements joined |
 | `Explanation.sections`, `.section(key)`, `.to_text()` | |
 | `fmt_g`, `TERM_LABELS` | `300 g` / `1.2 kg`; human names of the objective's terms |
+| `similar_rated_phrase(names)` | "It is close to dinners you rated highly: X and Y." (preference, source `profile`); shared with the preference card |
 | `substitution_phrase(swap)` | "No buttermilk (27 g) to buy: milk (25 g) and lemon juice (1.7 g) from your pantry stand in for it." + the rule's note. Shared with the substitution card |
 
 ## What it says
@@ -53,3 +54,4 @@ language model attached, and it is the ground truth any paraphrase is validated 
 - 2026-10-13 — Created.
 - 2026-10-13 — Singular/plural agreement ("1 of 7 dinners is"), sub-1 shortfalls printed with a decimal, assumed-amount caveat, second-person phrases for `excluded_recipe` and `not_dinner`.
 - 2026-10-16 — Day sections state each fired substitution rule (`SRC_SUBSTITUTION`, term `groceries`); added `substitution_phrase`.
+- 2026-10-16 — Day sections state which rated dinners a dinner is close to (`similar_rated_phrase`).

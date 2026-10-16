@@ -19,3 +19,4 @@ the wrong reason.
 ## Change log
 
 - 2026-10-12 — Created.
+- 2026-10-16 — Added the rating-history tests: unchanged without history, loved-like dinners rise and far ones fall, one liked dinner only nudges, low ratings and unknown dinners change nothing.

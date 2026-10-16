@@ -18,3 +18,4 @@ These are the flows the prototype needs; each asserts something a user would not
 - 2026-10-14 — Added `test_each_step_logs_one_info_line_that_names_its_outcome` (review, planning, plan outcome; no user text at INFO).
 - 2026-10-14 — Added `test_oversized_pantry_text_is_refused_not_truncated`, `test_too_many_food_names_are_refused`, `test_autocomplete_tolerates_a_huge_query` (security review).
 - 2026-10-16 — Added `test_a_substitution_shows_on_the_ingredient_line_and_leaves_the_grocery_box`.
+- 2026-10-16 — Added the rating-history tests: `rate_dinner`, `build_profile(rated_dinners=)` keeping the latest rating, and a loved dinner carried through re-plans.

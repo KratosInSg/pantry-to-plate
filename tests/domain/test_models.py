@@ -4,7 +4,7 @@ from __future__ import annotations
 import pytest
 from pydantic import ValidationError
 
-from domain.models import Diet, PantryItem, Scenario, UserProfile, WeekPlan
+from domain.models import Diet, PantryItem, RatedDinner, Scenario, UserProfile, WeekPlan
 
 
 def test_dinner_target_and_band_follow_the_profile():
@@ -57,3 +57,26 @@ def test_week_plan_completeness():
     assert not WeekPlan(planner="p", recipe_ids=[], status="optimal").is_complete        # nothing planned
     assert not WeekPlan(planner="p", recipe_ids=[1], status="partial").is_complete
     assert not WeekPlan(planner="p", status="infeasible").is_complete
+
+
+def test_a_rated_dinner_needs_a_five_star_rating_and_cannot_be_changed():
+    with pytest.raises(ValidationError):
+        RatedDinner(rating=0)
+    with pytest.raises(ValidationError):
+        RatedDinner(rating=6)
+    dinner = RatedDinner(rating=5, name="Chili", ingredient_ids=frozenset({1, 2}), tags=frozenset({"beef"}))
+    with pytest.raises(ValidationError):
+        dinner.rating = 1                                          # frozen: evidence is not edited in place
+    assert hash(dinner) == hash(RatedDinner(rating=5, name="Chili", ingredient_ids=frozenset({1, 2}),
+                                            tags=frozenset({"beef"})))
+
+
+def test_rated_dinners_default_to_none_and_survive_a_json_round_trip():
+    assert UserProfile().rated_dinners == ()
+    sc = Scenario(scenario_id="s", profile=UserProfile(rated_dinners=(RatedDinner(rating=4, recipe_id=7),)))
+    back = Scenario.model_validate_json(sc.model_dump_json())
+    assert back.profile.rated_dinners == sc.profile.rated_dinners
+    # scenarios written before the field existed (the frozen benchmark) still load, with no history
+    old = sc.model_dump(mode="json")
+    del old["profile"]["rated_dinners"]
+    assert Scenario.model_validate(old).profile.rated_dinners == ()

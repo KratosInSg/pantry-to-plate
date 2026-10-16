@@ -81,10 +81,11 @@ def md_escape(text: str) -> str:
 # ---------------------------------------------------------------------------------------------------- day marks
 DAY_PLANNED = "Planned"
 DAY_COOKED = "Cooked"
+DAY_LOVED = "Loved it"                       # cooked, and enjoyed: rating evidence for later plans
 DAY_SKIPPED = "Skipped"
 DAY_REJECTED = "Reject this dinner"
-DAY_MARKS = (DAY_PLANNED, DAY_COOKED, DAY_SKIPPED, DAY_REJECTED)
-_ELAPSED = (DAY_COOKED, DAY_SKIPPED)         # marks that mean "this day has passed"
+DAY_MARKS = (DAY_PLANNED, DAY_COOKED, DAY_LOVED, DAY_SKIPPED, DAY_REJECTED)
+_ELAPSED = (DAY_COOKED, DAY_LOVED, DAY_SKIPPED)   # marks that mean "this day has passed"
 
 
 @dataclass(frozen=True)
@@ -93,6 +94,7 @@ class ReplanRequest:
 
     cooked: tuple[int | None, ...] = ()      # per elapsed day: the recipe id cooked, or None if skipped
     rejected: tuple[int, ...] = ()           # recipe ids to exclude from the remaining days
+    loved: tuple[int, ...] = ()              # past dinners marked "Loved it" (also in ``cooked``): rated 5 for later plans
     remaining_days: int = 0
     changed: bool = False                    # at least one day is marked
     problem: str = ""                        # why this cannot be applied ("" = it can)
@@ -101,21 +103,25 @@ class ReplanRequest:
     def ok(self) -> bool:
         return self.changed and not self.problem
 
-    def describe(self, rejected_names: Sequence[str] = ()) -> str:
+    def describe(self, rejected_names: Sequence[str] = (), loved_names: Sequence[str] = ()) -> str:
         """One sentence telling the user what pressing the button will do.
 
-        ``rejected_names`` are the names of the dinners in ``rejected`` (the caller knows them; this module does not).
+        ``rejected_names`` / ``loved_names`` are the names of the dinners in ``rejected`` / ``loved`` (the caller knows
+        them; this module does not).
         """
         if self.problem:
             return self.problem
         if not self.changed:
-            return "Mark a day as cooked, skipped or rejected to re-plan the rest of the week."
+            return "Mark a day as cooked (or loved), skipped or rejected to re-plan the rest of the week."
         parts: list[str] = []
         if self.cooked:
             done = sum(1 for c in self.cooked if c is not None)
             skipped = len(self.cooked) - done
             parts.append(f"{len(self.cooked)} day{'s' if len(self.cooked) != 1 else ''} will count as past "
                          f"({done} cooked, {skipped} skipped) and their food comes out of the pantry")
+        if self.loved:
+            shown = ", ".join(loved_names) if loved_names else f"{len(self.loved)} dinner(s)"
+            parts.append(f"from now on, dinners like {shown} count for more")
         if self.rejected:
             shown = ", ".join(rejected_names) if rejected_names else f"{len(self.rejected)} dinner(s)"
             parts.append(f"{shown} will not come back")
@@ -128,8 +134,9 @@ class ReplanRequest:
 def build_replan_request(recipe_ids: Sequence[int], marks: Sequence[str]) -> ReplanRequest:
     """Interpret per-day marks.
 
-    The leading run of *Cooked* / *Skipped* days is the past. After it, a day may only be *Planned* or *Rejected*:
-    a *Cooked* day that follows an unresolved day is a contradiction, and is reported rather than guessed at.
+    The leading run of *Cooked* / *Loved it* / *Skipped* days is the past ("Loved it" is cooked and enjoyed). After it,
+    a day may only be *Planned* or *Rejected*: a past mark that follows an unresolved day is a contradiction, and is
+    reported rather than guessed at.
     """
     if len(recipe_ids) != len(marks):
         raise ValueError("one mark per planned day is required")
@@ -152,7 +159,8 @@ def build_replan_request(recipe_ids: Sequence[int], marks: Sequence[str]) -> Rep
         return ReplanRequest(changed=True, problem="Every day is marked as done: there is nothing left to plan.")
     cooked = tuple(None if marks[d] == DAY_SKIPPED else int(recipe_ids[d]) for d in range(elapsed))
     rejected = tuple(int(recipe_ids[d]) for d in range(elapsed, len(marks)) if marks[d] == DAY_REJECTED)
-    return ReplanRequest(cooked=cooked, rejected=rejected, remaining_days=remaining, changed=True)
+    loved = tuple(int(recipe_ids[d]) for d in range(elapsed) if marks[d] == DAY_LOVED)
+    return ReplanRequest(cooked=cooked, rejected=rejected, loved=loved, remaining_days=remaining, changed=True)
 
 
 # ---------------------------------------------------------------------------------------------------- use-by

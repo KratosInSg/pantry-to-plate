@@ -16,3 +16,4 @@ The optional LLM paraphraser continues to reword existing detailed explanations,
 
 ## Change log
 - 2026-10-16 — Substitution card shows fired substitution rules (source `substitution rule: <key>`), otherwise says none fired.
+- 2026-10-16 — Preference card names the closest rated dinners when the rating history raised the dinner's score; its source then adds "+ your rated dinners".

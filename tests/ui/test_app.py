@@ -154,7 +154,7 @@ def test_the_shopping_list_lists_items_by_group_and_can_be_downloaded(planned):
 
 def test_no_replan_is_possible_until_a_day_is_marked(planned):
     assert planned.button(key="replan").disabled
-    assert "Mark a day as cooked, skipped or rejected" in _texts(planned)
+    assert "Mark a day as cooked (or loved), skipped or rejected" in _texts(planned)
 
 
 def test_marking_days_out_of_order_is_explained_and_blocked():
@@ -207,3 +207,26 @@ def test_an_impossible_profile_is_explained_not_shown_as_an_empty_week():
     at.button(key="read_pantry").click().run()
     at.button(key="plan_week").click().run()
     assert not at.exception                      # whatever the outcome, the page explains it instead of breaking
+
+
+def test_a_loved_dinner_is_remembered_for_later_plans_until_forgotten():
+    at = _app()
+    at.button(key="use_example").click().run()
+    at.button(key="plan_week").click().run()
+    loved = at.session_state["week"].days[0].recipe_id
+    wid = at.session_state["week_id"]
+    at.radio(key=f"mark_{wid}_0").set_value("Loved it").run()
+    assert "count for more" in _texts(at)
+    at.button(key="replan").click().run(timeout=TIMEOUT)
+
+    assert not at.exception
+    assert [d.recipe_id for d in at.session_state["rated_dinners"]] == [loved]
+    assert [d.recipe_id for d in at.session_state["week"].scenario.profile.rated_dinners] == [loved]
+    sidebar = " ".join(str(c.value) for c in at.sidebar.caption)
+    assert "1 dinner you loved shapes new plans" in sidebar
+    # a fresh "Plan my week" still learns from it ...
+    at.button(key="plan_week").click().run(timeout=TIMEOUT)
+    assert [d.recipe_id for d in at.session_state["week"].scenario.profile.rated_dinners] == [loved]
+    # ... until the visitor says to forget it
+    at.sidebar.button(key="forget_loved").click().run()
+    assert "rated_dinners" not in at.session_state

@@ -33,3 +33,4 @@ widget's state after it was created). Unit tests of the logic could not have fou
 - 2026-10-14 — Added `test_the_llm_switch_is_hidden_when_no_model_is_reachable`.
 
 - 2026-10-15 — Resolve the Streamlit entry point relative to the repository root via `Path(__file__)`, not the pytest working directory.
+- 2026-10-16 — Added `test_a_loved_dinner_is_remembered_for_later_plans_until_forgotten` (mark, re-plan, fresh plan, forget); updated the unmarked-week message.

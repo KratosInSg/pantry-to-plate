@@ -4,8 +4,10 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from domain.models import UserProfile
-from preference.scorer import DEFAULT_WEIGHTS, disliked_mask, popularity, score_recipes
+from dataclasses import replace
+
+from domain.models import RatedDinner, UserProfile
+from preference.scorer import DEFAULT_WEIGHTS, disliked_mask, history_term, popularity, score_recipes
 
 
 @pytest.fixture(scope="module")
@@ -84,3 +86,47 @@ def test_disliked_mask_matches_dislikes(catalog, some_ingredient):
     mask = disliked_mask(catalog, UserProfile(disliked_ingredient_ids=frozenset({some_ingredient})))
     assert np.array_equal(np.flatnonzero(mask), np.sort(catalog.recipes_using(some_ingredient)))
     assert not disliked_mask(catalog, UserProfile()).any()
+
+
+# ------------------------------------------------------------------------------------------------ rating history
+def _loved(catalog, idx: int, rating: int = 5) -> RatedDinner:
+    """A catalogue recipe as a rated dinner (what the app builds when a dinner is marked "Loved it")."""
+    return RatedDinner(rating=rating, name=catalog.names[idx], recipe_id=int(catalog.recipe_id_of(idx)),
+                       ingredient_ids=frozenset(int(i) for i in catalog.ingredients(idx)[0]),
+                       tags=frozenset(catalog.tags[idx]))
+
+
+def test_without_a_history_the_score_is_exactly_as_before(catalog):
+    profile = UserProfile(liked_cuisines=frozenset({"italian"}))
+    no_history_weight = replace(DEFAULT_WEIGHTS, history=0.0)
+    assert np.array_equal(score_recipes(catalog, profile), score_recipes(catalog, profile, weights=no_history_weight))
+    assert not history_term(catalog, profile).any()
+
+
+def test_dinners_like_the_loved_ones_score_higher(catalog, ctx):
+    loved = [_loved(catalog, i) for i in range(500, 510)]                    # ten liked dinners: full confidence
+    with_history = score_recipes(catalog, UserProfile(rated_dinners=tuple(loved)), ctx.ignore_ids)
+    plain = score_recipes(catalog, UserProfile(), ctx.ignore_ids)
+    term = history_term(catalog, UserProfile(rated_dinners=tuple(loved)), ctx.ignore_ids)
+    assert term.min() >= -1.0 and term.max() <= 1.0
+    assert (with_history[500:510] > plain[500:510]).all()                    # the loved dinners themselves rise
+    assert with_history.min() >= 0.0 and with_history.max() <= 1.0
+    # recipes far from everything loved fall: the term is centred, not a bonus for everyone
+    assert (with_history < plain).any()
+
+
+def test_one_liked_dinner_only_nudges_and_ten_count_fully(catalog, ctx):
+    one = history_term(catalog, UserProfile(rated_dinners=(_loved(catalog, 500),)), ctx.ignore_ids)
+    ten = history_term(catalog, UserProfile(rated_dinners=tuple(_loved(catalog, i) for i in range(500, 510))),
+                       ctx.ignore_ids)
+    assert np.abs(one).max() <= 1.0 / DEFAULT_WEIGHTS.history_full_at + 1e-6
+    assert np.abs(ten).max() > 0.9
+
+
+def test_low_ratings_and_unknown_dinners_change_nothing(catalog, ctx):
+    disliked = UserProfile(rated_dinners=(_loved(catalog, 500, rating=2),))
+    unknown = UserProfile(rated_dinners=(RatedDinner(rating=5, ingredient_ids=frozenset({10**7})),))
+    for profile in (disliked, unknown):
+        assert not history_term(catalog, profile, ctx.ignore_ids).any()
+        assert np.array_equal(score_recipes(catalog, profile, ctx.ignore_ids),
+                              score_recipes(catalog, UserProfile(), ctx.ignore_ids))

@@ -17,3 +17,4 @@ Tests [`domain/models.py`](../../domain/models.md). Pure unit tests; no dataset 
 ## Change log
 
 - 2026-10-12 — Created.
+- 2026-10-16 — Added `test_a_rated_dinner_needs_a_five_star_rating_and_cannot_be_changed` and `test_rated_dinners_default_to_none_and_survive_a_json_round_trip` (old scenarios without the field still load).

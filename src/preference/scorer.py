@@ -19,11 +19,19 @@ Formula
                   + W_CUISINE   * cuisine_match            (+1 liked cuisine, -1 disliked, 0 otherwise)
                   + W_LIKED     * min(1, liked_hits / 2)   (liked ingredients present, saturating at 2)
                   - W_DISLIKED  * min(1, disliked_hits)    (any disliked ingredient is a strong negative)
-                  + W_POPULAR   * (2 * popularity - 1),    0, 1)
+                  + W_POPULAR   * (2 * popularity - 1)
+                  + W_HISTORY   * confidence * (2 * nearest - 1),    0, 1)
 
 ``popularity`` is the Bayesian-smoothed Food.com train rating mapped from [3.5, 5] to [0, 1]; unrated recipes get a
 neutral 0.5. Its weight is deliberately small: Food.com ratings are heavily skewed (72% are 5 stars), so they carry
 little signal beyond "not terrible".
+
+``nearest`` learns from the user's **rating history** (``UserProfile.rated_dinners``): how close the recipe is to the
+dinners they rated highly (``preference.history.nearest_dish_scores``, a rank in (0, 1], 0.5 = typical). It is the
+method that best predicted real people's later choices in the real-taste check (``md docs/evaluation.md``).
+``confidence`` = min(1, liked dinners / ``history_full_at``): one liked dinner nudges, ten count fully (the method
+compares each recipe with its 10 nearest liked dinners). With no rated dinners the term is 0, so a new user - and the
+planning benchmark, whose users have no history - is scored exactly as before.
 
 All weights are named constants so they can be tuned on the *validation* scenarios (never on test).
 """
@@ -36,6 +44,7 @@ import numpy as np
 
 from domain.models import UserProfile
 from knowledge.recipes import RecipeCatalog
+from preference.history import LIKE_MIN_RATING, nearest_dish_scores
 
 
 @dataclass(frozen=True, slots=True)
@@ -50,6 +59,10 @@ class PreferenceWeights:
     rating_prior_strength: float = 5.0     # "m" in the Bayesian average: pseudo-ratings at the global mean
     rating_floor: float = 3.5              # ratings at/below this map to popularity 0
     rating_ceiling: float = 5.0            # ratings at/above this map to popularity 1
+    # Hand-set to the scale of the liked-ingredient bonus: a recipe like the dinners someone loved should count about
+    # as much as one with foods they say they like. The planning benchmark cannot tune it (its users have no history).
+    history: float = 0.25
+    history_full_at: int = 10              # liked dinners for the full history weight (= NearestConfig.k)
 
 
 DEFAULT_WEIGHTS = PreferenceWeights()
@@ -102,8 +115,26 @@ def score_recipes(catalog: RecipeCatalog, profile: UserProfile, ignore_for_likes
     pop_term = 2.0 * popularity(catalog, weights) - 1.0
 
     score = (0.5 + weights.cuisine * cuisine_match + weights.liked_ingredient * liked_term
-             - weights.disliked_ingredient * disliked_term + weights.popularity * pop_term)
+             - weights.disliked_ingredient * disliked_term + weights.popularity * pop_term
+             + weights.history * history_term(catalog, profile, ignore, weights))
     return np.clip(score, 0.0, 1.0).astype(np.float32)
+
+
+def history_term(catalog: RecipeCatalog, profile: UserProfile, ignore_for_likes: Iterable[int] = (),
+                 weights: PreferenceWeights = DEFAULT_WEIGHTS) -> np.ndarray:
+    """``confidence * (2 * nearest - 1)`` in [-1, 1] per recipe (module docstring); all zeros without usable history.
+
+    "Usable" = at least one dinner rated 4-5 whose ingredients or tags the catalogue knows. Exposed so the explainer
+    and tests can see the term on its own.
+    """
+    n_liked = sum(1 for d in profile.rated_dinners if d.rating >= LIKE_MIN_RATING)
+    if n_liked == 0 or weights.history <= 0:
+        return np.zeros(catalog.n, dtype=np.float32)
+    nearest = nearest_dish_scores(catalog, profile.rated_dinners, ignore_for_likes)
+    if not nearest.any():                                   # nothing the catalogue recognises: no evidence
+        return np.zeros(catalog.n, dtype=np.float32)
+    confidence = min(1.0, n_liked / weights.history_full_at)
+    return (confidence * (2.0 * nearest - 1.0)).astype(np.float32)
 
 
 def disliked_mask(catalog: RecipeCatalog, profile: UserProfile) -> np.ndarray:

@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from explain.facts import DayFacts, PlanFacts, KCAL_IN_RANGE
-from explain.render import fmt_g, substitution_phrase
+from explain.render import fmt_g, similar_rated_phrase, substitution_phrase
 
 
 @dataclass(frozen=True)
@@ -38,10 +38,13 @@ def meal_cards(day: DayFacts, facts: PlanFacts) -> tuple[XAICard, ...]:
         preference.append(f"Matches your liked cuisine: {day.cuisine}.")
     if day.liked_ingredients:
         preference.append("Uses liked ingredients: " + ", ".join(day.liked_ingredients) + ".")
+    if day.similar_rated:
+        preference.append(similar_rated_phrase(day.similar_rated))
     if day.disliked_cuisine or day.disliked_ingredients:
         preference.append("Some soft dislikes remain; they are not hard exclusions.")
     if not preference:
-        preference.append("No explicit liked cuisine or ingredient match is recorded.")
+        preference.append("No explicit liked cuisine or ingredient match, and nothing close to a dinner you rated "
+                          "highly, is recorded.")
     nutrition = (f"{day.kcal:.0f} kcal is within your selected range."
                  if day.kcal_status == KCAL_IN_RANGE else
                  f"{day.kcal:.0f} kcal is outside your selected range by {day.kcal_gap:.0f} kcal.")
@@ -68,7 +71,8 @@ def meal_cards(day: DayFacts, facts: PlanFacts) -> tuple[XAICard, ...]:
     return (
         XAICard("expiry", "⏳", "Expiry", expiry, "pantry replay + expiry metadata"),
         XAICard("pantry", "🥫", "Pantry", pantry, "pantry replay"),
-        XAICard("preference", "❤️", "Preference", " ".join(preference), "user profile + recipe attributes"),
+        XAICard("preference", "❤️", "Preference", " ".join(preference),
+                "user profile + recipe attributes" + (" + your rated dinners" if day.similar_rated else "")),
         XAICard("nutrition", "🥗", "Nutrition", nutrition, "recipe nutrition + profile targets"),
         XAICard("groceries", "🛒", "Groceries", groceries, "pantry replay"),
         XAICard("constraint", "🛡️", "Constraint", constraint, "hard-rule checker"),

@@ -10,11 +10,15 @@ venv/
 # Raw downloads: large and reproducible from their sources (see data/canonical/README.md)
 data/FoodData_Central_csv_*/
 data/recipes/
+data/mealRecResearchpaper_Data/
 # data/foodkeeper/ is small (<1 MB) and its source blocks scripted downloads, so it IS tracked.
 
 # data/canonical/ is tracked on purpose: the team shares one curated dataset.
 # data/evaluation/ (the frozen benchmark) is tracked on purpose too; per-run result CSVs are derived and ignored.
-data/evaluation/runs/
+data/evaluation/**/runs/
+# MealRec-derived real-taste user sets: MealRec has no licence for redistribution (its repository only asks to be
+# cited), so the frozen sets stay local. Rebuild them with `python src/evaluation/taste_users.py` from the download.
+data/evaluation/taste_v*/
 
 # Editor / OS
 .vscode/

@@ -13,3 +13,4 @@ Tests [`ui/logic.py`](../../ui/logic.md). No Streamlit, no dataset.
 - 2026-10-13 — Created.
 - 2026-10-14 — Added `test_md_escape_neutralises_markdown` and `test_md_escape_keeps_the_visible_text_and_flattens_lines`.
 - 2026-10-14 — Added `local_today` tests: browser date wins (Singapore 04:30 vs 20:30 UTC), bad or malformed browser zones fall back to the configured one, and the server fallback is reported.
+- 2026-10-16 — "Loved it" mark: counts as cooked and as rating evidence, and is blocked out of order.

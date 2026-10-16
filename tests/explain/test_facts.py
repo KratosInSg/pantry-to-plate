@@ -238,3 +238,21 @@ def test_a_fired_substitution_rule_is_a_fact_of_that_day(ctx):
     assert [name for name, _ in swap.uses] == ["milk", "lemon juice"] and swap.note
     assert "buttermilk" not in {g.name for g in facts.groceries}
     assert {"milk", "lemon juice"} <= {u.name for u in facts.days[0].pantry_uses}
+
+
+def test_a_dinner_is_said_to_be_close_to_rated_ones_only_when_that_raised_its_score(ctx):
+    from domain.models import RatedDinner
+    from preference.scorer import history_term
+    cat = ctx.catalog
+    loved = tuple(RatedDinner(rating=5, name=cat.names[i], recipe_id=int(cat.recipe_id_of(i)),
+                              ingredient_ids=frozenset(int(x) for x in cat.ingredients(i)[0]),
+                              tags=frozenset(cat.tags[i])) for i in range(500, 510))
+    profile = UserProfile(rated_dinners=loved)
+    far = int(np.argmin(history_term(cat, profile, ctx.ignore_ids)))           # pushed down by the history
+    sc = Scenario(scenario_id="t", profile=profile, horizon_days=2)
+    facts = build_facts(sc, _plan(ctx, [500, far]), ctx)
+    assert cat.names[500] in facts.days[0].similar_rated                      # a loved dinner is closest to itself
+    assert 1 <= len(facts.days[0].similar_rated) <= 2
+    assert facts.days[1].similar_rated == ()                                  # never a justification after the fact
+    plain = build_facts(sc.model_copy(update={"profile": UserProfile()}), _plan(ctx, [500, far]), ctx)
+    assert all(d.similar_rated == () for d in plain.days)

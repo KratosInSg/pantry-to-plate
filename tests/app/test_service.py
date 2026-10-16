@@ -341,3 +341,33 @@ def test_a_substitution_shows_on_the_ingredient_line_and_leaves_the_grocery_box(
     assert line.to_buy_g == 0 and line.substituted_by.startswith("milk (") and "lemon juice" in line.substituted_by
     assert "buttermilk" not in {i.name for i in week.grocery_box.items}
     assert week.explanation.facts.days[0].substitutions[0].rule_key == "buttermilk_milk_lemon"
+
+
+# --------------------------------------------------------------------------------------------- rating history
+def test_rate_dinner_describes_a_catalogue_recipe_in_our_vocabulary(service, week):
+    rid = week.days[0].recipe_id
+    rated = service.rate_dinner(rid, 4)
+    idx = service.ctx.catalog.index_of(rid)
+    assert (rated.recipe_id, rated.rating, rated.name) == (rid, 4, week.days[0].name)
+    assert rated.ingredient_ids == {int(i) for i in service.ctx.catalog.ingredients(idx)[0]}
+    assert rated.tags == set(service.ctx.catalog.tags[idx])
+    with pytest.raises(ValueError, match="unknown recipe"):
+        service.rate_dinner(-1)
+    with pytest.raises(ValueError):
+        service.rate_dinner(rid, 6)
+
+
+def test_build_profile_carries_rated_dinners_and_keeps_the_latest_rating(service, week):
+    rid = week.days[0].recipe_id
+    built = service.build_profile(rated_dinners=[service.rate_dinner(rid, 2), service.rate_dinner(rid, 5)])
+    assert [(d.recipe_id, d.rating) for d in built.profile.rated_dinners] == [(rid, 5)]
+
+
+def test_a_loved_dinner_becomes_rating_evidence_for_the_rest_of_the_week(service, week):
+    first = week.days[0].recipe_id
+    again = service.replan(week, cooked=[first], loved=[first])
+    assert [d.recipe_id for d in again.scenario.profile.rated_dinners] == [first]
+    assert all(d.rating == 5 for d in again.scenario.profile.rated_dinners)
+    assert week.scenario.profile.rated_dinners == ()                     # the original week is not modified
+    later = service.replan(again, cooked=[again.days[0].recipe_id])        # carried through later re-plans
+    assert [d.recipe_id for d in later.scenario.profile.rated_dinners] == [first]

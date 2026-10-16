@@ -22,7 +22,7 @@ from __future__ import annotations
 
 from enum import Enum
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from nlp.schemas import Urgency
 
@@ -59,6 +59,23 @@ class Diet(str, Enum):
     VEGAN = "vegan"
 
 
+class RatedDinner(BaseModel):
+    """A dinner the user rated: evidence for ``preference.history``. Soft only - it shapes scores, never what is allowed.
+
+    Described in our vocabulary so it works for a catalogue recipe (``recipe_id`` set, e.g. a planned dinner marked
+    "Loved it") and for a dish from elsewhere (``recipe_id`` None, e.g. a MealRec rating).
+    """
+
+    model_config = ConfigDict(frozen=True)
+
+    rating: int = Field(ge=1, le=5)                         # 5-star scale; 4-5 count as liked
+    name: str = ""                                          # shown in explanations ("close to dinners you rated ...")
+    recipe_id: int | None = None                            # Food.com id when it is one of our recipes
+    ingredient_ids: frozenset[int] = frozenset()            # canonical ingredient ids
+    tags: frozenset[str] = frozenset()                      # catalogue tag vocabulary (dish type, protein, cuisine)
+    cuisines: frozenset[str] = frozenset()
+
+
 class UserProfile(BaseModel):
     """Constraints and preferences of the (single) user. MVP: one person, one serving per dinner."""
 
@@ -79,6 +96,7 @@ class UserProfile(BaseModel):
     liked_cuisines: frozenset[str] = frozenset()
     disliked_cuisines: frozenset[str] = frozenset()
     max_weekday_minutes: int = 45                           # soft cooking-time limit for Monday-Friday dinners
+    rated_dinners: tuple[RatedDinner, ...] = ()             # rating history: dinners like the liked ones score higher
 
     # --- nutrition targets (planning support against reference ranges, not medical advice) ------------------------
     daily_kcal_target: float = Field(default=2000.0, gt=500, lt=6000)

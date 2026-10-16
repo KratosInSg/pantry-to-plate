@@ -87,6 +87,12 @@ def sidebar_profile(service: PantryToPlateService, offer_llm: bool = True) -> tu
         liked_foods = st.text_input("Foods I like", key="liked_foods", max_chars=limit, placeholder="basil, mushrooms")
         disliked_foods = st.text_input("Foods I dislike", key="disliked_foods", max_chars=limit, placeholder="cilantro")
         never_foods = st.text_input("Never serve me", key="never_foods", max_chars=limit, placeholder="liver")
+        loved_dinners = tuple(st.session_state.get("rated_dinners") or ())
+        if loved_dinners:
+            n = len(loved_dinners)
+            st.caption(f"❤️ {n} dinner{'s' if n != 1 else ''} you loved {'shape' if n != 1 else 'shapes'} new plans: "
+                       "dinners like them count for more.")
+            st.button("Forget them", key="forget_loved", on_click=lambda: st.session_state.pop("rated_dinners", None))
 
     with sb.expander("🎯  Targets"):
         kcal = st.number_input("Calories per day", 1200, 4500, 2000, step=50, key="daily_kcal")
@@ -104,7 +110,7 @@ def sidebar_profile(service: PantryToPlateService, offer_llm: bool = True) -> tu
                 liked_cuisines=liked, disliked_cuisines=disliked, liked_foods=_split(liked_foods),
                 disliked_foods=_split(disliked_foods), excluded_foods=_split(never_foods),
                 daily_kcal_target=float(kcal), min_protein_g_per_dinner=float(protein),
-                max_weekday_minutes=int(minutes)), use_llm
+                max_weekday_minutes=int(minutes), rated_dinners=loved_dinners), use_llm
 
 
 # ==================================================================================================================
@@ -315,13 +321,15 @@ def _week_tab(service: PantryToPlateService, week: PlannedWeek) -> PlannedWeek |
 
     request = logic.build_replan_request([d.recipe_id for d in week.days], marks)
     rejected_names = [logic.display_name(d.name) for d in week.days if d.recipe_id in request.rejected]
+    loved_names = [logic.display_name(d.name) for d in week.days if d.recipe_id in request.loved]
     with st.container(border=True, key=f"card_replan_{wid}"):
         st.markdown("#### 🔄 Life happens")
         st.caption("Mark what you did on each dinner above, then re-plan the rest of the week from what's left.")
-        (st.error if request.problem else st.info)(request.describe(rejected_names))
+        (st.error if request.problem else st.info)(request.describe(rejected_names, loved_names))
         if st.button("Re-plan the remaining days", type="primary", key="replan", disabled=not request.ok):
             with st.spinner("Re-planning from what is left in your kitchen…"):
-                return service.replan(week, cooked=list(request.cooked), rejected=list(request.rejected))
+                return service.replan(week, cooked=list(request.cooked), rejected=list(request.rejected),
+                                      loved=list(request.loved))
     return None
 
 

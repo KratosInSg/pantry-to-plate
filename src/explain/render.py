@@ -137,6 +137,12 @@ def _use_phrase(facts: PlanFacts, use: PantryUse) -> str:
     return f"{fmt_g(use.grams)} {use.name}" + (f" (use {by})" if by else "")
 
 
+def similar_rated_phrase(names: tuple[str, ...]) -> str:
+    """``It is close to dinners you rated highly: Chicken Marsala and Beef Stew.``"""
+    one = len(names) == 1
+    return f"It is close to {'a dinner' if one else 'dinners'} you rated highly: {_join(list(names))}."
+
+
 def substitution_phrase(swap: SubstitutionFact) -> str:
     """``No buttermilk (240 g) to buy: milk (220 g) and lemon juice (15 g) from your pantry stand in for it.``"""
     parts = [f"{name} ({fmt_g(g)})" if g > 0 else f"{name} (a staple)" for name, g in swap.uses]
@@ -294,6 +300,8 @@ def _day(f: PlanFacts, d: DayFacts) -> Section:
     if d.disliked_ingredients:
         s.append(Statement(f"It contains {_join(list(d.disliked_ingredients))}, which you said you dislike.",
                            "preference", SRC_PROFILE))
+    if d.similar_rated:
+        s.append(Statement(similar_rated_phrase(d.similar_rated), "preference", SRC_PROFILE))
 
     if d.is_weekday:
         if d.minutes_over > 0:

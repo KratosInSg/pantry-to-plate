@@ -34,7 +34,7 @@ Five stages, left to right: input, understand, enrich, decide, output. The only 
 - **Substitution rules** — after the plan is chosen, an item the plan would buy is replaced by pantry stock when a
   known swap fits entirely from spare stock that passes the same hard rules (e.g. buttermilk ← milk + lemon juice).
   Each fired rule is recorded and cited by the explainer (`optimizer/substitutions.py`).
-- **Preference scorer** — content-based: similarity between the recipe (ingredients, cuisine, nutrition, cooking time) and the user's stated likes/dislikes, minus a penalty for disliked ingredients.
+- **Preference scorer** — content-based: similarity between the recipe (ingredients, cuisine, nutrition, cooking time) and the user's stated likes/dislikes, minus a penalty for disliked ingredients. It also **learns from the user's ratings**: dinners close to ones they rated highly (the "Loved it" mark) score higher (`preference/history.py`), the method checked on 100 real MealRec users (`md docs/evaluation.md`). No model is trained.
 - **Weekly optimiser** — a mixed-integer linear model solved with HiGHS (SciPy). Picks the 7-day combination of meals that minimises a weighted sum of: waste, extra groceries, nutrition deviation, and preference/repetition/cook-time penalties, subject to the hard rules.
 - Owner: `src/preference/`, `src/optimizer/`.
 

@@ -35,3 +35,18 @@ def test_substitution_card_and_sentence_cite_the_fired_rule(ctx):
     day = render(facts).section("day:0")
     swaps = [s for s in day.statements if s.source == SRC_SUBSTITUTION]
     assert len(swaps) == 1 and swaps[0].text == card.detail and swaps[0].term == "groceries"
+
+
+def test_preference_card_and_sentence_name_the_closest_rated_dinners(ctx):
+    from domain.models import RatedDinner, UserProfile
+    cat = ctx.catalog
+    loved = tuple(RatedDinner(rating=5, name=cat.names[i], recipe_id=int(cat.recipe_id_of(i)),
+                              ingredient_ids=frozenset(int(x) for x in cat.ingredients(i)[0]),
+                              tags=frozenset(cat.tags[i])) for i in range(500, 510))
+    sc = Scenario(scenario_id="xai-rated", horizon_days=1, profile=UserProfile(rated_dinners=loved))
+    facts = build_facts(sc, plan_from_indices("manual", ctx, [500], 1), ctx)
+    card = meal_cards(facts.days[0], facts)[2]
+    assert card.key == "preference" and "you rated highly" in card.detail and cat.names[500] in card.detail
+    assert card.source.endswith("+ your rated dinners")
+    sentences = [s for s in render(facts).section("day:0").statements if "you rated highly" in s.text]
+    assert len(sentences) == 1 and sentences[0].term == "preference"

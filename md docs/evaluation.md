@@ -1,5 +1,9 @@
 # Evaluation
 
+> **Results package:** [`Evaluation/`](../Evaluation/README.md) has one folder per evaluation, each with its tables,
+> the command that produced them and the per-scenario CSV. This page is the design and the running record. The
+> folder is what to read, or copy, for the report.
+
 ## Metrics
 
 | # | Metric | Checks |
@@ -39,7 +43,44 @@ All methods run on the same scenarios, so comparisons are paired: mean differenc
 > (see "Weight sweep"), so re-running them gives different optimiser rows. **The current reference is the next
 > section.**
 
-### Current reference run: adopted weights + vegetarian without eggs (2026-10-14)
+### Current reference run: Greedy vs Genetic vs MILP (2026-10-16)
+
+*Frozen benchmark v2 · **validation split** (n = 120, 15 per family) · adopted weights · current code ·
+`python src/evaluation/runner.py --split validation --planners random,greedy,genetic,optimiser --baseline greedy
+--save`. Full tables, per-family results and the 5-seed GA check:
+[`Evaluation/01_planner_comparison`](../Evaluation/01_planner_comparison/README.md). The test split has not been run.*
+
+| Method | Waste (g) | Extra grocery items | Pantry utilisation % | Dinners in kcal band % | Protein ok % | Preference (0–1) | Weekday overtime % | Violations | s / plan |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Random | 854 | 44.1 | 7.2 | 13.8 | 30.6 | 0.54 | 42 | 0 | 0.01 |
+| Greedy | 763 | 23.7 | **26.3** | 3.6 | 12.3 | 0.52 | 31 | 0 | 0.09 |
+| Genetic (GA) | 734 | **15.4** | 16.3 | 69.5 | **59.6** | 0.61 | 16 | 0 | 0.61 |
+| **MILP (HiGHS)** | **723** | **15.4** | 17.3 | **70.6** | 59.4 | **0.62** | **13** | 0 | 4.67 |
+
+Paired, 95 % bootstrap CI (n = 120):
+- MILP − greedy: waste **−40 g** [−64, −17], groceries **−8.3 items** [−9.8, −6.8], kcal-in-band **+67 pts**.
+- GA − greedy: waste **−30 g** [−52, −8], groceries **−8.3 items**, kcal-in-band **+66 pts**.
+- MILP − GA: waste **−10 g** [−17, −3], groceries +0.0 [−0.2, +0.3], kcal-in-band +1.1 [−1.0, +3.5].
+
+The GA is stable across 5 seeds (waste 728.8 ± 1.9 g), so it is a near-equal, 7.7× faster alternative to the MILP. The
+optimisers buy fewer distinct items but about 0.9 kg more food by weight than greedy. Greedy and the MILP match the
+2026-10-14 run below (greedy exactly; the MILP within the time-limit noise).
+
+### Ablations re-run with the adopted weights (2026-10-16)
+
+*Same split, n = 120; each variant minus the full MILP. Details:
+[`Evaluation/02_ablations`](../Evaluation/02_ablations/README.md).*
+
+| Variant | Waste (g) | Expiring stock used (pts) | Grocery items | kcal-in-band (pts) | Protein ok (pts) | Preference | Disliked dinners (pts) |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `no_expiry` | **+32 \*** [+21, +44] | **−4.3 \*** | **−0.4 \*** | −0.5 | −1.0 | +0.003 | −0.1 |
+| `no_nutrition` | −8 [−20, +3] | +0.7 | **−3.8 \*** | **−45 \*** [−49, −41] | **−26 \*** | +0.002 | −0.5 |
+| `no_preference` | **−15 \*** [−26, −7] | **+1.8 \*** | **−1.0 \*** | −1.1 | −0.7 | **−0.050 \*** [−0.061, −0.040] | **+1.3 \*** |
+
+With the tuned weights the preference term is now a real lever: −0.050 when switched off, where the 2026-10-12 run
+below found −0.01. Its price is about 15 g of waste and one grocery item per week.
+
+### Earlier reference run: adopted weights + vegetarian without eggs (2026-10-14)
 
 *Frozen benchmark v1 · **validation split only** (n = 120) · adopted weights (preference 6.0, kcal 8.0, protein 4.0) ·
 vegetarian = no meat, fish **or eggs** (rule changed 2026-10-14, dataset rebuilt) · `python src/evaluation/runner.py
@@ -105,7 +146,7 @@ Per family (optimiser − greedy; CI over 15 scenarios, so wide):
 | restrictive_diet | +21 [−21, +65] | −14.9 [−19.6, −10.3] | +68 [+58, +78] |
 | infeasible_combo | **+30** [+5, +64] | −18.1 [−20.7, −15.6] | +23 [+15, +31] |
 
-### Ablations (same split; each variant minus the full optimiser, paired, n = 120)
+### Ablations, first run with the untuned weights (2026-10-12; superseded by the re-run above)
 
 Run with `--planners opt_no_expiry,opt_no_nutrition,opt_no_preference --save`; paired against the full optimiser's rows
 from the run above. `*` = the 95 % CI excludes 0.
@@ -246,7 +287,7 @@ per-main-ingredient cap, or charging repeated main ingredients) is open work. Th
 
 *Frozen benchmark v2 (byte-exact rebaseline of v1) · **validation split only**, 48 scenarios (6 per family) · current
 default weights · `python src/evaluation/robustness.py --split validation --planners greedy,optimiser,opt_no_expiry
---baseline opt_no_expiry --limit 48 --save` → `data/evaluation/v2/runs/20261016_164315_robustness_validation.csv`.*
+--baseline opt_no_expiry --limit 48 --save` → rows in `Evaluation/03_robustness/robustness_validation.csv`.*
 
 Each plan is made once from what the planner is told, then replayed against perturbed realities
 (`evaluation/robustness.py`): estimated deadlines 1 or 2 days earlier, ±2-day jitter, 30 % less / more stock,
@@ -280,9 +321,86 @@ spoils 2 days early, waste **+10.8 g [−0.9, +25.5]**. 30 % less stock: waste *
 * A natural remedy, not built: discount the expiry credit by the estimate's confidence more strongly, or re-plan
   mid-week (`optimizer/replan.py`) once the user reports what actually spoiled.
 
+### Real-taste preference check: MealRec users (2026-10-16)
+
+*Frozen real-taste set `data/evaluation/taste_v2` (100 MealRec users: 50 validation / 50 test; the same users as
+`taste_v1`, plus dinner tags). The method and its settings were chosen on the validation users. The **test users were
+then run once**, with nothing changed in between. `python src/evaluation/taste_eval.py --split validation|test`; per-user
+rows in `Evaluation/04_real_taste_preferences/`.*
+
+**Question.** The planning benchmark's likes are invented, so its preference metric only shows that the optimiser
+follows them. Here the likes are real. For each user, the earliest 80 dinners they rated on Allrecipes play the part of
+"dinners we suggested and they rated". Preferences built from those are checked against the dinners they rated
+*later* (those that exist in our catalogue: about 24 per test user and 28 per validation user). No later rating is
+used to build anything.
+
+**Protocol** (the MealRec paper's own, Li et al. 2022, Section 5.1.1). Each held-out dinner is ranked against 99
+recipes the user never rated, sampled at random with a fixed seed and shared by every method.
+- **HR@K:** the dinner is in the top K of those 100. Chance is K/100, so HR@10 = 0.10.
+- **NDCG@K:** also rewards a higher place.
+- **AUC:** the stricter full-ranking counterpart (0.5 = chance), reported next to the sampled metrics because sampled
+  metrics can flatter every method and even reorder them (Krichene & Rendle, KDD 2020).
+
+**Methods** (none is trained):
+
+| Method | What scores the catalogue |
+| --- | --- |
+| Popularity | Today's scorer for a user who states nothing: only the Food.com rating prior |
+| Likes in the profile | Liked ingredients / cuisines derived from the history, put into today's scorer unchanged ("plug and play") |
+| Average-dish similarity | Ingredient similarity to the user's *average* liked dinner |
+| **Nearest dishes + tags** | Mean similarity to the user's **10 most similar** liked dinners, over ingredients and over tags (dish type, main protein, cuisine), mixed 50/50. Keeps mixed tastes (e.g. Mexican *and* Italian) apart |
+
+**Results: test users, single run** (validation in brackets):
+
+| Method | HR@10 | NDCG@10 | HR@5 | AUC |
+| --- | --- | --- | --- | --- |
+| Chance level | 0.100 | 0.045 | 0.050 | 0.500 |
+| Popularity (today) | 0.119 (0.115) | 0.052 (0.058) | 0.055 (0.068) | 0.518 (0.531) |
+| Likes in the profile | 0.140 (0.137) | 0.069 (0.071) | 0.074 (0.084) | 0.549 (0.539) |
+| Average-dish similarity | 0.174 (0.204) | 0.085 (0.089) | 0.087 (0.100) | 0.587 (0.598) |
+| **Nearest dishes + tags** | **0.202** (0.235) | **0.092** (0.116) | **0.107** (0.142) | **0.622** (0.643) |
+
+Chance-level NDCG@10 is the expected value for a random rank among 100. The empirical `random` row that `taste_eval`
+prints (test: HR@10 0.083, AUC 0.499) varies around those values.
+
+Nearest dishes + tags minus popularity, paired over the 50 test users, 95 % bootstrap CI:
+- HR@10 **+0.083 [+0.040, +0.127]**
+- NDCG@10 **+0.040 [+0.020, +0.061]**
+- AUC **+0.105 [+0.075, +0.134]**
+- higher HR@10 for 64 % of users
+
+**How to read it.**
+* **Preferences learned from a person's past ratings predict what they choose later: about twice the chance hit
+  rate** (HR@10 0.20 vs 0.10). They also beat today's popularity prior, with every confidence interval clear of zero
+  on the held-out test users.
+* **Plugging likes into the existing profile fields gives part of the gain** (test AUC +0.031 [+0.009, +0.053] over
+  popularity, though not on HR@10). Keeping the whole history as nearest dishes with tags gives the largest gain.
+* **The numbers stay well below the MealRec paper's** (HR@10 0.42–0.69). That is not a difference of metric. Those
+  models are trained on the same site's own interaction data and rank whole meals; ours is content-only, works across
+  sites (Allrecipes ratings → Food.com recipes), and needs no training. An exploratory diagnostic on the same
+  validation users (scratch scripts, not in the repository) puts the gap in context. Inside MealRec, simple same-site
+  popularity reaches HR@10 ≈ 0.45 and item-to-item collaborative filtering ≈ 0.46, while ingredient-only content stays
+  at ≈ 0.19 there too. The limit is the missing behaviour data (who else liked what on *our* platform), which is slide
+  4's "collaborative filtering once multi-user data exists".
+* Food.com behaviour does not stand in for that data. On these users, Food.com rating counts (AUC 0.532) and
+  Food.com item-to-item filtering (0.516) were no better than today's prior (validation, exploratory).
+* **Now in the planner (2026-10-16):** the nearest-dishes score is the rating-history term of `preference.scorer`
+  (dinners in `UserProfile.rated_dinners`, e.g. those marked "Loved it"). The integrated scorer was checked on the
+  **validation users only** (`scorer_with_history`, added after the single test run): HR@10 0.240, NDCG@10 0.123,
+  AUC 0.643, ahead of popularity by +0.125 HR@10 [+0.093, +0.159] for 82 % of users. That is the same as the method
+  on its own, so wiring it in did not cost ranking quality. The test users were not run again.
+
+<details><summary>First run on taste_v1 (validation only; superseded)</summary>
+
+The first run, before tags and the paper's protocol existed, compared popularity (AUC 0.531), likes in the profile
+(0.539) and average-dish similarity (0.598) on the same 50 validation users. An exploratory sweep of the like-derivation
+thresholds reached at most 0.564 (about 23 likes per user, chosen on the users it is reported for). These numbers match
+the AUC column above.
+</details>
+
 ### How to read this
 
-*(Numbers from the current reference run, 2026-10-14.)*
+*(Numbers from the 2026-10-14 reference run; the 2026-10-16 Greedy vs GA vs MILP run above confirms them.)*
 
 * **Supported:** planning the week jointly needs ~34 % fewer extra grocery items than greedy (15.6 vs 23.7), puts 72 %
   of dinners inside the calorie band (greedy: 4 %), cuts weekday over-time dinners from 31 % to 13 %, with **zero
@@ -307,5 +425,5 @@ spoils 2 days early, waste **+10.8 g [−0.9, +25.5]**. 30 % less stock: waste *
 
 ## What's not proven
 
-- Real taste satisfaction — there's no real user panel. Preference quality is measured against synthetic profiles with known likes/dislikes, and optionally checked offline by seeing whether the preference score ranks Food.com users' higher-rated recipes above their lower-rated ones.
+- Real taste satisfaction — there's no real user panel. Preference quality in the planning benchmark is measured against synthetic profiles with known likes/dislikes. The real-taste check above uses real people's past ratings (MealRec), but it is offline (ranking their later-rated dinners), positive-only, and not a study of people eating our plans.
 - Constraint safety is relative to the knowledge base — hidden allergens in branded/packaged products aren't covered yet (see architecture.md → Out of scope).

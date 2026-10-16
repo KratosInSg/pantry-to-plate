@@ -28,3 +28,4 @@ solver's own numbers.
 - 2026-10-13 — Created.
 - 2026-10-13 — Added `test_assumed_quantities_are_listed_but_stated_ones_are_not`.
 - 2026-10-16 — Week-totals test compares against `replay_with_substitutions`; added `test_a_fired_substitution_rule_is_a_fact_of_that_day`.
+- 2026-10-16 — Added `test_a_dinner_is_said_to_be_close_to_rated_ones_only_when_that_raised_its_score`.

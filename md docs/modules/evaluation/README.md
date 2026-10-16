@@ -32,6 +32,8 @@ metrics.summarise / paired_bootstrap            per-family and paired comparison
 | `metrics.py` | `evaluate_plan`, `summarise`, `paired_bootstrap` | [metrics.md](metrics.md) |
 | `runner.py` | Planner registry + CLI comparison | [runner.md](runner.md) |
 | `build_benchmark.py` | One-shot freeze script | [build_benchmark.md](build_benchmark.md) |
+| `taste_users.py` | Builds / freezes / loads the 100 MealRec real-taste users (`data/evaluation/taste_v2/`; v1 kept) | [taste_users.md](taste_users.md) |
+| `taste_eval.py` | Real-taste preference check: do preferences from earlier ratings rank later liked dinners high (HR@K / NDCG@K with the MealRec paper's protocol, AUC) | [taste_eval.md](taste_eval.md) |
 | `robustness.py` | Measure 8: replay each plan against perturbed realities (earlier spoilage, wrong amounts); signed degradation, paired vs `opt_no_expiry` | [robustness.md](robustness.md) |
 
 ## Discipline (project non-negotiable)
@@ -44,3 +46,5 @@ metrics.summarise / paired_bootstrap            per-family and paired comparison
 
 - 2026-10-12 — Package created; benchmark v1 frozen (240 scenarios, 120 validation / 120 test).
 - 2026-10-16 — Added `robustness.py` (measure 8: degradation under expiry / quantity perturbations).
+- 2026-10-16 — Added `taste_users.py` and `taste_eval.py` (real-taste preference check on MealRec users).
+- 2026-10-16 — Real-taste check: `taste_v2` (adds tags), paper-protocol HR/NDCG metrics; test users run once.

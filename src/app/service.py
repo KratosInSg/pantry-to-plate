@@ -20,6 +20,8 @@ Typical use::
     week = service.plan_week(service.make_scenario(profile, pantry))
     # ... later, day 0 was cooked, day 1 skipped, and the user rejected Wednesday's dinner:
     week = service.replan(week, cooked=[week.days[0].recipe_id, None], rejected=[week.days[2].recipe_id])
+    # ... and they loved Monday's dinner: it becomes rating evidence, so later plans favour dinners like it
+    week = service.replan(week, cooked=[week.days[0].recipe_id], loved=[week.days[0].recipe_id])
 """
 from __future__ import annotations
 
@@ -35,7 +37,7 @@ from rapidfuzz import fuzz, process
 from app.grocery import build_grocery_box
 from app.models import (ENTRY_ASSUMED, ENTRY_CHOOSE, ENTRY_NO_AMOUNT, ENTRY_OK, ENTRY_UNKNOWN, ENTRY_UNSAFE, DayPlan,
                         IngredientChoice, IngredientLine, PantryEntry, PantryReview, PlannedWeek)
-from domain.models import ALLERGENS, HORIZON_DAYS, Diet, PantryItem, Scenario, UserProfile, WeekPlan
+from domain.models import ALLERGENS, HORIZON_DAYS, Diet, PantryItem, RatedDinner, Scenario, UserProfile, WeekPlan
 from domain.pantry import (SKIP_AMBIGUOUS, SKIP_NO_AMOUNT, SKIP_UNKNOWN, SKIP_UNSAFE, make_pantry_item,
                            merge_pantry_items, pantry_from_parse)
 from explain.facts import build_facts
@@ -187,12 +189,15 @@ class PantryToPlateService:
                       excluded_recipe_ids: Iterable[int] = (), daily_kcal_target: float = 2000.0,
                       dinner_kcal_share: float = 0.30, kcal_tolerance: float = 0.20,
                       min_protein_g_per_dinner: float = 20.0, max_weekday_minutes: int = 45,
-                      max_total_minutes: int | None = None, dinner_only: bool = True) -> ProfileBuild:
+                      max_total_minutes: int | None = None, dinner_only: bool = True,
+                      rated_dinners: Iterable[RatedDinner] = ()) -> ProfileBuild:
         """Build a validated :class:`UserProfile` from plain form values.
 
         Food fields take *names*; names that cannot be matched are reported in ``resolution`` and left out (never
         silently turned into a different food). ``dinner_only`` (on by default for the app) leaves out breakfast
         dishes, doughs and batters that the dataset's "main-dish" tag lets through; the explanation says how many.
+        ``rated_dinners`` is the user's rating history (e.g. from :meth:`rate_dinner`); dinners like the ones rated
+        4-5 then score higher (``preference.scorer``). It is soft evidence: it never allows or forbids anything.
 
         Raises:
             ValueError: an unknown diet / allergen / cuisine, a number outside its allowed range, or more than
@@ -229,12 +234,28 @@ class PantryToPlateService:
             disliked_ingredient_ids=ids_of(disliked), liked_cuisines=liked_c, disliked_cuisines=disliked_c,
             max_weekday_minutes=max_weekday_minutes, daily_kcal_target=daily_kcal_target,
             dinner_kcal_share=dinner_kcal_share, kcal_tolerance=kcal_tolerance,
-            min_protein_g_per_dinner=min_protein_g_per_dinner)
+            min_protein_g_per_dinner=min_protein_g_per_dinner, rated_dinners=_merge_rated((), rated_dinners))
         logger.debug("profile: %s, allergens %s, %d liked / %d disliked / %d excluded food(s) resolved; %d unresolved, "
                      "%d ambiguous", diet_value.value, sorted(allergen_set) or "none", len(profile.liked_ingredient_ids),
                      len(profile.disliked_ingredient_ids), len(profile.excluded_ingredient_ids), len(res.unresolved),
                      len(res.ambiguous))
         return ProfileBuild(profile=profile, resolution=res, notes=notes)
+
+    def rate_dinner(self, recipe_id: int, rating: int = 5) -> RatedDinner:
+        """A catalogue recipe the user rated, as rating evidence for later plans (``UserProfile.rated_dinners``).
+
+        Raises:
+            ValueError: an unknown recipe id, or a rating outside 1-5.
+        """
+        cat = self.ctx.catalog
+        try:
+            idx = cat.index_of(int(recipe_id))
+        except KeyError:
+            raise ValueError(f"unknown recipe id {recipe_id}") from None
+        info = cat.info(idx)
+        return RatedDinner(rating=rating, name=info.name, recipe_id=int(recipe_id),
+                           ingredient_ids=frozenset(int(i) for i in cat.ingredients(idx)[0]),
+                           tags=frozenset(cat.tags[idx]), cuisines=frozenset({info.cuisine} if info.cuisine else ()))
 
     # ------------------------------------------------------------------------------------------------ the pantry
     def review_pantry(self, text: str, today: date | None = None, horizon_days: int = HORIZON_DAYS) -> PantryReview:
@@ -361,7 +382,7 @@ class PantryToPlateService:
         return replace(planned, explanation=explanation, days=days)
 
     def replan(self, planned: PlannedWeek, cooked: Sequence[int | None] = (), rejected: Iterable[int] = (),
-               paraphrase: bool = False) -> PlannedWeek:
+               paraphrase: bool = False, loved: Iterable[int] = ()) -> PlannedWeek:
         """Re-plan the days that are left, from the current pantry.
 
         Args:
@@ -371,6 +392,9 @@ class PantryToPlateService:
             rejected: recipe ids the user does not want. They are excluded from every remaining day (and stay
                 excluded through later re-plans, because the exclusion lives in the carried scenario's profile).
             paraphrase: as for :meth:`plan_week`.
+            loved: recipe ids the user rated "loved it". Each is added to the profile's ``rated_dinners`` (rating 5;
+                a later rating of the same recipe replaces an earlier one), so the remaining days - and every later
+                re-plan, through the carried scenario - favour dinners like it.
 
         Past days are never touched: they are outside the new problem. Food a skipped or rejected dinner would
         have used is still in the pantry, one day closer to its deadline, which is what the waste term chases.
@@ -385,6 +409,13 @@ class PantryToPlateService:
             profile = scenario.profile.model_copy(update={
                 "excluded_recipe_ids": scenario.profile.excluded_recipe_ids | rejected_ids})
             scenario = scenario.model_copy(update={"profile": profile})
+        loved_dinners = [self.rate_dinner(r, 5) for r in dict.fromkeys(int(r) for r in loved)]
+        if loved_dinners:
+            profile = scenario.profile.model_copy(update={
+                "rated_dinners": _merge_rated(scenario.profile.rated_dinners, loved_dinners)})
+            scenario = scenario.model_copy(update={"profile": profile})
+            logger.debug("re-planning with %d loved dinner(s); %d rated dinner(s) in the profile", len(loved_dinners),
+                         len(profile.rated_dinners))
         plan = self._planner.plan(scenario)
         expired = {self._name(i): g for i, g in rolled.expired_g.items()}
         if expired:
@@ -461,6 +492,16 @@ class PantryToPlateService:
             grocery_box=build_grocery_box(report, ctx.store, scenario.start_weekday), explanation=explanation,
             status=plan.status, complete=facts.complete, solve_seconds=float(plan.diagnostics.get("solve_seconds", 0.0)),
             day_offset=day_offset, expired=expired or {})
+
+
+def _merge_rated(existing: Iterable[RatedDinner], new: Iterable[RatedDinner]) -> tuple[RatedDinner, ...]:
+    """``existing`` then ``new``; for a catalogue recipe rated twice, the later rating replaces the earlier one."""
+    out: dict[object, RatedDinner] = {}
+    for k, dinner in enumerate(list(existing) + list(new)):
+        key = dinner.recipe_id if dinner.recipe_id is not None else ("outside", k)
+        out.pop(key, None)                                  # re-insert so the newest rating also sits last
+        out[key] = dinner
+    return tuple(out.values())
 
 
 def _log_planned(planned: PlannedWeek, seconds: float) -> None:

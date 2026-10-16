@@ -18,7 +18,9 @@ pantry used / bought   ``optimizer.substitutions.replay_with_substitutions``: th
 substitutions          the fired rule itself (``optimizer.substitutions.Substitution``): rule key, grams, substitutes
 unused expiring stock  the same replay
 kcal / protein / time  the recipe's computed nutrition and the user's own targets (``UserProfile``)
-preference reasons     the scorer's own components: liked / disliked cuisine and ingredients
+preference reasons     the scorer's own components: liked / disliked cuisine and ingredients, and - when the
+                       rating-history term raised this dinner's score - the liked dinners it is closest to
+                       (``preference.history.nearest_rated``, the same similarity the term ranks by)
 rules                  ``optimizer.hard_rules.violation_masks``: how many dinners each active rule removed
 cost terms             ``WeekPlan.diagnostics["cost_<term>"]`` written by the weekly optimiser, whose sum is the
                        objective it minimised. Absent for baselines, which have no cost terms to cite
@@ -42,6 +44,8 @@ from optimizer.inventory import visible_deadlines
 from optimizer.planning import PlanningContext
 from optimizer.substitutions import replay_with_substitutions
 from optimizer.weekly import COST_TERMS
+from preference.history import nearest_rated
+from preference.scorer import history_term
 
 WEEKDAY_NAMES = ("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
 
@@ -151,6 +155,7 @@ class DayFacts:
     liked_ingredients: tuple[str, ...]
     disliked_ingredients: tuple[str, ...]
     substitutions: tuple[SubstitutionFact, ...] = ()
+    similar_rated: tuple[str, ...] = ()   # liked rated dinners this one is close to (only when that raised its score)
 
 
 @dataclass(frozen=True, slots=True)
@@ -248,6 +253,11 @@ def build_facts(scenario: Scenario, plan: WeekPlan, ctx: PlanningContext) -> Pla
         urgent[iid] = any(p.urgency.value != "none" for p in items)
 
     low, high = profile.dinner_kcal_range
+    # the rating-history term as the scorer computed it; a dinner is said to be "close to dinners you rated highly"
+    # only where the term pushed its score up, never as an after-the-fact justification
+    rated = profile.rated_dinners
+    term = (history_term(cat, profile, ctx.ignore_ids, ctx.preference_weights)
+            if rated and ctx.preference_weights.history > 0 else None)
     days: list[DayFacts] = []
     for day, idx in enumerate(indices):
         info = cat.info(idx)
@@ -268,6 +278,10 @@ def build_facts(scenario: Scenario, plan: WeekPlan, ctx: PlanningContext) -> Pla
         below, above = low - kcal, kcal - high
         status = (KCAL_BELOW if below > GAP_TOLERANCE else KCAL_ABOVE if above > GAP_TOLERANCE else KCAL_IN_RANGE)
         protein_gap = profile.min_protein_g_per_dinner - info.protein_g
+        similar: tuple[str, ...] = ()
+        if term is not None and term[idx] > 0:
+            similar = tuple(rated[pos].name or "a dinner you rated"
+                            for pos, _ in nearest_rated(cat, rated, idx, ctx.ignore_ids))
         swaps = tuple(SubstitutionFact(sw.rule_key, name_of(sw.replaced_id), sw.replaced_g,
                                        tuple((name_of(i), g) for i, g in sw.uses), sw.note)
                       for sw in replay.on_day(day))
@@ -281,7 +295,7 @@ def build_facts(scenario: Scenario, plan: WeekPlan, ctx: PlanningContext) -> Pla
             pantry_uses=uses, groceries=groceries,
             liked_cuisine=info.cuisine is not None and info.cuisine in profile.liked_cuisines,
             disliked_cuisine=info.cuisine is not None and info.cuisine in profile.disliked_cuisines,
-            liked_ingredients=liked, disliked_ingredients=disliked, substitutions=swaps))
+            liked_ingredients=liked, disliked_ingredients=disliked, substitutions=swaps, similar_rated=similar))
 
     masks = violation_masks(cat, profile)
     allowed = np.ones(cat.n, dtype=bool)

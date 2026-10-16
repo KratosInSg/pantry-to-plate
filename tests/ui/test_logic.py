@@ -7,7 +7,7 @@ from datetime import date, datetime, timezone
 import pytest
 
 from app.models import ENTRY_ASSUMED, ENTRY_CHOOSE, ENTRY_NO_AMOUNT, ENTRY_OK, ENTRY_UNKNOWN, ENTRY_UNSAFE, PantryEntry
-from ui.logic import (DAY_COOKED, display_name, DAY_MARKS, DAY_PLANNED, DAY_REJECTED, DAY_SKIPPED, apply_use_by, build_replan_request,
+from ui.logic import (DAY_COOKED, DAY_LOVED, display_name, DAY_MARKS, DAY_PLANNED, DAY_REJECTED, DAY_SKIPPED, apply_use_by, build_replan_request,
                       current_use_by_index, local_today, md_escape, needs_choice, status_label, use_by_choices,
                       weekday_label)
 
@@ -71,7 +71,7 @@ def test_bad_input_is_rejected_loudly():
 
 
 def test_the_marks_the_ui_offers_are_exactly_the_ones_the_logic_understands():
-    assert set(DAY_MARKS) == {DAY_PLANNED, DAY_COOKED, DAY_SKIPPED, DAY_REJECTED}
+    assert set(DAY_MARKS) == {DAY_PLANNED, DAY_COOKED, DAY_LOVED, DAY_SKIPPED, DAY_REJECTED}
 
 
 # ---------------------------------------------------------------------------------------------------- use-by
@@ -189,3 +189,20 @@ def test_an_unusable_browser_timezone_falls_back_to_the_configured_one(bad):
 def test_without_any_timezone_the_server_date_is_used_and_says_so():
     day, source = local_today(None, LATE_UTC, configured_timezone="Not/AZone")
     assert source == "server" and day == LATE_UTC.astimezone().date()
+
+
+def test_a_loved_day_is_a_cooked_day_that_is_also_rating_evidence():
+    r = build_replan_request(IDS, _marks(d0=DAY_LOVED, d1=DAY_COOKED, d2=DAY_LOVED, d4=DAY_REJECTED))
+    assert r.ok and r.cooked == (IDS[0], IDS[1], IDS[2]) and r.loved == (IDS[0], IDS[2])
+    assert r.rejected == (IDS[4],) and r.remaining_days == 4
+    text = r.describe(rejected_names=["Fish pie"], loved_names=["Chili", "Dal"])
+    assert "dinners like Chili, Dal count for more" in text and "Fish pie will not come back" in text
+
+
+def test_loving_a_day_out_of_order_is_reported_not_guessed():
+    r = build_replan_request(IDS, _marks(d1=DAY_LOVED))
+    assert not r.ok and "Mark days in order" in r.problem
+
+
+def test_without_loved_days_the_request_has_no_loved_dinners():
+    assert build_replan_request(IDS, _marks(d0=DAY_COOKED)).loved == ()

@@ -45,3 +45,4 @@ Calls `logging_setup.configure_logging()` before `main()`. It is idempotent, so 
 - 2026-10-14 — Configures logging at start-up (`logging_setup.configure_logging`).
 - 2026-10-14 — Profile notes and validation errors are escaped with `logic.md_escape` (they quote what the user typed). `.streamlit/config.toml` now hides tracebacks (`showErrorDetails = "none"`) and developer menu items.
 - 2026-10-14 — "Today" comes from the visitor's browser timezone; the LLM switch is shown only when a model is reachable.
+- 2026-10-16 — After a re-plan, the profile's `rated_dinners` are kept in `st.session_state["rated_dinners"]` so the next "Plan my week" uses them.

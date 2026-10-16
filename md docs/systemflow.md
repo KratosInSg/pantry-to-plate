@@ -40,6 +40,7 @@ flowchart LR
 - Past, already-cooked days are never touched.
 - Ingredients from a skipped/rejected meal stay in the pantry and still need to be used — they're prioritised in the re-plan ahead of anything with less shelf life left.
 - A rejection is asked "not today, or never?" — "not today" gets a low weight in the preference model, "never" a higher one.
+- As built: a cooked dinner can be marked **"Loved it"**. It counts as cooked, and it joins the profile's rated dinners, so the rest of the week, every later re-plan and the next "Plan my week" in the session favour dinners like it (`ui/logic.py` → `service.replan(loved=...)` → `preference.scorer`).
 - Anything hitting its use-by date today can't be pushed later; the system suggests freezing it or a same-night quick prep instead.
 
 **Counterfactual question ("what if I don't want paneer?")**

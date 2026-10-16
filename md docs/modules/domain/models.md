@@ -18,7 +18,8 @@ UI / benchmark generator ───────────▶ UserProfile ──
 | --- | --- |
 | `Diet` | `omnivore`, `pescatarian`, `vegetarian` (no meat, fish or eggs; dairy fine), `vegan` — each a hard rule |
 | `ALLERGENS` | The nine allergen names; each maps to a `contains_<name>` flag on ingredients and recipes |
-| `UserProfile` | Hard constraints (diet, allergens, pork, alcohol, excluded ingredients, **excluded recipes** (rejected dinners), optional time cap, **`dinner_only`**), soft preferences (likes/dislikes, cuisines, weekday time limit) and nutrition targets |
+| `UserProfile` | Hard constraints (diet, allergens, pork, alcohol, excluded ingredients, **excluded recipes** (rejected dinners), optional time cap, **`dinner_only`**), soft preferences (likes/dislikes, cuisines, weekday time limit, **`rated_dinners`** — the rating history) and nutrition targets |
+| `RatedDinner` | A dinner the user rated (frozen): `rating` 1–5 (4–5 = liked), `name`, `recipe_id` (our Food.com id, or `None` for a dish from elsewhere), `ingredient_ids`, `tags`, `cuisines`. Soft evidence for `preference.history`; never allows or forbids anything |
 | `PantryItem` | `ingredient_id`, `grams`, `last_use_day`, `expiry_known`, `expiry_confidence`, `urgency`, `quantity_assumed` |
 | `Scenario` | One planning problem: profile + pantry + horizon + start weekday (+ hidden truth for benchmarks). `is_weekday(day)` |
 | `WeekPlan` | `planner`, `recipe_ids` (index = day), `status`, `diagnostics`. `is_complete` |
@@ -52,3 +53,4 @@ UI / benchmark generator ───────────▶ UserProfile ──
 - 2026-10-14 — `Diet.VEGETARIAN` documented as no meat, fish or eggs.
 
 - 2026-10-15 — New `RESTRICTABLE_FOOD_FLAGS` and validated `UserProfile.excluded_food_groups` opt-in exclusions.
+- 2026-10-16 — `RatedDinner` and `UserProfile.rated_dinners` (default empty, so stored scenarios and the frozen benchmark load unchanged, tested).

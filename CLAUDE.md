@@ -45,6 +45,7 @@ must work (more bluntly) without it, and every LLM answer is validated against t
 | `src/evaluation/` | Scenario generator, simulator-backed metrics, benchmark runner | Measures plans; never produces the app's plan |
 | `src/logging_setup.py` | `configure_logging()` + `timed()`: where log lines go and how many | Only entry points call `configure_logging` |
 | `data/evaluation/` | Frozen synthetic scenarios + split (+ SHA-256 freeze file) | Frozen: regenerate only by bumping the version |
+| `Evaluation/` | The results package for the report: one folder per evaluation (README with tables + the run's CSV) | Results only; every table names the command that regenerates it |
 | `tests/` | Mirrors `src/` (`tests/nlp/test_x.py` tests `src/nlp/x.py`) | Every module ships with tests |
 | `md docs/` | Project-level design docs | Update when a design decision changes |
 | `md docs/modules/` | **One doc per source/test file**, mirroring `src/` and `tests/` | See "Documentation rule" below |
@@ -95,6 +96,9 @@ python -m pytest                          # run all tests
 python -m pytest tests/nlp -q             # one package
 python src/evaluation/build_benchmark.py  # freeze the synthetic benchmark (refuses if already frozen)
 python src/evaluation/runner.py --split validation --planners random,greedy,optimiser --limit 24
+python src/evaluation/robustness.py --split validation --planners greedy,optimiser,opt_no_expiry --limit 48
+python src/evaluation/taste_users.py      # freeze the MealRec real-taste users (needs the raw download; refuses if frozen)
+python src/evaluation/taste_eval.py --split validation   # does a rating history predict later liked dinners?
 ```
 
 ## Git

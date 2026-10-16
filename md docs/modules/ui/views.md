@@ -18,7 +18,9 @@ results from `PantryToPlateService`, lays them out, and reports what the user di
 
 `review_id` (bumps on every new reading, so widget keys never leak between readings) · `entries` / `originals`
 (the editable rows and the rows as first parsed, to restore "we estimate") · `week` (the current plan) / `week_id` ·
-`reworded` (an LLM-reworded copy of the plan) · `read_requested` (set by the example button's callback).
+`reworded` (an LLM-reworded copy of the plan) · `read_requested` (set by the example button's callback) ·
+`rated_dinners` (dinners marked "Loved it", kept for the session; shown in the Tastes section with a "Forget them" button,
+and passed to `build_profile` so a fresh plan learns from them).
 
 ## Things that were learned the hard way
 
@@ -50,3 +52,4 @@ Through [`tests/ui/test_app.py`](../tests/ui/test_app.md).
 
 - 2026-10-15 — Diet sidebar now exposes strict food exclusions separate from allergies.
 - 2026-10-16 — Ingredients table shows "swap: milk (25 g) and lemon juice (1.7 g)" in the From column when a substitution rule replaced buying an item.
+- 2026-10-16 — Tastes section shows how many loved dinners shape new plans (with "Forget them"); `sidebar_profile` returns `rated_dinners`; re-plan passes `loved`.

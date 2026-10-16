@@ -22,7 +22,8 @@ week    = service.replan(week, cooked=[week.days[0].recipe_id, None], rejected=[
 | `cuisines()` | Sorted cuisine names for a dropdown |
 | `search_ingredients(query, limit=8)` | Autocomplete: prefix matches first, then fuzzy; one hit per ingredient |
 | `resolve_names(names) -> NameResolution` | Typed food names → ids; `unresolved` and `ambiguous` (with candidates) are reported, never guessed |
-| `build_profile(...) -> ProfileBuild` | Validated `UserProfile` from plain form values; `dinner_only=True` by default; raises `ValueError` naming the valid options for an unknown diet / allergen / cuisine |
+| `build_profile(...) -> ProfileBuild` | Validated `UserProfile` from plain form values; `dinner_only=True` by default; `rated_dinners=` carries the rating history (a recipe rated twice keeps the later rating); raises `ValueError` naming the valid options for an unknown diet / allergen / cuisine |
+| `rate_dinner(recipe_id, rating=5) -> RatedDinner` | A catalogue recipe as rating evidence (name, ingredients, tags, cuisine); `ValueError` for an unknown id or a rating outside 1–5 |
 | `review_pantry(text, today=None)` | Free text → `PantryReview` (rows with honest statuses and suggestions) |
 | `add_pantry_entry(ingredient_id, grams, days_left=None, urgent=False)` | A row added by hand |
 | `choose_ingredient(entry, ingredient_id)` | Resolve a "did you mean?" row; keeps the amount, re-derives the deadline |
@@ -30,7 +31,7 @@ week    = service.replan(week, cooked=[week.days[0].recipe_id, None], rejected=[
 | `make_scenario(profile, pantry, today=None, horizon_days=7)` | The planning problem; weekday names start from `today` |
 | `plan_week(scenario, paraphrase=False)` | Plan → explain → present (`PlannedWeek`) |
 | `reword(planned)` | Validated LLM rewording of the reasons; returns `planned` unchanged if no model is reachable |
-| `replan(planned, cooked=(), rejected=(), paraphrase=False)` | Re-plan the remaining days from the current pantry |
+| `replan(planned, cooked=(), rejected=(), paraphrase=False, loved=())` | Re-plan the remaining days from the current pantry; `loved` recipe ids join the profile's `rated_dinners` (rating 5) and stay through later re-plans |
 | `llm_available()` | A model is configured and reachable right now |
 
 ## How re-planning works
@@ -80,3 +81,4 @@ Logger `app.service`: the INFO timeline of a session. One line each for: service
 
 - 2026-10-15 — `build_profile(excluded_food_groups=...)` forwards strict food exclusions to the validated profile.
 - 2026-10-16 — Presentation uses `replay_with_substitutions`: ingredient lines carry `substituted_by`, and swapped items leave the grocery box, matching the explanation.
+- 2026-10-16 — `rate_dinner`, `build_profile(rated_dinners=...)` and `replan(loved=...)`: dinners the user loved become rating evidence for later plans.
