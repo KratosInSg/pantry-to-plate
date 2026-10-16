@@ -32,6 +32,7 @@ metrics.summarise / paired_bootstrap            per-family and paired comparison
 | `metrics.py` | `evaluate_plan`, `summarise`, `paired_bootstrap` | [metrics.md](metrics.md) |
 | `runner.py` | Planner registry + CLI comparison | [runner.md](runner.md) |
 | `build_benchmark.py` | One-shot freeze script | [build_benchmark.md](build_benchmark.md) |
+| `robustness.py` | Measure 8: replay each plan against perturbed realities (earlier spoilage, wrong amounts); signed degradation, paired vs `opt_no_expiry` | [robustness.md](robustness.md) |
 
 ## Discipline (project non-negotiable)
 
@@ -42,3 +43,4 @@ metrics.summarise / paired_bootstrap            per-family and paired comparison
 ## Change log
 
 - 2026-10-12 — Package created; benchmark v1 frozen (240 scenarios, 120 validation / 120 test).
+- 2026-10-16 — Added `robustness.py` (measure 8: degradation under expiry / quantity perturbations).

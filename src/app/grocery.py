@@ -3,7 +3,8 @@
 One definition, again
 ---------------------
 "What must be bought" is whatever the pantry could not cover when the plan's dinners are replayed in order
-(``optimizer.inventory.account_inventory``) - the same numbers the evaluation scores and the explainer cites. This
+(``optimizer.inventory.account_inventory``), less what a fired substitution rule covers from spare pantry stock
+(``optimizer.substitutions``; the service passes that replay) - the same numbers the explainer cites. This
 module only *presents* them: names, food group, the first day each item is needed, and a ``minor`` flag for pinches.
 Staples the user is assumed to have (salt, water) are not in the replay and so never appear here.
 """

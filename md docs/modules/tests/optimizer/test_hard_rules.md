@@ -23,3 +23,4 @@ dataset build: a flag regression shows up here.
 - 2026-10-12 — Created.
 - 2026-10-13 — Added `test_a_rejected_recipe_is_never_feasible_and_nothing_else_is_affected` (unknown ids ignored; exactly one recipe removed) and `test_dinner_only_removes_breakfast_dough_and_batter_dishes_and_is_off_by_default` (off by default so the benchmark is unaffected; heuristic removes a few percent, keeps crusted/glazed dinners).
 - 2026-10-14 — Added `test_vegetarian_recipes_have_no_meat_fish_or_egg`.
+- 2026-10-16 — Added `test_ingredient_violations_use_the_same_rule_names_as_recipes`.

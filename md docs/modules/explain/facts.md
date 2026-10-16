@@ -15,13 +15,15 @@ in `PlanFacts` and so cannot be said.
 | `PlanFacts` | Week totals, rule counts, `days: tuple[DayFacts]`, `leftovers`, `stranded`, `groceries`, `solver`, … |
 | `DayFacts` | One dinner: name, minutes, kcal and protein, kcal status/gap, protein gap, time over the weekday limit, `pantry_uses`, `groceries`, preference reasons |
 | `PantryUse`, `GroceryNeed`, `Leftover`, `Stranded`, `RuleFact`, `SolverFacts` | The leaf facts |
+| `SubstitutionFact` | A fired substitution rule on one dinner: `rule_key`, `replaced`, `replaced_g`, `uses` (name, grams), `note`; in `DayFacts.substitutions` |
 | `KCAL_IN_RANGE` / `KCAL_BELOW` / `KCAL_ABOVE`, `WEEKDAY_NAMES` | Constants |
 
 ## Where each fact comes from
 
 | Fact | Source |
 | --- | --- |
-| pantry used per dinner, groceries per dinner, week totals, waste | `optimizer.inventory.account_inventory` with the *planner-visible* deadlines — the same replay as the grocery box and the evaluation |
+| pantry used per dinner, groceries per dinner, week totals, waste | `optimizer.substitutions.replay_with_substitutions` with the *planner-visible* deadlines: the evaluation's replay (`account_inventory`) plus the substitution rules that fired, the same call as the app's grocery box. The benchmark scores plans without substitutions, which can only lower groceries and waste |
+| substitutions | the fired rule (`optimizer.substitutions.Substitution`) |
 | `Stranded` | the replay's `expired_demand_g`: stock you own that is past its deadline on the day a dinner needs it, so that dinner buys it again |
 | kcal / protein / minutes | the catalogue's computed per-serving nutrition against the user's own band, minimum and weekday limit |
 | liked / disliked cuisine and ingredients | the preference scorer's own components (staples do not count as "liked") |
@@ -56,3 +58,4 @@ in `PlanFacts` and so cannot be said.
 
 - 2026-10-13 — Created.
 - 2026-10-13 — Added assumed quantities (`PantryItem.quantity_assumed`), `GAP_TOLERANCE`, and `groceries_by_day` from the replay instead of recomputing shortfalls here.
+- 2026-10-16 — Facts come from `replay_with_substitutions`; added `SubstitutionFact` / `DayFacts.substitutions`.

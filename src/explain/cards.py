@@ -1,13 +1,14 @@
 """Eight evidence-labelled XAI cards for each meal (PPT slide 9 terminology).
 
 Pure presentation: consumes deterministic DayFacts / PlanFacts; never alters planning.
-No fabricated substitutions, counterfactuals, or NLP performance claims.
+No fabricated substitutions, counterfactuals, or NLP performance claims: the substitution card states only a
+substitution rule that actually fired (``optimizer.substitutions``), and says so when none did.
 """
 from __future__ import annotations
 
 from dataclasses import dataclass
 from explain.facts import DayFacts, PlanFacts, KCAL_IN_RANGE
-from explain.render import fmt_g
+from explain.render import fmt_g, substitution_phrase
 
 
 @dataclass(frozen=True)
@@ -56,6 +57,14 @@ def meal_cards(day: DayFacts, facts: PlanFacts) -> tuple[XAICard, ...]:
                   "The plan has detected rule violations; inspect Rules & notes.")
     time = (f"{day.minutes} minutes; {day.minutes_over} minutes above your weekday preference."
             if day.minutes_over else f"{day.minutes} minutes; no weekday overtime penalty.")
+    if day.substitutions:
+        substitution = XAICard("substitution", "🔄", "Substitution",
+                               " ".join(substitution_phrase(x) for x in day.substitutions),
+                               "substitution rule: " + ", ".join(x.rule_key for x in day.substitutions))
+    else:
+        substitution = XAICard("substitution", "🔄", "Substitution",
+                               "No substitution rule fired for this dinner: nothing it needs to buy can be replaced "
+                               "by spare pantry stock.", "substitution rules (none fired)", False)
     return (
         XAICard("expiry", "⏳", "Expiry", expiry, "pantry replay + expiry metadata"),
         XAICard("pantry", "🥫", "Pantry", pantry, "pantry replay"),
@@ -63,8 +72,6 @@ def meal_cards(day: DayFacts, facts: PlanFacts) -> tuple[XAICard, ...]:
         XAICard("nutrition", "🥗", "Nutrition", nutrition, "recipe nutrition + profile targets"),
         XAICard("groceries", "🛒", "Groceries", groceries, "pantry replay"),
         XAICard("constraint", "🛡️", "Constraint", constraint, "hard-rule checker"),
-        XAICard("substitution", "🔄", "Substitution",
-                "No verified ingredient substitution is recorded for this dinner.",
-                "no substitution trace available", False),
+        substitution,
         XAICard("cooking_time", "⏱️", "Cooking time", time, "recipe duration + profile limit"),
     )

@@ -6,7 +6,9 @@ Why this is a *roll forward* and not a change to the optimiser
 get used first, and the remaining days re-planned from the *current* pantry. All of that falls out of one
 transformation, so the optimiser itself needs no new concept (no "locked day", no partial horizon):
 
-1. replay the dinners that were actually cooked (``None`` = skipped) against the pantry,
+1. replay the dinners that were actually cooked (``None`` = skipped) against the pantry, with the same substitution
+   rules the plan showed (``optimizer.substitutions``: a dinner cooked with milk + lemon instead of buttermilk used
+   the milk),
 2. what they consumed leaves the pantry; stock whose deadline has passed is gone (reported, not silently dropped),
 3. the remaining stock's deadlines are shifted by ``t`` days,
 4. the new ``Scenario`` has ``horizon_days - t`` days and ``start_weekday + t``.
@@ -24,8 +26,9 @@ from collections.abc import Sequence
 from dataclasses import dataclass, field
 
 from domain.models import PantryItem, Scenario
-from optimizer.inventory import account_inventory, deadlines_from_pantry
+from optimizer.inventory import deadlines_from_pantry
 from optimizer.planning import PlanningContext
+from optimizer.substitutions import replay_with_substitutions
 
 logger = logging.getLogger(__name__)
 
@@ -66,7 +69,7 @@ def roll_forward(scenario: Scenario, cooked_recipe_ids: Sequence[int | None], ct
     deadlines = deadlines_from_pantry(scenario.pantry)
     # horizon_days=elapsed: leftover stock with a deadline inside the elapsed days is "waste" (it expired);
     # everything else is "unused" (still good now)
-    report = account_inventory(indices, scenario.pantry, ctx.catalog, deadlines, ctx.ignore_ids, horizon_days=elapsed)
+    report = replay_with_substitutions(indices, scenario, ctx, deadlines, horizon_days=elapsed).report
 
     by_ingredient: dict[int, list[PantryItem]] = {}
     for item in scenario.pantry:

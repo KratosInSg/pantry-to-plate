@@ -26,8 +26,8 @@ Tests · Change log**.
 | `src/nlp/` | [nlp/README.md](nlp/README.md) | rules-based pantry parser done; optional LLM fallback done (validated) |
 | `src/domain/` | [domain/README.md](domain/README.md) | done (profile, pantry, scenario, plan; NLP → pantry conversion) |
 | `src/preference/` | [preference/README.md](preference/README.md) | content-based scorer done |
-| `src/optimizer/` | [optimizer/README.md](optimizer/README.md) | hard rules, shortlist, inventory, baselines, weekly MILP (HiGHS + CP-SAT backends) done |
-| `src/evaluation/` | [evaluation/README.md](evaluation/README.md) | benchmark v1 frozen; metrics + runner done; robustness metric pending |
+| `src/optimizer/` | [optimizer/README.md](optimizer/README.md) | hard rules, shortlist, inventory, substitution rules, baselines, weekly MILP (HiGHS + CP-SAT backends) done |
+| `src/evaluation/` | [evaluation/README.md](evaluation/README.md) | benchmark frozen (v2 rebaseline); metrics, runner, robustness done; NLP labelled set pending |
 | `src/explain/` | [explain/README.md](explain/README.md) | facts + templates + validated optional LLM paraphrase done |
 | `src/app/` | [app/README.md](app/README.md) | service facade for a UI: pantry review, profile, plan, grocery box, re-plan |
 | `src/ui/` | [ui/README.md](ui/README.md) | Streamlit prototype: pantry review, profile, week, shopping list, re-plan |
@@ -90,6 +90,7 @@ Tests · Change log**.
 | `explain/render.py` | [explain/render.md](explain/render.md) |
 | `explain/paraphrase.py` | [explain/paraphrase.md](explain/paraphrase.md) |
 | `explain/explainer.py` | [explain/explainer.md](explain/explainer.md) |
+| `explain/cards.py` | [explain/cards.md](explain/cards.md) |
 
 ## `src/app/`
 
@@ -135,6 +136,8 @@ Tests · Change log**.
 | `optimizer/cpsat_worker.py` | [optimizer/cpsat_worker.md](optimizer/cpsat_worker.md) |
 | `optimizer/weekly.py` | [optimizer/weekly.md](optimizer/weekly.md) |
 | `optimizer/replan.py` | [optimizer/replan.md](optimizer/replan.md) |
+| `optimizer/substitutions.py` | [optimizer/substitutions.md](optimizer/substitutions.md) |
+| `optimizer/genetic.py` | [optimizer/genetic.md](optimizer/genetic.md) |
 
 ## `src/evaluation/`
 
@@ -145,6 +148,10 @@ Tests · Change log**.
 | `evaluation/runner.py` | [evaluation/runner.md](evaluation/runner.md) |
 | `evaluation/build_benchmark.py` | [evaluation/build_benchmark.md](evaluation/build_benchmark.md) |
 | `evaluation/weight_sweep.py` | [evaluation/weight_sweep.md](evaluation/weight_sweep.md) |
+| `evaluation/robustness.py` | [evaluation/robustness.md](evaluation/robustness.md) |
+| `evaluation/ga_hyperparams.py` | [evaluation/ga_hyperparams.md](evaluation/ga_hyperparams.md) |
+| `evaluation/ga_multiseed.py` | [evaluation/ga_multiseed.md](evaluation/ga_multiseed.md) |
+| `evaluation/ga_objective_audit.py` | [evaluation/ga_objective_audit.md](evaluation/ga_objective_audit.md) |
 
 ## `tests/`
 
@@ -167,12 +174,15 @@ Tests · Change log**.
 | `tests/explain/test_render.py` | [tests/explain/test_render.md](tests/explain/test_render.md) |
 | `tests/explain/test_paraphrase.py` | [tests/explain/test_paraphrase.md](tests/explain/test_paraphrase.md) |
 | `tests/explain/test_explainer.py` | [tests/explain/test_explainer.md](tests/explain/test_explainer.md) |
+| `tests/explain/test_cards.py` | [tests/explain/test_cards.md](tests/explain/test_cards.md) |
 | `tests/ui/test_logic.py` | [tests/ui/test_logic.md](tests/ui/test_logic.md) |
 | `tests/ui/test_app.py` | [tests/ui/test_app.md](tests/ui/test_app.md) |
 | `tests/ui/test_theme.py` | [tests/ui/test_theme.md](tests/ui/test_theme.md) |
 | `tests/app/test_grocery.py` | [tests/app/test_grocery.md](tests/app/test_grocery.md) |
 | `tests/app/test_service.py` | [tests/app/test_service.md](tests/app/test_service.md) |
 | `tests/optimizer/test_replan.py` | [tests/optimizer/test_replan.md](tests/optimizer/test_replan.md) |
+| `tests/optimizer/test_substitutions.py` | [tests/optimizer/test_substitutions.md](tests/optimizer/test_substitutions.md) |
+| `tests/optimizer/test_genetic.py` | [tests/optimizer/test_genetic.md](tests/optimizer/test_genetic.md) |
 | `tests/evaluation/test_weight_sweep.py` | [tests/evaluation/test_weight_sweep.md](tests/evaluation/test_weight_sweep.md) |
 | `tests/domain/test_models.py` | [tests/domain/test_models.md](tests/domain/test_models.md) |
 | `tests/domain/test_pantry.py` | [tests/domain/test_pantry.md](tests/domain/test_pantry.md) |
@@ -186,6 +196,8 @@ Tests · Change log**.
 | `tests/evaluation/test_scenarios.py` | [tests/evaluation/test_scenarios.md](tests/evaluation/test_scenarios.md) |
 | `tests/evaluation/test_metrics.py` | [tests/evaluation/test_metrics.md](tests/evaluation/test_metrics.md) |
 | `tests/evaluation/test_runner.py` | [tests/evaluation/test_runner.md](tests/evaluation/test_runner.md) |
+| `tests/evaluation/test_robustness.py` | [tests/evaluation/test_robustness.md](tests/evaluation/test_robustness.md) |
+| `tests/evaluation/test_ga_hyperparams.py` | [tests/evaluation/test_ga_hyperparams.md](tests/evaluation/test_ga_hyperparams.md) |
 
 ## Repo-level files
 
@@ -215,3 +227,5 @@ Tests · Change log**.
 - 2026-10-14 — Added `src/logging_setup.py` (project-wide logging) and its tests; log calls added across the
   runtime packages.
 - 2026-10-14 — Security review (`md docs/security.md`): input limits, Markdown escaping, Streamlit config, dependency floors.
+- 2026-10-16 — Added `optimizer/substitutions.py`, `evaluation/robustness.py` and their tests.
+- 2026-10-16 — Indexed the GA planner and experiments (`optimizer/genetic.py`, `evaluation/ga_*.py`), `explain/cards.py` and their tests.

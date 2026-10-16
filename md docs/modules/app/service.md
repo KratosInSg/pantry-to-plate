@@ -79,3 +79,4 @@ Logger `app.service`: the INFO timeline of a session. One line each for: service
 - 2026-10-14 — Input limits (`MAX_PANTRY_CHARS`, `MAX_FOOD_NAMES`, `MAX_QUERY_CHARS`) from the security review.
 
 - 2026-10-15 — `build_profile(excluded_food_groups=...)` forwards strict food exclusions to the validated profile.
+- 2026-10-16 — Presentation uses `replay_with_substitutions`: ingredient lines carry `substituted_by`, and swapped items leave the grocery box, matching the explanation.

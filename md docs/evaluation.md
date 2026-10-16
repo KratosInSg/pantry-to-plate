@@ -242,6 +242,44 @@ is cheap, and the four-way protein taxonomy (poultry / meat / seafood / vegetari
 per-main-ingredient cap, or charging repeated main ingredients) is open work. The new defaults did **not** cause it
 (84 % vs 83 %). Rows: `data/evaluation/runs/20261013_131852_weight_sweep_validation.csv`.
 
+### Robustness (measure 8, 2026-10-16)
+
+*Frozen benchmark v2 (byte-exact rebaseline of v1) · **validation split only**, 48 scenarios (6 per family) · current
+default weights · `python src/evaluation/robustness.py --split validation --planners greedy,optimiser,opt_no_expiry
+--baseline opt_no_expiry --limit 48 --save` → `data/evaluation/v2/runs/20261016_164315_robustness_validation.csv`.*
+
+Each plan is made once from what the planner is told, then replayed against perturbed realities
+(`evaluation/robustness.py`): estimated deadlines 1 or 2 days earlier, ±2-day jitter, 30 % less / more stock,
+30 % per-item noise, and a combination. **Degradation** = perturbed − nominal, positive = worse.
+
+Mean degradation (g of waste / g of groceries):
+
+| Perturbation | Greedy | Optimiser | `opt_no_expiry` |
+| --- | --- | --- | --- |
+| spoils 1 day early | +18 / +18 | +10 / +10 | +11 / +11 |
+| spoils 2 days early | +35 / +35 | +22 / +22 | +11 / +11 |
+| 30 % less stock | −239 / +81 | −224 / +50 | −236 / +35 |
+| combined (1 day early ± 1, 30 % noise) | +55 / +47 | +46 / +21 | +43 / +18 |
+
+Paired difference in degradation, optimiser − `opt_no_expiry` (negative = optimiser more robust), 95 % CI, n = 48:
+spoils 2 days early, waste **+10.8 g [−0.9, +25.5]**. 30 % less stock: waste **+11.7 g [+5.7, +18.7]**, groceries
+**+15.2 g [+8.4, +23.0]**. All other perturbations are indistinguishable from zero, or small in the optimiser's favour
+(30 % more stock: −2.8 g waste [−5.7, −0.3]).
+
+* **The expiry term does not make the plan more robust; it makes it slightly less robust.** The optimiser schedules
+  stock close to its *estimated* deadline, so when the food really spoils earlier, or there is less of it, more of that
+  plan breaks. The planner without expiry awareness leans less on perishable stock, so it has less to lose. The slide's
+  expectation ("less degradation than the planner without expiry awareness") is **not** supported.
+* **It still ends ahead in absolute terms.** Even with food spoiling 2 days early, the optimiser's real waste
+  (702 + 22 ≈ 724 g) stays below `opt_no_expiry`'s (734 + 11 ≈ 745 g) and greedy's (735 + 35 ≈ 770 g). The expiry
+  term's advantage shrinks under wrong estimates, but within these perturbation sizes it does not reverse.
+* **Greedy degrades most** under early spoilage (+24 g more than `opt_no_expiry` at 2 days [+8, +43]) and when there
+  is less stock (+46 g more groceries [+32, +59]), because it cooks most from the pantry.
+* With less stock, waste *falls* for every plan simply because there is less food to waste. Compare planners, and read
+  the grocery columns for quantity perturbations.
+* A natural remedy, not built: discount the expiry credit by the estimate's confidence more strongly, or re-plan
+  mid-week (`optimizer/replan.py`) once the user reports what actually spoiled.
+
 ### How to read this
 
 *(Numbers from the current reference run, 2026-10-14.)*
@@ -262,7 +300,7 @@ per-main-ingredient cap, or charging repeated main ingredients) is open work. Th
 * The scenarios are **synthetic** (documented generator; no real households).
 * The nutrition, preference and cook-time metrics use the **same definitions the optimiser minimises** — they favour it
   by construction. The independent checks are waste and groceries (replayed against *hidden* true expiry), the
-  ablations, and robustness (not yet implemented).
+  ablations, and robustness (see "Robustness").
 * Weights are hand-set defaults. HiGHS reports loose proven gaps, but its plans were within ~0.4 % of the best objective
   found by any solver on 48 validation scenarios (see "Solver backends"); plans are good, not certified optimal.
 * Seconds per plan were measured while the machine was also running other work.

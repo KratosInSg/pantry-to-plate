@@ -27,3 +27,4 @@ templates never make claims the facts do not support.
 
 - 2026-10-13 — Created. The small-shortfall regression came from running the real LLM against the output.
 - 2026-10-13 — Added `test_assumed_quantities_are_flagged_in_the_caveats` and `test_grammar_agrees_with_the_count`; rules wording for `excluded_recipe` and `not_dinner` is covered through `test_service.py`.
+- 2026-10-16 — `SRC_SUBSTITUTION` added to the allowed statement sources.

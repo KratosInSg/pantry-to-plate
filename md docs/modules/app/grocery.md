@@ -31,3 +31,4 @@ is stated by hand.
 ## Change log
 
 - 2026-10-13 — Created.
+- 2026-10-16 — Docstring: the service passes the replay after substitution rules, so swapped items are not on the list.

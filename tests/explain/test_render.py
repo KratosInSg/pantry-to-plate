@@ -10,12 +10,12 @@ import pytest
 from domain.models import Diet, PantryItem, Scenario, UserProfile
 from explain.facts import build_facts
 from explain.paraphrase import CLAIM_WORDS
-from explain.render import (SRC_COST_TERM, SRC_INPUT, SRC_PROFILE, SRC_REPLAY, SRC_RULE, TERM_LABELS, fmt_g,
-                            render, _listed)
+from explain.render import (SRC_COST_TERM, SRC_INPUT, SRC_PROFILE, SRC_REPLAY, SRC_RULE, SRC_SUBSTITUTION,
+                            TERM_LABELS, fmt_g, render, _listed)
 from optimizer.baselines import RandomFeasiblePlanner
 from optimizer.planning import plan_from_indices
 
-SOURCES = {SRC_REPLAY, SRC_COST_TERM, SRC_RULE, SRC_PROFILE, SRC_INPUT}
+SOURCES = {SRC_REPLAY, SRC_COST_TERM, SRC_RULE, SRC_PROFILE, SRC_INPUT, SRC_SUBSTITUTION}
 TERMS = {"waste", "groceries", "nutrition", "preference", "cook_time", "variety", "overview", "rule", "solver", "data"}
 
 

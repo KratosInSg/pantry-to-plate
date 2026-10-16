@@ -1,0 +1,3 @@
+# The frozen benchmark is verified by SHA-256 (data/evaluation/*/FROZEN.json). With core.autocrlf=true, Windows
+# checkouts rewrite LF as CRLF and every hash check fails, so these files must be checked out byte-exact.
+data/evaluation/** -text

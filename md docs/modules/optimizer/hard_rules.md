@@ -31,6 +31,7 @@ inventory replay) and the weekday cooking-time limit / dislikes (soft: costs, no
 | `violated_rules(catalog, profile, idx) -> list[Rule]` | Which rules recipe `idx` breaks, each with a human-readable reason (for the explainer) |
 | `count_violations(catalog, profile, indices) -> int` | (meal, rule) violations in a plan — the safety metric |
 | `Rule(name, reason)` | Named rule + why |
+| `ingredient_violations(flags, ingredient_id, profile) -> list[str]` | The same rules for *one ingredient* (an ingredient-table row), with the same names. Used for substitutes, which enter a dinner after the recipe was allowed |
 
 ## Honesty about coverage
 
@@ -58,3 +59,4 @@ would be the kind of rationalisation the project forbids. The heuristic is delib
 - 2026-10-14 — Vegetarian now excludes eggs (through the rebuilt `is_vegetarian` flag; no code change to the rule itself).
 
 - 2026-10-15 — `food_group:<group>` applies the existing recipe flags as hard exclusions with traceable reasons; no packaged-food safety guarantee.
+- 2026-10-16 — Added `ingredient_violations` (ingredient-level twin of the recipe rules) so a substitution can never smuggle in a violation.

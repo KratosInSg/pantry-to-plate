@@ -49,3 +49,4 @@ Through [`tests/ui/test_app.py`](../tests/ui/test_app.md).
 - 2026-10-14 — `sidebar_profile(service, offer_llm=True)`: `offer_llm=False` hides the LLM switch (returns `False`).
 
 - 2026-10-15 — Diet sidebar now exposes strict food exclusions separate from allergies.
+- 2026-10-16 — Ingredients table shows "swap: milk (25 g) and lemon juice (1.7 g)" in the From column when a substitution rule replaced buying an item.

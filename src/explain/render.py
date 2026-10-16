@@ -15,7 +15,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field, replace
 
-from explain.facts import KCAL_ABOVE, KCAL_BELOW, DayFacts, Leftover, PantryUse, PlanFacts, RuleFact
+from explain.facts import (KCAL_ABOVE, KCAL_BELOW, DayFacts, Leftover, PantryUse, PlanFacts, RuleFact,
+                           SubstitutionFact)
 
 # ``Statement.source`` values.
 SRC_REPLAY = "replay"                  # the inventory replay (same definitions as the grocery box and the evaluation)
@@ -23,6 +24,7 @@ SRC_COST_TERM = "solver_cost_term"     # a term of the objective the weekly opti
 SRC_RULE = "hard_rule"                 # a named hard rule
 SRC_PROFILE = "profile"                # the user's own stated targets / preferences
 SRC_INPUT = "input"                    # how the pantry data itself was obtained (e.g. estimated use-by dates)
+SRC_SUBSTITUTION = "substitution_rule" # a substitution rule that fired (``optimizer.substitutions``)
 
 # Human wording for each cost term of the objective (``optimizer.weekly.COST_TERMS``).
 TERM_LABELS = {
@@ -133,6 +135,13 @@ def _by(facts: PlanFacts, last_use_day: int | None, known: bool) -> str:
 def _use_phrase(facts: PlanFacts, use: PantryUse) -> str:
     by = _by(facts, use.last_use_day, use.deadline_known)
     return f"{fmt_g(use.grams)} {use.name}" + (f" (use {by})" if by else "")
+
+
+def substitution_phrase(swap: SubstitutionFact) -> str:
+    """``No buttermilk (240 g) to buy: milk (220 g) and lemon juice (15 g) from your pantry stand in for it.``"""
+    parts = [f"{name} ({fmt_g(g)})" if g > 0 else f"{name} (a staple)" for name, g in swap.uses]
+    text = f"No {swap.replaced} ({fmt_g(swap.replaced_g)}) to buy: {_join(parts)} from your pantry stand in for it."
+    return f"{text} {swap.note}" if swap.note else text
 
 
 def _leftover_phrase(facts: PlanFacts, left: Leftover) -> str:
@@ -254,6 +263,8 @@ def _day(f: PlanFacts, d: DayFacts) -> Section:
     else:
         s.append(Statement("Everything it needs is in your pantry or among the staples we assume you have.",
                            "groceries", SRC_REPLAY))
+    for swap in d.substitutions:
+        s.append(Statement(substitution_phrase(swap), "groceries", SRC_SUBSTITUTION))
 
     if d.kcal_status == KCAL_BELOW:
         s.append(Statement(f"At {d.kcal:.0f} kcal it is {_gap(d.kcal_gap)} kcal below your dinner range "

@@ -12,8 +12,10 @@ Where every fact comes from
 =====================  =====================================================================================
 fact                   source
 =====================  =====================================================================================
-pantry used / bought   ``optimizer.inventory.account_inventory`` - the *same* replay the app's grocery box and
-                       the evaluation use, so a number here can never disagree with either
+pantry used / bought   ``optimizer.substitutions.replay_with_substitutions``: the inventory replay the evaluation
+                       uses (``optimizer.inventory.account_inventory``) plus the substitution rules that fired - the
+                       same call the app's grocery box uses, so a number here can never disagree with it
+substitutions          the fired rule itself (``optimizer.substitutions.Substitution``): rule key, grams, substitutes
 unused expiring stock  the same replay
 kcal / protein / time  the recipe's computed nutrition and the user's own targets (``UserProfile``)
 preference reasons     the scorer's own components: liked / disliked cuisine and ingredients
@@ -36,8 +38,9 @@ import numpy as np
 
 from domain.models import Scenario, WeekPlan
 from optimizer.hard_rules import count_violations, violation_masks
-from optimizer.inventory import account_inventory, visible_deadlines
+from optimizer.inventory import visible_deadlines
 from optimizer.planning import PlanningContext
+from optimizer.substitutions import replay_with_substitutions
 from optimizer.weekly import COST_TERMS
 
 WEEKDAY_NAMES = ("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
@@ -71,6 +74,17 @@ class GroceryNeed:
 
     name: str
     grams: float
+
+
+@dataclass(frozen=True, slots=True)
+class SubstitutionFact:
+    """A substitution rule that fired for one dinner: the replaced food is not bought, the substitutes are used."""
+
+    rule_key: str                # ``optimizer.substitutions.SUBSTITUTION_RULES`` key, e.g. "buttermilk_milk_lemon"
+    replaced: str                # canonical name of the food not bought
+    replaced_g: float
+    uses: tuple[tuple[str, float], ...]   # (substitute name, grams from the pantry; 0 for an assumed staple)
+    note: str                    # the rule's practical caveat ("" if none)
 
 
 @dataclass(frozen=True, slots=True)
@@ -136,6 +150,7 @@ class DayFacts:
     disliked_cuisine: bool
     liked_ingredients: tuple[str, ...]
     disliked_ingredients: tuple[str, ...]
+    substitutions: tuple[SubstitutionFact, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)
@@ -215,7 +230,8 @@ def build_facts(scenario: Scenario, plan: WeekPlan, ctx: PlanningContext) -> Pla
     horizon = scenario.horizon_days
     indices = [cat.index_of(r) for r in plan.recipe_ids]
     deadlines = visible_deadlines(scenario.pantry, horizon)
-    report = account_inventory(indices, scenario.pantry, cat, deadlines, ctx.ignore_ids, horizon)
+    replay = replay_with_substitutions(indices, scenario, ctx, deadlines, horizon)
+    report = replay.report
 
     def name_of(iid: int) -> str:
         info = store.ingredient(iid)
@@ -252,6 +268,9 @@ def build_facts(scenario: Scenario, plan: WeekPlan, ctx: PlanningContext) -> Pla
         below, above = low - kcal, kcal - high
         status = (KCAL_BELOW if below > GAP_TOLERANCE else KCAL_ABOVE if above > GAP_TOLERANCE else KCAL_IN_RANGE)
         protein_gap = profile.min_protein_g_per_dinner - info.protein_g
+        swaps = tuple(SubstitutionFact(sw.rule_key, name_of(sw.replaced_id), sw.replaced_g,
+                                       tuple((name_of(i), g) for i, g in sw.uses), sw.note)
+                      for sw in replay.on_day(day))
         days.append(DayFacts(
             day=day, weekday=WEEKDAY_NAMES[(scenario.start_weekday + day) % 7], recipe_id=info.recipe_id,
             name=info.name, minutes=info.minutes, cuisine=info.cuisine, kcal=kcal, protein_g=info.protein_g,
@@ -262,7 +281,7 @@ def build_facts(scenario: Scenario, plan: WeekPlan, ctx: PlanningContext) -> Pla
             pantry_uses=uses, groceries=groceries,
             liked_cuisine=info.cuisine is not None and info.cuisine in profile.liked_cuisines,
             disliked_cuisine=info.cuisine is not None and info.cuisine in profile.disliked_cuisines,
-            liked_ingredients=liked, disliked_ingredients=disliked))
+            liked_ingredients=liked, disliked_ingredients=disliked, substitutions=swaps))
 
     masks = violation_masks(cat, profile)
     allowed = np.ones(cat.n, dtype=bool)

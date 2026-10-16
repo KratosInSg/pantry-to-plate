@@ -153,20 +153,24 @@ def summarise(df: pd.DataFrame, by: list[str] | None = None) -> pd.DataFrame:
     return df.groupby(by or ["planner"])[metric_cols].mean().round(2)
 
 
-def paired_bootstrap(df: pd.DataFrame, metric: str, a: str, b: str, n_boot: int = 2000, seed: int = 0
-                     ) -> dict[str, float]:
+def paired_bootstrap(df: pd.DataFrame, metric: str, a: str, b: str, n_boot: int = 2000, seed: int = 0,
+                     higher_is_better: bool | None = None) -> dict[str, float]:
     """Paired comparison of planners ``a`` and ``b`` on one metric over the *same* scenarios.
 
     Returns the mean difference ``a - b`` with a 95% bootstrap confidence interval (resampling scenarios), plus the share
     of scenarios where ``a`` is strictly better. Paired because both methods ran on identical scenarios, so the scenario's
     own difficulty cancels out (docs/evaluation.md, "Statistical comparison").
+
+    ``higher_is_better`` defaults to ``HIGHER_IS_BETTER[metric]``; pass it for a column that is not a plan metric
+    (e.g. a robustness degradation, where lower is better).
     """
     wide = df.pivot_table(index="scenario_id", columns="planner", values=metric)
     pair = wide[[a, b]].dropna()
     diff = (pair[a] - pair[b]).to_numpy()
     rng = np.random.default_rng(seed)
     boots = np.array([rng.choice(diff, size=len(diff), replace=True).mean() for _ in range(n_boot)]) if len(diff) else np.array([0.0])
-    better = (diff > 0) if HIGHER_IS_BETTER[metric] else (diff < 0)
+    up = HIGHER_IS_BETTER[metric] if higher_is_better is None else higher_is_better
+    better = (diff > 0) if up else (diff < 0)
     return {"n": float(len(diff)), "mean_diff": float(diff.mean()) if len(diff) else 0.0,
             "ci_low": float(np.percentile(boots, 2.5)), "ci_high": float(np.percentile(boots, 97.5)),
             "share_a_better": float(better.mean()) if len(diff) else 0.0}

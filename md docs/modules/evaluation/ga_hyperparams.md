@@ -14,3 +14,7 @@ python src/evaluation/ga_hyperparams.py --limit 24 --seeds 5 --generations 350
 There are 6 configurations × 5 seeds × 24 scenarios = **720 GA plans**. Output includes mean/std across seeds for weighted fitness, food waste, grocery items and grams, pantry and expiring utilisation, nutrition, preference, safety, completion, and runtime. It writes raw, per-seed, and summary CSVs to `data/evaluation/v2/runs/`.
 
 Select a configuration using a predeclared criterion balancing **fitness, safety, and runtime**, not only one favourable seed or a single metric. After selection, freeze the hyperparameters before final held-out testing. A mutation probability is a probability of replacing **one gene in a child**, not a per-gene mutation probability. Hyperparameter search on validation data can overfit validation scenarios, so avoid sweeping excessively.
+
+## Change log
+
+- 2026-10-16 — Created: mutation × population five-seed validation sweep.

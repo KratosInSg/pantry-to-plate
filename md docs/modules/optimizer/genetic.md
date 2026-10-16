@@ -32,3 +32,8 @@ python src/evaluation/ga_multiseed.py --limit 24 --seeds 5 --generations 35,350
 The audit builds the **actual** MILP model, fixes recipe/day binaries to the GA plan, then re-solves continuous inventory/slack variables. It prints GA replay fitness, the fixed-plan MILP objective, and their difference. A nonzero difference is evidence of nonidentical fitness accounting and must be reported or fixed before claiming identical objectives. The audit does not use hidden expiry truth.
 
 The multiseed experiment runs the same 24 validation scenarios for greedy, MILP, and 5 independent seeds at each of 35 and 350 generations. It saves raw observations, per-seed means and across-seed mean/std/min/max CSVs. It also prints runtime. Because GA is stochastic, avoid claiming one seed is representative; compare means and variability. Do not tune on held-out test data. Tenfold more generations increases the evaluation budget; it does **not** guarantee GA beats MILP or improve every individual outcome.
+
+## Change log
+
+- 2026-10-16 — Created: GA weekly planner (benchmark comparison only).
+- 2026-10-16 — Seed/generation variants (`genetic_35_sN`, `genetic_350_sN`); frozen configuration 350 generations, 20 % mutation (`md docs/evaluation_ga_frozen_v2.md`).

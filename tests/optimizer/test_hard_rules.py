@@ -8,7 +8,8 @@ import numpy as np
 import pytest
 
 from domain.models import Diet, UserProfile
-from optimizer.hard_rules import count_violations, feasible_mask, violated_rules, violation_masks
+from optimizer.hard_rules import (count_violations, feasible_mask, ingredient_violations, violated_rules,
+                                  violation_masks)
 
 
 def test_default_profile_allows_everything(catalog):
@@ -142,3 +143,19 @@ def test_multiple_food_group_exclusions(catalog):
     profile = UserProfile(excluded_food_groups=frozenset({"meat", "poultry", "fish"}))
     expected = ~(catalog.flag("contains_meat") | catalog.flag("contains_poultry") | catalog.flag("contains_fish"))
     assert np.array_equal(feasible_mask(catalog, profile), expected)
+
+
+def test_ingredient_violations_use_the_same_rule_names_as_recipes(store):
+    table = store.all_ingredients()
+    butter, bacon, peanut = (store.ingredient_by_name(n).ingredient_id for n in ("butter", "bacon", "peanut butter"))
+    assert ingredient_violations(table.loc[butter], butter, UserProfile()) == []
+    assert ingredient_violations(table.loc[butter], butter, UserProfile(diet=Diet.VEGAN)) == ["diet:vegan"]
+    assert ingredient_violations(table.loc[butter], butter, UserProfile(diet=Diet.VEGETARIAN)) == []
+    assert ingredient_violations(table.loc[bacon], bacon, UserProfile(diet=Diet.PESCATARIAN)) == ["diet:pescatarian"]
+    assert ingredient_violations(table.loc[bacon], bacon, UserProfile(avoid_pork=True)) == ["pork"]
+    assert ingredient_violations(table.loc[peanut], peanut,
+                                 UserProfile(allergens=frozenset({"peanut"}))) == ["allergen:peanut"]
+    assert ingredient_violations(table.loc[butter], butter,
+                                 UserProfile(excluded_food_groups=frozenset({"dairy"}))) == ["food_group:dairy"]
+    assert ingredient_violations(table.loc[butter], butter,
+                                 UserProfile(excluded_ingredient_ids=frozenset({butter}))) == ["excluded"]

@@ -63,3 +63,4 @@ only differ in the plan they hand in, never in how they are judged.
   expired stock, so it flagged stranded stock rather than a constraint breach and would have shown a misleading
   "must be 0". The guarantee is tested structurally in `tests/optimizer/test_weekly.py`.
 - 2026-10-14 — Added `avoidable_waste_g` / `unavoidable_waste_g` and `unusable_ingredients`.
+- 2026-10-16 — `paired_bootstrap(..., higher_is_better=None)`: override the direction for columns that are not plan metrics (robustness degradation). Plans are still scored without substitution rules (conservative).

@@ -36,6 +36,7 @@ know about hidden allergens inside branded products. "Zero violations" is theref
 """
 from __future__ import annotations
 
+from collections.abc import Mapping
 from dataclasses import dataclass
 
 import numpy as np
@@ -126,6 +127,37 @@ _REASONS = {
     "time": "takes longer than the user's maximum cooking time",
     "not_dinner": "looks like a breakfast dish, dough, batter or icing rather than a dinner",
 }
+
+
+def ingredient_violations(flags: Mapping[str, object], ingredient_id: int, profile: UserProfile) -> list[str]:
+    """Names of the hard rules a *single ingredient* would break for this profile (empty list = safe).
+
+    The ingredient-level twin of :func:`violation_masks`, with the same rule names. Recipes are filtered with the
+    recipe flags; this is for an ingredient that enters a dinner *after* the recipe was allowed - a substitute
+    (``optimizer.substitutions``) - which must pass the same rules or the substitution would smuggle a violation in.
+
+    Args:
+        flags: the ingredient's row of ``ingredient.parquet`` (any mapping with the ``contains_*``, ``is_vegetarian``
+            and ``is_vegan`` columns).
+        ingredient_id: its id (for ``excluded_ingredient_ids``).
+        profile: the user.
+    """
+    out: list[str] = []
+    diet = profile.diet
+    if ((diet is Diet.PESCATARIAN and (bool(flags["contains_meat"]) or bool(flags["contains_poultry"])))
+            or (diet is Diet.VEGETARIAN and not bool(flags["is_vegetarian"]))
+            or (diet is Diet.VEGAN and not bool(flags["is_vegan"]))):
+        out.append(f"diet:{diet.value}")
+    out += [f"allergen:{a}" for a in sorted(profile.allergens) if bool(flags[f"contains_{a}"])]
+    out += [f"food_group:{g}" for g in sorted(profile.excluded_food_groups)
+            if bool(flags[RESTRICTABLE_FOOD_FLAGS[g]])]
+    if profile.avoid_pork and bool(flags["contains_pork"]):
+        out.append("pork")
+    if profile.avoid_alcohol and bool(flags["contains_alcohol"]):
+        out.append("alcohol")
+    if ingredient_id in profile.excluded_ingredient_ids:
+        out.append("excluded")
+    return out
 
 
 def count_violations(catalog: RecipeCatalog, profile: UserProfile, recipe_indices) -> int:

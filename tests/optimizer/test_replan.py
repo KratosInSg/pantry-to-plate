@@ -27,7 +27,13 @@ class FakeCatalog:
 
 
 def _ctx(recipes, ignore=()):
-    return SimpleNamespace(catalog=FakeCatalog(recipes), ignore_ids=frozenset(ignore))
+    return SimpleNamespace(catalog=FakeCatalog(recipes), ignore_ids=frozenset(ignore), store=None)
+
+
+@pytest.fixture(autouse=True)
+def _no_substitution_rules(monkeypatch):
+    """The fake catalogue's ingredient ids are not real foods, so the real substitution table must not apply."""
+    monkeypatch.setattr("optimizer.substitutions.default_rules", lambda store: ())
 
 
 def _item(iid, grams, last_use_day=None, known=False, conf=1.0, urgency=Urgency.NONE) -> PantryItem:
@@ -112,3 +118,14 @@ def test_nothing_left_to_plan_is_an_error():
 def test_scenario_id_records_the_roll_forward():
     ctx = _ctx([{1: 1.0}])
     assert roll_forward(_scenario([_item(1, 10)]), [0], ctx).scenario.scenario_id == "s+d1"
+
+
+def test_a_cooked_dinner_that_used_a_substitution_used_up_the_substitutes(monkeypatch):
+    from optimizer.substitutions import ResolvedRule
+    # ingredient 9 is "bought" by dinner 0 unless the rule swaps in 1 + 2 from the pantry (0.9 / 0.1 per gram)
+    monkeypatch.setattr("optimizer.substitutions.default_rules",
+                        lambda store: (ResolvedRule("nine", 9, ((1, 0.9), (2, 0.1)), ""),))
+    monkeypatch.setattr("optimizer.substitutions.allowed_substitutes", lambda store, profile, rules: {1, 2})
+    out = roll_forward(_scenario([_item(1, 500), _item(2, 100)]), [0], _ctx([{9: 200.0}]))
+    assert out.consumed_g == {1: pytest.approx(180.0), 2: pytest.approx(20.0)}
+    assert {p.ingredient_id: p.grams for p in out.scenario.pantry} == {1: pytest.approx(320.0), 2: pytest.approx(80.0)}

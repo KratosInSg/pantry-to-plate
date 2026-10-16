@@ -18,3 +18,4 @@ Tests [`optimizer/replan.py`](../../optimizer/replan.md) on a fake catalogue (ea
 ## Change log
 
 - 2026-10-13 — Created.
+- 2026-10-16 — Autouse fixture disables the real substitution table for the fake catalogue; added `test_a_cooked_dinner_that_used_a_substitution_used_up_the_substitutes`.

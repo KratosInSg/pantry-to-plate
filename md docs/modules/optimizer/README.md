@@ -38,6 +38,7 @@ WeekPlan (recipe_ids, status, diagnostics = the model's own cost terms)
 | `cpsat_worker.py` | The CP-SAT solve itself: integer scaling + solve, run as a separate process | [cpsat_worker.md](cpsat_worker.md) |
 | `weekly.py` | The weekly model: variables, constraints, cost terms, ablations | [weekly.md](weekly.md) |
 | `replan.py` | Mid-week roll-forward: cooked / skipped days leave the pantry, the rest is planned again | [replan.md](replan.md) |
+| `substitutions.py` | Substitution rules (buttermilk ← milk + lemon juice …) fired on the replay from spare, hard-rule-safe pantry stock | [substitutions.md](substitutions.md) |
 
 ## Design rules
 
@@ -65,3 +66,4 @@ runs in a child process because it cannot share a process with pyarrow on the de
 - 2026-10-13 — CP-SAT backend added (`backends.solve_cpsat` + `cpsat_worker.py`), selectable per planner.
 - 2026-10-13 — `replan.py` (mid-week roll-forward); hard rules `excluded_recipe` and opt-in `not_dinner`;
   `groceries_by_day` and skipped-day support in the inventory replay.
+- 2026-10-16 — Added `substitutions.py` (ingredient substitution rules on the replay) and `hard_rules.ingredient_violations`; `replan.py` applies the rules.

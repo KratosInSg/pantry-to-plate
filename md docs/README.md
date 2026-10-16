@@ -36,8 +36,9 @@ Oct 2026 — implementation under way.
 | NLP pantry parser (`src/nlp/`) | done (rules-based; optional LLM fallback) |
 | Recipe catalogue, domain models, pantry conversion (`src/knowledge/recipes.py`, `src/domain/`) | done |
 | Hard-rule filter, preference scorer, shortlist, inventory accounting (`src/preference/`, `src/optimizer/`) | done |
+| Ingredient substitution rules (`optimizer/substitutions.py`; buttermilk ← milk + lemon juice, …) | done: fired on the replay from spare, hard-rule-safe stock; shown in the grocery box, ingredient lines and the Substitution card. Not yet inside the optimiser's objective |
 | Weekly optimiser (MILP; HiGHS default, OR-Tools CP-SAT as a second backend in a child process) and baselines | done; ≈ 6 s per plan; solver comparison in `evaluation.md` |
-| Evaluation: benchmark v1 frozen (240 scenarios), metrics, runner | done; robustness metric and NLP labelled set pending |
+| Evaluation: benchmark frozen (240 scenarios; v2 = byte-exact rebaseline of v1), metrics, runner, robustness (`evaluation/robustness.py`) | done; NLP labelled set pending |
 | LLM runtime (Ollama + `qwen3:8b`) and client (`src/llm/`) | done; checked live |
 | NLP LLM fallback (`src/nlp/llm_fallback.py`) | done; validated against the user's words; not yet scored on a labelled set |
 | Explainer (`src/explain/`): facts → templates → optional validated LLM paraphrase | done; template text complete without an LLM; paraphrase 30/32 sections accepted live |

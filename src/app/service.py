@@ -40,7 +40,7 @@ from domain.pantry import (SKIP_AMBIGUOUS, SKIP_NO_AMOUNT, SKIP_UNKNOWN, SKIP_UN
                            merge_pantry_items, pantry_from_parse)
 from explain.facts import build_facts
 from explain.paraphrase import Paraphraser, build_paraphraser, paraphrase_explanation
-from explain.render import Explanation, render
+from explain.render import Explanation, fmt_g, render
 from llm.client import LlmClient
 from logging_setup import timed
 from nlp.pantry_parser import PantryParser
@@ -48,9 +48,10 @@ from nlp.llm_fallback import parser_with_llm
 from nlp.resolver import IngredientResolver, normalise_name
 from nlp.schemas import MatchStatus, ParsedItem, ParseResult, Urgency
 from optimizer.candidates import ShortlistConfig
-from optimizer.inventory import account_inventory, visible_deadlines
+from optimizer.inventory import visible_deadlines
 from optimizer.planning import PlanningContext, make_context
 from optimizer.replan import roll_forward
+from optimizer.substitutions import replay_with_substitutions
 from optimizer.weekly import DEFAULT_WEIGHTS, OptimizerWeights, WeeklyPlanner
 
 logger = logging.getLogger(__name__)
@@ -423,8 +424,9 @@ class PantryToPlateService:
 
         indices = [ctx.catalog.index_of(r) for r in plan.recipe_ids]
         deadlines = visible_deadlines(scenario.pantry, scenario.horizon_days)
-        report = account_inventory(indices, scenario.pantry, ctx.catalog, deadlines, ctx.ignore_ids,
-                                   scenario.horizon_days)
+        # the same replay + substitution rules the explanation was built from, so lines, box and reasons agree
+        replay = replay_with_substitutions(indices, scenario, ctx, deadlines)
+        report = replay.report
 
         days: list[DayPlan] = []
         for day, idx in enumerate(indices):
@@ -432,6 +434,9 @@ class PantryToPlateService:
             df = facts.days[day]
             uses = {u.name: u for u in df.pantry_uses}
             ids, grams = ctx.catalog.ingredients(idx)
+            swapped = {sw.replaced_id: " and ".join(f"{self._name(i)} ({fmt_g(g)})" if g > 0 else self._name(i)
+                                                    for i, g in sw.uses)
+                       for sw in replay.on_day(day)}
             lines: list[IngredientLine] = []
             for iid, g in zip(ids.tolist(), grams.tolist()):
                 name = self._name(iid)
@@ -441,7 +446,8 @@ class PantryToPlateService:
                     name=name, grams=float(g), from_pantry_g=float(taken),
                     to_buy_g=float(report.groceries_by_day[day].get(iid, 0.0)), staple=iid in ctx.ignore_ids,
                     use_by_day=use.last_use_day if use is not None else None,
-                    deadline_known=use.deadline_known if use is not None else False))
+                    deadline_known=use.deadline_known if use is not None else False,
+                    substituted_by=swapped.get(iid, "")))
             lines.sort(key=lambda l: (l.staple, -l.grams))
             days.append(DayPlan(
                 day=day, weekday=df.weekday, recipe_id=info.recipe_id, name=info.name, minutes=info.minutes,

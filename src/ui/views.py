@@ -385,6 +385,8 @@ def _day_card(day: DayPlan, week: PlannedWeek, wid: int) -> str:
 
 
 def _source(line) -> str:
+    if line.substituted_by:
+        return f"swap: {line.substituted_by}"
     if line.from_pantry_g > 0 and line.to_buy_g > 0:
         return f"{fmt_g(line.from_pantry_g)} pantry + {fmt_g(line.to_buy_g)} buy"
     return "pantry" if line.from_pantry_g > 0 else "buy"

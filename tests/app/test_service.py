@@ -324,3 +324,20 @@ def test_reword_uses_the_llm_only_for_overview_and_days(ctx, week):
     assert all(s.source == "template" for k, s in by_key.items() if k in ("rules", "caveats"))
     assert all(d.explanation.source == "llm" for d in out.days)         # the per-day view sees the reworded text
     assert out.plan == week.plan and out.recipe_ids == week.recipe_ids  # the plan itself is untouched
+
+
+def test_a_substitution_shows_on_the_ingredient_line_and_leaves_the_grocery_box(service, ctx):
+    from optimizer.planning import plan_from_indices
+    buttermilk, milk, lemon = (ctx.store.ingredient_by_name(n).ingredient_id
+                               for n in ("buttermilk", "milk", "lemon juice"))
+    idx = next(int(i) for i in ctx.catalog.recipes_using(buttermilk)
+               if not {milk, lemon} & set(ctx.catalog.ingredients(int(i))[0].tolist()))
+    scenario = service.make_scenario(UserProfile(), [PantryItem(ingredient_id=milk, grams=500),
+                                                     PantryItem(ingredient_id=lemon, grams=100)],
+                                     today=TODAY, horizon_days=1)
+    # _present is the presentation step plan_week runs after the solver; a hand-made plan pins the recipe
+    week = service._present(scenario, plan_from_indices("manual", ctx, [idx], 1), paraphrase=False)
+    line = next(l for l in week.days[0].ingredients if l.name == "buttermilk")
+    assert line.to_buy_g == 0 and line.substituted_by.startswith("milk (") and "lemon juice" in line.substituted_by
+    assert "buttermilk" not in {i.name for i in week.grocery_box.items}
+    assert week.explanation.facts.days[0].substitutions[0].rule_key == "buttermilk_milk_lemon"

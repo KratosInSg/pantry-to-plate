@@ -122,6 +122,8 @@ class IngredientLine:
     staple: bool                         # assumed to be in every kitchen (salt, water ...): never counted
     use_by_day: int | None               # deadline of the pantry stock used, relative to this plan's day 0
     deadline_known: bool
+    substituted_by: str = ""             # "milk (220 g) and lemon juice (15 g)" when a substitution rule replaced
+                                         # buying this ingredient (``optimizer.substitutions``); "" otherwise
 
 
 @dataclass(frozen=True, slots=True)

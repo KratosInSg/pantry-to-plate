@@ -38,7 +38,7 @@ must work (more bluntly) without it, and every LLM answer is validated against t
 | `src/nlp/` | Free text → structured pantry (parse, canonicalise, flag urgency) | Understands input; never plans |
 | `src/preference/` | Content-based preference scoring | Scores; never filters safety |
 | `src/llm/` | Transport to the language model (Ollama native / OpenAI-compatible) | Transport only; callers validate every answer; any failure is `LlmError` = "no LLM" |
-| `src/optimizer/` | The only place that decides the weekly plan: hard rules, shortlist, inventory accounting, baselines, weekly MILP | Pure functions of their inputs |
+| `src/optimizer/` | The only place that decides the weekly plan: hard rules, shortlist, inventory accounting, substitution rules, baselines, weekly MILP | Pure functions of their inputs |
 | `src/explain/` | Turns solver output into plain English | Reads, never decides |
 | `src/app/` | `PantryToPlateService`: the one object a UI calls (pantry review, profile, plan, grocery box, re-plan) | Orchestrates and presents; decides nothing |
 | `src/ui/` | The Streamlit prototype (`streamlit run src/ui/streamlit_app.py`) | Layout and state only; every decision is the service's |

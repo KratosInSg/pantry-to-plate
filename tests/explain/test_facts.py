@@ -13,8 +13,9 @@ from explain.facts import KCAL_ABOVE, KCAL_BELOW, KCAL_IN_RANGE, build_facts
 from nlp.schemas import Urgency
 from optimizer.baselines import RandomFeasiblePlanner
 from optimizer.hard_rules import violation_masks
-from optimizer.inventory import account_inventory, deadlines_from_pantry
+from optimizer.inventory import deadlines_from_pantry
 from optimizer.planning import plan_from_indices
+from optimizer.substitutions import replay_with_substitutions
 from optimizer.weekly import COST_TERMS
 
 WEEK = [500, 501, 502, 503, 504, 505, 506]        # seven distinct, arbitrary catalogue rows
@@ -61,8 +62,8 @@ def test_week_totals_equal_the_inventory_replay_and_the_per_day_lists(ctx):
         _stock_of(ctx, 503, factor=0.4, last_use_day=1, expiry_known=False, expiry_confidence=0.6)
     sc = Scenario(scenario_id="t", pantry=pantry)
     facts = build_facts(sc, _plan(ctx), ctx)
-    rep = account_inventory(WEEK, pantry, ctx.catalog, {i: d if d is not None and d < 7 else None for i, d in
-                                                        deadlines_from_pantry(pantry).items()}, ctx.ignore_ids, 7)
+    rep = replay_with_substitutions(WEEK, sc, ctx, {i: d if d is not None and d < 7 else None for i, d in
+                                                    deadlines_from_pantry(pantry).items()}).report
     assert facts.waste_g == pytest.approx(rep.total_waste_g)
     assert facts.pantry_consumed_g == pytest.approx(rep.total_consumed_g)
     assert facts.n_grocery_items == rep.n_grocery_items
@@ -223,3 +224,17 @@ def test_assumed_quantities_are_listed_but_stated_ones_are_not(ctx):
               PantryItem(ingredient_id=milk, grams=500)]
     facts = build_facts(Scenario(scenario_id="t", pantry=pantry), _plan(ctx), ctx)
     assert [(a.name, a.grams) for a in facts.assumed_quantities] == [("spinach", 250.0)]
+
+
+def test_a_fired_substitution_rule_is_a_fact_of_that_day(ctx):
+    buttermilk, milk, lemon = (ctx.store.ingredient_by_name(n).ingredient_id
+                               for n in ("buttermilk", "milk", "lemon juice"))
+    idx = next(int(i) for i in ctx.catalog.recipes_using(buttermilk)
+               if not {milk, lemon} & set(ctx.catalog.ingredients(int(i))[0].tolist()))
+    pantry = [PantryItem(ingredient_id=milk, grams=500), PantryItem(ingredient_id=lemon, grams=100)]
+    facts = build_facts(Scenario(scenario_id="t", pantry=pantry, horizon_days=1), _plan(ctx, [idx]), ctx)
+    [swap] = facts.days[0].substitutions
+    assert swap.rule_key == "buttermilk_milk_lemon" and swap.replaced == "buttermilk"
+    assert [name for name, _ in swap.uses] == ["milk", "lemon juice"] and swap.note
+    assert "buttermilk" not in {g.name for g in facts.groceries}
+    assert {"milk", "lemon juice"} <= {u.name for u in facts.days[0].pantry_uses}

@@ -16,7 +16,9 @@ optimiser**.
 
 ## What it does
 
-1. Replays the cooked dinners against the pantry (skipped days use nothing but still pass).
+1. Replays the cooked dinners against the pantry (skipped days use nothing but still pass), with the same
+   substitution rules the plan showed (`optimizer/substitutions.py`), so a dinner cooked with milk + lemon instead
+   of buttermilk used up that milk.
 2. What they consumed leaves the pantry. Stock whose deadline fell inside the elapsed days is **dropped and reported**
    in `expired_g` — never silently.
 3. Remaining stock's deadlines shift by `t`; a deadline at or beyond the new horizon becomes "no deadline".
@@ -48,3 +50,4 @@ Logger `optimizer.replan`. DEBUG: one line per roll-forward: days elapsed and sk
 
 - 2026-10-13 — Created.
 - 2026-10-14 — Logging: DEBUG summary of each roll-forward.
+- 2026-10-16 — The roll-forward replay applies the substitution rules (`replay_with_substitutions`).
