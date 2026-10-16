@@ -1,4 +1,6 @@
 """Genetic planner integration tests using the real recipe catalogue."""
+import pytest
+
 from domain.models import Diet, Scenario, UserProfile
 from optimizer.genetic import GAConfig, GeneticPlanner
 from optimizer.hard_rules import count_violations
