@@ -50,3 +50,13 @@ def test_more_generations_do_not_worsen_best_fitness(ctx):
     a = build_planner("genetic_35_s1", ctx).plan(scenario)
     b = build_planner("genetic_350_s1", ctx).plan(scenario)
     assert b.diagnostics["objective"] <= a.diagnostics["objective"] + 1e-4
+
+
+def test_frozen_ga_default(ctx):
+    planner = build_planner("genetic", ctx)
+    assert planner.config.population == 48
+    assert planner.config.generations == 350
+    assert planner.config.mutation_rate == 0.20
+    assert planner.config.elite == 3
+    assert planner.config.tournament == 3
+    assert planner.name == "genetic"
