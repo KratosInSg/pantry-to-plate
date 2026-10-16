@@ -30,6 +30,7 @@ from app.models import ENTRY_ASSUMED, ENTRY_NO_AMOUNT, ENTRY_UNSAFE, DayPlan, Pa
 from app.service import MAX_PANTRY_CHARS, MAX_QUERY_CHARS, PantryToPlateService
 from domain.models import ALLERGENS, HORIZON_DAYS, Diet
 from explain.facts import KCAL_IN_RANGE
+from explain.cards import meal_cards
 from explain.render import TERM_LABELS, fmt_g
 from ui import logic, theme
 
@@ -349,6 +350,16 @@ def _day_card(day: DayPlan, week: PlannedWeek, wid: int) -> str:
                               label_visibility="collapsed")
 
         with st.expander("💡 Why this dinner"):
+            st.caption("Eight transparent factors, grounded in recipe facts and pantry replay")
+            cards = meal_cards(week.explanation.facts.days[day.day], week.explanation.facts)
+            columns = st.columns(2)
+            for index, card in enumerate(cards):
+                with columns[index % 2]:
+                    with st.container(border=True):
+                        st.markdown(f"**{card.icon} {card.label}**")
+                        st.write(card.detail)
+                        st.caption(f"Source: {card.source}")
+            st.markdown("**Detailed reasoning**")
             section = day.explanation
             if section.source == "llm":
                 st.write(section.text)
