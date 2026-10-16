@@ -34,7 +34,8 @@ class GeneticPlanner:
     def __init__(self, ctx: PlanningContext, config: GAConfig = GAConfig(),
                  shortlist_config: ShortlistConfig = ShortlistConfig(size=120)):
         self.ctx, self.config, self.shortlist_config = ctx, config, shortlist_config
-        if config.population < 4 or not 1 <= config.elite < config.population or config.generations < 1:
+        self.name = "genetic" if (config.generations, config.seed) == (35, 42) else f"genetic_{config.generations}_s{config.seed}"
+        if config.population < 4 or not 1 <= config.elite < config.population or config.generations < 1 or not 0 <= config.mutation_rate <= 1 or config.tournament < 2:
             raise ValueError("invalid genetic algorithm configuration")
 
     def plan(self, scenario: Scenario):
