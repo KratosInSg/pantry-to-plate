@@ -3,7 +3,7 @@
 Usage (from the repository root)::
 
     python -m evaluation.runner --split validation --planners random,greedy --limit 40
-    python -m evaluation.runner --split validation --planners random,greedy,optimiser,opt_no_expiry
+    python -m evaluation.runner --split validation --planners greedy,optimiser,genetic --limit 24
 
 (``PYTHONPATH=src`` is set automatically when run through ``pytest``; for the command line use
 ``python src/evaluation/runner.py ...``, which adds ``src`` to the path itself.)
@@ -47,6 +47,9 @@ def build_planner(name: str, ctx: PlanningContext) -> Planner:
         return RandomFeasiblePlanner(ctx, seed=0)
     if name == "greedy":
         return GreedyIngredientMatchPlanner(ctx)
+    if name == "genetic":
+        from optimizer.genetic import GeneticPlanner
+        return GeneticPlanner(ctx)
     if name.startswith(("optimiser", "opt_")):
         from optimizer.weekly import make_planner            # the weekly optimiser, its ablations, `_cpsat` variants
         return make_planner(name, ctx)
