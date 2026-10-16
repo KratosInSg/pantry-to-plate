@@ -107,7 +107,33 @@ def audit_one(scenario, ctx, ga_name="genetic_35_s0"):
         raise AssertionError("GA term decomposition does not match GA fitness")
     if abs(sum(milp_terms.values())-milp_fixed) > 0.001:
         raise AssertionError("MILP term decomposition does not match fixed-plan objective")
+    # Explain waste differences at ingredient level before changing either algorithm.
+    inventory = account_inventory(chosen, scenario.pantry, ctx.catalog,
+                                  visible_deadlines(scenario.pantry, scenario.horizon_days),
+                                  ctx.ignore_ids, scenario.horizon_days)
+    stock = handles["stock"]
+    discrepancies = []
+    for iid, item in stock.items():
+        if item.last_use_day is None:
+            continue
+        ga_used = float(inventory.consumed_g.get(iid, 0.))
+        milp_used = sum(float(result.x[v]) for v in handles["use"].get(iid, []))
+        difference = milp_used - ga_used
+        if abs(difference) > 1e-5:
+            unit = (DEFAULT_WEIGHTS.waste_per_100g / 100.
+                    * (item.urgency_factor if DEFAULT_WEIGHTS.urgency_weighting else 1.)
+                    * (item.confidence if DEFAULT_WEIGHTS.confidence_weighting else 1.))
+            discrepancies.append({
+                "ingredient_id": int(iid), "last_use_day": item.last_use_day,
+                "stock_g": round(item.grams, 4),
+                "ga_used_g": round(ga_used, 4),
+                "milp_used_g": round(milp_used, 4),
+                "extra_milp_use_g": round(difference, 4),
+                "weighted_waste_delta": round(difference * unit, 5),
+            })
+    discrepancies.sort(key=lambda row: -abs(row["weighted_waste_delta"]))
     return {"scenario": scenario.scenario_id, "status": result.status,
+            "ingredient_differences": discrepancies[:15],
             "ga_fitness": ga_score, "milp_fixed_plan_cost": round(milp_fixed, 4),
             "delta_ga_minus_milp": round(ga_score-milp_fixed, 4),
             "abs_delta": round(abs(ga_score-milp_fixed), 4),
