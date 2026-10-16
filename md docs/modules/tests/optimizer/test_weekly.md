@@ -28,3 +28,5 @@ so the shortlist is kept at 50).
 - 2026-10-12 — Created.
 - 2026-10-13 — Added the CP-SAT backend tests (suffix selection; cross-check against HiGHS).
 - 2026-10-13 — Added the cost-term decomposition test.
+
+- 2026-10-16 — Added regression test that unavoidable expiring pantry stock absent from candidate demand contributes to the MILP's constant waste cost.

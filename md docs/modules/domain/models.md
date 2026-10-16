@@ -50,3 +50,5 @@ UI / benchmark generator ───────────▶ UserProfile ──
   frozen benchmark is unchanged); `PantryItem.quantity_assumed`. All additions have defaults, so stored scenarios
   still load.
 - 2026-10-14 — `Diet.VEGETARIAN` documented as no meat, fish or eggs.
+
+- 2026-10-15 — New `RESTRICTABLE_FOOD_FLAGS` and validated `UserProfile.excluded_food_groups` opt-in exclusions.

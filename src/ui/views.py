@@ -30,6 +30,7 @@ from app.models import ENTRY_ASSUMED, ENTRY_NO_AMOUNT, ENTRY_UNSAFE, DayPlan, Pa
 from app.service import MAX_PANTRY_CHARS, MAX_QUERY_CHARS, PantryToPlateService
 from domain.models import ALLERGENS, HORIZON_DAYS, Diet
 from explain.facts import KCAL_IN_RANGE
+from explain.cards import meal_cards
 from explain.render import TERM_LABELS, fmt_g
 from ui import logic, theme
 
@@ -71,6 +72,12 @@ def sidebar_profile(service: PantryToPlateService, offer_llm: bool = True) -> tu
         col1, col2 = st.columns(2)
         avoid_pork = col1.checkbox("No pork", key="avoid_pork")
         avoid_alcohol = col2.checkbox("No alcohol", key="avoid_alcohol")
+        from domain.models import RESTRICTABLE_FOOD_FLAGS
+        excluded_food_groups = st.multiselect(
+            "Other foods I strictly exclude (not allergies)", list(RESTRICTABLE_FOOD_FLAGS),
+            key="excluded_food_groups", format_func=lambda g: g.replace("_", " ").title(),
+            help="Uses recipe ingredient flags; not a guarantee for packaged food or cross-contact.",
+        )
 
     with sb.expander("😋  Tastes"):
         cuisines = service.cuisines()
@@ -93,6 +100,7 @@ def sidebar_profile(service: PantryToPlateService, offer_llm: bool = True) -> tu
                                   help="Re-reads pantry text the rules cannot understand and can reword the "
                                        "explanations. Everything works without it.")
     return dict(diet=diet, allergens=allergens, avoid_pork=avoid_pork, avoid_alcohol=avoid_alcohol,
+                excluded_food_groups=excluded_food_groups,
                 liked_cuisines=liked, disliked_cuisines=disliked, liked_foods=_split(liked_foods),
                 disliked_foods=_split(disliked_foods), excluded_foods=_split(never_foods),
                 daily_kcal_target=float(kcal), min_protein_g_per_dinner=float(protein),
@@ -342,6 +350,16 @@ def _day_card(day: DayPlan, week: PlannedWeek, wid: int) -> str:
                               label_visibility="collapsed")
 
         with st.expander("💡 Why this dinner"):
+            st.caption("Eight transparent factors, grounded in recipe facts and pantry replay")
+            cards = meal_cards(week.explanation.facts.days[day.day], week.explanation.facts)
+            columns = st.columns(2)
+            for index, card in enumerate(cards):
+                with columns[index % 2]:
+                    with st.container(border=True):
+                        st.markdown(f"**{card.icon} {card.label}**")
+                        st.write(card.detail)
+                        st.caption(f"Source: {card.source}")
+            st.markdown("**Detailed reasoning**")
             section = day.explanation
             if section.source == "llm":
                 st.write(section.text)

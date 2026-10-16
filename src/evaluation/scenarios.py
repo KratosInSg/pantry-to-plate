@@ -60,7 +60,7 @@ FAMILIES: tuple[str, ...] = ("expiry_heavy", "sparse_pantry", "well_stocked", "r
                              "conflicting_preferences", "tight_time", "nutrition_pressure", "infeasible_combo")
 BENCHMARK_VERSION = "v1"
 DEFAULT_BASE_SEED = 20261012
-DEFAULT_EVAL_DIR = Path(__file__).resolve().parents[2] / "data" / "evaluation"
+DEFAULT_EVAL_DIR = Path(__file__).resolve().parents[2] / "data" / "evaluation" / "v2"
 
 # Relative frequency of allergies in the simulated population (rough public prevalence ordering, not medical data).
 _ALLERGEN_WEIGHTS = {"dairy": 0.22, "gluten": 0.22, "tree_nut": 0.15, "peanut": 0.10, "egg": 0.10, "soy": 0.07,

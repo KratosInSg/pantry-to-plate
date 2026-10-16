@@ -160,3 +160,32 @@ def test_hard_rules_hold_for_a_restricted_user(ctx):
     assert plan.is_complete
     assert count_violations(ctx.catalog, profile, _idx(ctx, plan)) == 0
     assert np.all(ctx.catalog.flag("is_vegan")[_idx(ctx, plan)])
+
+
+def test_unusable_expiring_stock_still_counts_in_model_waste(ctx):
+    """An expiring ingredient absent from every shortlisted recipe is unavoidable waste."""
+    from optimizer.planning import prepare
+    from optimizer.candidates import shortlist
+    from optimizer.weekly import _aggregate_pantry
+    from optimizer.backends import solve_highs
+    from optimizer.inventory import visible_deadlines
+    from optimizer.weekly import COST_TERMS
+    from optimizer.candidates import ShortlistConfig
+    from domain.models import PantryItem, Scenario
+    from optimizer.weekly import WeeklyPlanner
+
+    sc = Scenario(scenario_id="absent-expiring-stock", seed=12,
+                  pantry=[PantryItem(ingredient_id=99999999, grams=100.,
+                                     last_use_day=0, expiry_known=True)])
+    prepared = prepare(sc, ctx)
+    config = ShortlistConfig(size=15)
+    cand = shortlist(ctx.catalog, sc.profile, sc.pantry, prepared.feasible,
+                     prepared.preference, ctx.ignore_ids, config)
+    planner = WeeklyPlanner(ctx, shortlist_config=config)
+    model, handles = planner._build(sc, cand, prepared.preference)
+    stock = handles["stock"]
+    assert 99999999 in stock
+    assert 99999999 not in handles["use"]
+    item = stock[99999999]
+    expected = planner.weights.waste_per_100g * item.urgency_factor * item.confidence
+    assert handles["constant_waste_cost"] >= expected - 1e-6

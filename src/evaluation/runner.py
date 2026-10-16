@@ -3,7 +3,7 @@
 Usage (from the repository root)::
 
     python -m evaluation.runner --split validation --planners random,greedy --limit 40
-    python -m evaluation.runner --split validation --planners random,greedy,optimiser,opt_no_expiry
+    python -m evaluation.runner --split validation --planners greedy,optimiser,genetic --limit 24
 
 (``PYTHONPATH=src`` is set automatically when run through ``pytest``; for the command line use
 ``python src/evaluation/runner.py ...``, which adds ``src`` to the path itself.)
@@ -47,6 +47,18 @@ def build_planner(name: str, ctx: PlanningContext) -> Planner:
         return RandomFeasiblePlanner(ctx, seed=0)
     if name == "greedy":
         return GreedyIngredientMatchPlanner(ctx)
+    if name == "genetic" or name.startswith("genetic_"):
+        from optimizer.genetic import GAConfig, GeneticPlanner
+        if name == "genetic":
+            return GeneticPlanner(ctx)
+        import re
+        match = re.fullmatch(r"genetic_(35|350)_s([0-9]+)", name)
+        if match is None:
+            raise ValueError("genetic variants: genetic, genetic_35_s<seed>, genetic_350_s<seed>")
+        generations, seed = map(int, match.groups())
+        if seed > 2**32 - 1:
+            raise ValueError("GA seed must fit uint32")
+        return GeneticPlanner(ctx, config=GAConfig(generations=generations, seed=seed))
     if name.startswith(("optimiser", "opt_")):
         from optimizer.weekly import make_planner            # the weekly optimiser, its ablations, `_cpsat` variants
         return make_planner(name, ctx)

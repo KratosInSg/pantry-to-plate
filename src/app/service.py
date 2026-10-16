@@ -180,7 +180,7 @@ class PantryToPlateService:
 
     # ------------------------------------------------------------------------------------------------ the profile
     def build_profile(self, *, diet: str = "omnivore", allergens: Iterable[str] = (), avoid_pork: bool = False,
-                      avoid_alcohol: bool = False, liked_cuisines: Iterable[str] = (),
+                      avoid_alcohol: bool = False, excluded_food_groups: Iterable[str] = (), liked_cuisines: Iterable[str] = (),
                       disliked_cuisines: Iterable[str] = (), liked_foods: Iterable[str] = (),
                       disliked_foods: Iterable[str] = (), excluded_foods: Iterable[str] = (),
                       excluded_recipe_ids: Iterable[int] = (), daily_kcal_target: float = 2000.0,
@@ -222,6 +222,7 @@ class PantryToPlateService:
 
         profile = UserProfile(
             diet=diet_value, allergens=allergen_set, avoid_pork=avoid_pork, avoid_alcohol=avoid_alcohol,
+            excluded_food_groups=frozenset(g.strip().lower().replace(' ', '_') for g in excluded_food_groups),
             excluded_ingredient_ids=ids_of(excluded), excluded_recipe_ids=frozenset(int(r) for r in excluded_recipe_ids),
             max_total_minutes=max_total_minutes, dinner_only=dinner_only, liked_ingredient_ids=ids_of(liked),
             disliked_ingredient_ids=ids_of(disliked), liked_cuisines=liked_c, disliked_cuisines=disliked_c,
