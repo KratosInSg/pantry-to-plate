@@ -21,7 +21,7 @@ from optimizer.weekly import DEFAULT_WEIGHTS, _aggregate_pantry, protein_type
 @dataclass(frozen=True)
 class GAConfig:
     population: int = 48
-    generations: int = 35
+    generations: int = 350
     elite: int = 3
     tournament: int = 3
     mutation_rate: float = 0.20
@@ -34,7 +34,7 @@ class GeneticPlanner:
     def __init__(self, ctx: PlanningContext, config: GAConfig = GAConfig(),
                  shortlist_config: ShortlistConfig = ShortlistConfig(size=120)):
         self.ctx, self.config, self.shortlist_config = ctx, config, shortlist_config
-        self.name = "genetic" if (config.generations, config.seed) == (35, 42) else f"genetic_{config.generations}_s{config.seed}"
+        self.name = "genetic" if config == GAConfig() else f"genetic_{config.generations}_s{config.seed}"
         if config.population < 4 or not 1 <= config.elite < config.population or config.generations < 1 or not 0 <= config.mutation_rate <= 1 or config.tournament < 2:
             raise ValueError("invalid genetic algorithm configuration")
 
