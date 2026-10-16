@@ -38,7 +38,7 @@ Oct 2026 — implementation under way.
 | Hard-rule filter, preference scorer, shortlist, inventory accounting (`src/preference/`, `src/optimizer/`) | done |
 | Ingredient substitution rules (`optimizer/substitutions.py`; buttermilk ← milk + lemon juice, …) | done: fired on the replay from spare, hard-rule-safe stock; shown in the grocery box, ingredient lines and the Substitution card. Not yet inside the optimiser's objective |
 | Weekly optimiser (MILP; HiGHS default, OR-Tools CP-SAT as a second backend in a child process) and baselines | done; ≈ 6 s per plan; solver comparison in `evaluation.md` |
-| Evaluation: benchmark frozen (240 scenarios; v2 = byte-exact rebaseline of v1), metrics, runner, robustness (`evaluation/robustness.py`) | done; NLP labelled set pending |
+| Evaluation: benchmark frozen (240 scenarios; v2 = byte-exact rebaseline of v1), metrics, runner, robustness (`evaluation/robustness.py`) | done; **test split run once (2026-10-16)**, results in `Evaluation/`; NLP labelled set pending |
 | LLM runtime (Ollama + `qwen3:8b`) and client (`src/llm/`) | done; checked live |
 | Preferences from ratings (`preference/history.py`) + real-taste check on 100 MealRec users (`evaluation/taste_users.py`, `taste_eval.py`) | done; test users run once. Nearest liked dishes + tags: HR@10 0.202 (chance 0.10), AUC 0.622, ahead of popularity (HR@10 0.119) with CIs clear of zero. **In the planner**: the scorer's rating-history term over `UserProfile.rated_dinners`, fed by the UI's "Loved it" mark |
 | NLP LLM fallback (`src/nlp/llm_fallback.py`) | done; validated against the user's words; not yet scored on a labelled set |

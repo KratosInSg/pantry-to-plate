@@ -57,7 +57,7 @@ No candidate met the pre-declared criteria, so the adopted weights stand. The pr
 objective counts *distinct* grocery items, so one protein bought once and used all week is cheap. A structural fix (a
 per-main-ingredient cap) is open work.
 
-## 4 · Waste weight (120 scenarios, 2026-10-14) — **decision pending**
+## 4 · Waste weight (120 scenarios, 2026-10-14) — **not adopted**
 
 | Setting | Waste (g) | Avoidable waste (g) | Extra grocery items | Dinners in kcal band % | Preference |
 | --- | --- | --- | --- | --- | --- |
@@ -67,9 +67,9 @@ per-main-ingredient cap) is open work.
 | + waste ×3 | 682.2 | 376.8 | 16.5 | 68.9 | 0.61 |
 
 The pre-declared rule (avoidable waste at least 5 % lower, at most +1.0 grocery item, at most 3 points less calorie fit)
-picks **waste ×2**: avoidable waste −6 % for +0.54 items. Waste ×3 fails the grocery limit by 0.05 items. **Not
-adopted yet:** it needs the project owner's decision, and adopting it would change the optimiser rows in
-01_planner_comparison.
+picks **waste ×2**: avoidable waste −6 % for +0.54 items. Waste ×3 fails the grocery limit by 0.05 items.
+**Not adopted:** the held-out test split was run on 2026-10-16 with the current weights (waste ×1). That closes the
+decision for this benchmark version, because adopting it now would need a new benchmark to measure it without bias.
 
 ## Caveats
 

@@ -43,12 +43,47 @@ All methods run on the same scenarios, so comparisons are paired: mean differenc
 > (see "Weight sweep"), so re-running them gives different optimiser rows. **The current reference is the next
 > section.**
 
-### Current reference run: Greedy vs Genetic vs MILP (2026-10-16)
+### Final result: held-out test split, run once (2026-10-16)
+
+*Frozen benchmark v2 · **test split** (n = 120, 15 per family; robustness n = 48) · weights frozen beforehand
+(preference 6.0, kcal 8.0, protein 4.0, waste 1.0; the waste ×2 candidate was not adopted) · current code. Every table,
+per-family result and CSV: [`Evaluation/`](../Evaluation/README.md) (01 planners, 02 ablations, 03 robustness). This is
+the single unbiased estimate; any later change of method or weights needs a new benchmark version.*
+
+| Method | Waste (g) | Extra grocery items | Pantry utilisation % | Expiring stock used % | Dinners in kcal band % | Protein ok % | Preference (0–1) | Weekday overtime % | Violations | s / plan |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Random | 859 | 44.8 | 6.9 | 2.7 | 14.9 | 31.0 | 0.53 | 48 | 0 | 0.01 |
+| Greedy | 771 | 23.7 | **27.0** | 14.8 | 3.5 | 13.7 | 0.53 | 37 | 0 | 0.08 |
+| Genetic (GA) | 724 | 15.4 | 18.1 | 20.5 | 65.8 | **57.6** | **0.59** | 20 | 0 | 0.58 |
+| **MILP (HiGHS)** | **710** | **15.3** | 18.9 | **22.5** | **68.2** | **57.6** | **0.59** | **16** | 0 | 3.95 |
+
+Paired, 95 % bootstrap CI (n = 120):
+- MILP − greedy: waste **−61.5 g** [−83.3, −40.5], groceries **−8.4 items** [−9.6, −7.0], expiring stock used
+  **+7.7 pts**, kcal-in-band **+64.8 pts**, protein **+43.9 pts**, preference **+0.065**, weekday overtime **−21 pts**.
+- GA − greedy: waste **−47.1 g** [−67.9, −28.5], groceries **−8.3 items**, kcal-in-band **+62.4 pts**.
+- MILP − GA: waste **−14.3 g** [−22.2, −6.7], kcal-in-band **+2.4 pts** [+0.2, +4.6], groceries −0.1 [−0.4, +0.3].
+
+GA over 5 seeds: waste 729.7 ± 2.6 g, so the MILP's edge holds against every seed (−16 to −22 g). Validation (below)
+agrees in every direction, and the waste gains are larger on test.
+
+- **Ablations (test, variant − full MILP):**
+  - no expiry: waste **+36.5 g** [+25.4, +48.8];
+  - no nutrition: kcal-in-band **−46.1 pts**, groceries −4.2 items;
+  - no preference: preference **−0.034** [−0.043, −0.028], disliked dinners 0.5 % → 1.7 %, groceries −0.6 items.
+- **Robustness (test, n = 48):** the expiry-aware MILP degrades the most (+15 to +19 g vs `opt_no_expiry` under
+  early spoilage or less stock, significant in 5 of 7 perturbations), so the proposal's expectation is not supported.
+  It still has the lowest real waste in every perturbed kitchen.
+
+The cost to state with these results: the optimisers buy fewer distinct items but about 0.9 kg more food by weight
+than greedy, and they waste more than greedy in `restrictive_diet` and `infeasible_combo`.
+
+### Current reference run: Greedy vs Genetic vs MILP (validation, 2026-10-16)
 
 *Frozen benchmark v2 · **validation split** (n = 120, 15 per family) · adopted weights · current code ·
 `python src/evaluation/runner.py --split validation --planners random,greedy,genetic,optimiser --baseline greedy
 --save`. Full tables, per-family results and the 5-seed GA check:
-[`Evaluation/01_planner_comparison`](../Evaluation/01_planner_comparison/README.md). The test split has not been run.*
+[`Evaluation/01_planner_comparison`](../Evaluation/01_planner_comparison/README.md). The test split was run
+once afterwards (see above).*
 
 | Method | Waste (g) | Extra grocery items | Pantry utilisation % | Dinners in kcal band % | Protein ok % | Preference (0–1) | Weekday overtime % | Violations | s / plan |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
