@@ -113,3 +113,5 @@ Logger `optimizer.weekly`. DEBUG: shortlist size, model size (variables, integer
   project owner accepted about +3 grocery items for stronger likes and a better calorie fit; the exact combination
   met every pre-declared criterion on all 120 validation scenarios (+15.0 / +13.7 pts, +2.78 items, waste +1.7 %).
 - 2026-10-14 — Logging: model size, solve outcome and cost terms at DEBUG; no-candidate / no-solution at WARNING.
+
+- 2026-10-16 — Fixed constant waste accounting for expiring pantry ingredients absent from every shortlisted recipe. Their waste cannot be avoided by the solver, but must still be included in the reported objective. This adjusts objective reporting by a scenario-specific constant without changing recipe ranking. Motivated by GA-vs-MILP fixed-plan term audit.
