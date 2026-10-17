@@ -346,6 +346,11 @@ class PantryToPlateService:
                               "food_group": self._food_group(item.ingredient_id) if known else None, "status": status,
                               "problem": _PROBLEMS.get(status, reason)})
 
+    def _protein_g(self, ingredient_id: int, grams: float) -> float | None:
+        """Protein in ``grams`` of an ingredient (grams x USDA per 100 g); ``None`` if USDA has no protein value."""
+        per_100g = (self.ctx.store.nutrition_per_100g(ingredient_id) or {}).get("protein_g")
+        return None if per_100g is None else grams * per_100g / 100.0
+
     def _food_group(self, ingredient_id: int | None) -> str | None:
         """The dataset's food group of an ingredient, for the row's icon; ``None`` if unknown."""
         info = self.ctx.store.ingredient(ingredient_id) if ingredient_id is not None else None
@@ -486,7 +491,7 @@ class PantryToPlateService:
                     to_buy_g=float(report.groceries_by_day[day].get(iid, 0.0)), staple=iid in ctx.ignore_ids,
                     use_by_day=use.last_use_day if use is not None else None,
                     deadline_known=use.deadline_known if use is not None else False,
-                    substituted_by=swapped.get(iid, "")))
+                    substituted_by=swapped.get(iid, ""), protein_g=self._protein_g(iid, float(g))))
             lines.sort(key=lambda l: (l.staple, -l.grams))
             days.append(DayPlan(
                 day=day, weekday=df.weekday, recipe_id=info.recipe_id, name=info.name, minutes=info.minutes,

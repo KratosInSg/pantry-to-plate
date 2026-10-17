@@ -138,6 +138,8 @@ def test_planning_shows_seven_days_with_reasons_ingredients_and_steps(planned):
     labels = [e.label for e in planned.expander]
     assert sum("Why this dinner" in l for l in labels) == 7               # why / ingredients / how to cook, per day
     assert sum("Ingredients" in l for l in labels) == 7 and sum("How to cook" in l for l in labels) == 7
+    columns = list(planned.dataframe[0].value.columns)
+    assert columns[:3] == ["Ingredient", "Amount", "Protein"]           # protein sits next to the amount
     assert any("p2p-chip" in str(m.value) for m in planned.markdown)      # the at-a-glance chips
     assert [m.label for m in planned.metric][:2] == ["Dinners planned", "Pantry food used"]
     assert planned.metric[0].value == "7"

@@ -66,3 +66,4 @@ Through [`tests/ui/test_app.py`](../tests/ui/test_app.md).
 - 2026-10-16 — Ingredients table shows "swap: milk (25 g) and lemon juice (1.7 g)" in the From column when a substitution rule replaced buying an item.
 - 2026-10-16 — Tastes section shows how many loved dinners shape new plans (with "Forget them"); `sidebar_profile` returns `rated_dinners`; re-plan passes `loved`.
 - 2026-10-17 — Pantry rows show the food's icon and a coloured status badge (`KIND_BADGE`, `_row_heading`) instead of a status emoji and a status line; the icon is shown large in its own column.
+- 2026-10-17 — Ingredients table has a Protein column next to Amount (per serving, grams × USDA; "—" when USDA has no value).

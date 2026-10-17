@@ -127,6 +127,9 @@ class IngredientLine:
     deadline_known: bool
     substituted_by: str = ""             # "milk (220 g) and lemon juice (15 g)" when a substitution rule replaced
                                          # buying this ingredient (``optimizer.substitutions``); "" otherwise
+    # protein in ``grams`` of this ingredient: grams x USDA protein per 100 g (the same sum that gives the dinner's
+    # ``protein_g``). ``None`` = USDA has no protein value for it, shown as unknown rather than as 0.
+    protein_g: float | None = None
 
 
 @dataclass(frozen=True, slots=True)

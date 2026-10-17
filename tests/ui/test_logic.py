@@ -8,7 +8,7 @@ import pytest
 
 from app.models import ENTRY_ASSUMED, ENTRY_CHOOSE, ENTRY_NO_AMOUNT, ENTRY_OK, ENTRY_UNKNOWN, ENTRY_UNSAFE, PantryEntry
 from ui.logic import (DAY_COOKED, DAY_LOVED, display_name, DAY_MARKS, DAY_PLANNED, DAY_REJECTED, DAY_SKIPPED, apply_use_by, build_replan_request,
-                      current_use_by_index, local_today, md_escape, needs_choice, status_badge, status_label,
+                      current_use_by_index, local_today, md_escape, needs_choice, protein_label, status_badge, status_label,
                       use_by_choices,
                       weekday_label)
 
@@ -140,6 +140,11 @@ def test_weekday_label_with_an_offset():
     assert weekday_label(2, 0) == "Wednesday"
     assert weekday_label(2, 0, day_offset=-2) == "Monday"
     assert weekday_label(6, 1) == "Monday"
+
+
+def test_protein_label_shows_unknown_as_a_dash_not_zero():
+    assert protein_label(12.44) == "12.4 g" and protein_label(0.04) == "0.0 g"
+    assert protein_label(None) == "—"
 
 
 def test_display_name_restores_the_possessive_food_com_dropped():

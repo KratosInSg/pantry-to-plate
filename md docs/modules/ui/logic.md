@@ -12,6 +12,7 @@ The decisions behind the UI that are worth testing, kept free of Streamlit so th
 | `ReplanRequest` | `ok`, `changed`, `problem`, `loved`, `describe(rejected_names, loved_names)` — one sentence saying what the button will do |
 | `use_by_choices(start_weekday, horizon, original)`, `current_use_by_index`, `apply_use_by` | The use-by selector: our estimate, each day of the plan, "won't go off this week"; and how a choice changes an entry |
 | `status_label(entry)`, `status_badge(entry)`, `needs_choice(entry)` | Row wording, the short badge tag (*Ready*, *Check amount*, *Pick one*, *Not recognised*, *Add amount*, *Left out*; fixed text, safe in Markdown), and which rows must ask "which one?" |
+| `protein_label(protein_g)` | An ingredient line's protein for the table: `"12.4 g"`, or `"—"` when unknown (never shown as 0) |
 | `display_name(name)` | Display form of a recipe/ingredient name; restores the possessive Food.com dropped ("julie s" → "Julie's") |
 | `weekday_label(start_weekday, day, day_offset=0)`, `EXAMPLE_PANTRY`, `DAY_*` | Helpers and constants |
 
@@ -50,3 +51,4 @@ The decisions behind the UI that are worth testing, kept free of Streamlit so th
 - 2026-10-14 — Added `local_today` (the user's date from the browser timezone; fixes weekday names on a UTC server).
 - 2026-10-16 — "Loved it" day mark (`DAY_LOVED`): a cooked day whose recipe becomes rating evidence (`ReplanRequest.loved`).
 - 2026-10-17 — Added `status_badge` (the short tag on a pantry row's coloured badge).
+- 2026-10-17 — Added `protein_label`.

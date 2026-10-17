@@ -83,3 +83,4 @@ Logger `app.service`: the INFO timeline of a session. One line each for: service
 - 2026-10-16 — Presentation uses `replay_with_substitutions`: ingredient lines carry `substituted_by`, and swapped items leave the grocery box, matching the explanation.
 - 2026-10-16 — `rate_dinner`, `build_profile(rated_dinners=...)` and `replan(loved=...)`: dinners the user loved become rating evidence for later plans.
 - 2026-10-17 — Every review row with an ingredient (parsed, chosen or added by hand) carries its `food_group`.
+- 2026-10-17 — Each ingredient line carries its protein (`_protein_g`: grams × USDA per 100 g, `None` if USDA has no value), for the Protein column of the Ingredients table.

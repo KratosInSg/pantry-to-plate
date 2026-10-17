@@ -216,6 +216,17 @@ def test_pantry_use_by_deadline_is_shown_for_stock_that_has_one(week):
     assert all(0 <= l.use_by_day < 7 for l in uses)
 
 
+def test_ingredient_protein_comes_from_usda_and_adds_up_to_the_dinner(service, week):
+    for d in week.days:
+        known = [l.protein_g for l in d.ingredients if l.protein_g is not None]
+        assert known and all(p >= 0 for p in known)
+        assert sum(known) == pytest.approx(d.protein_g, rel=1e-3, abs=0.05)    # the dinner's protein is this sum
+    line = week.days[0].ingredients[0]
+    iid = service.ctx.store.ingredient_by_name(line.name).ingredient_id
+    per_100g = service.ctx.store.nutrition_per_100g(iid)["protein_g"]
+    assert line.protein_g == pytest.approx(line.grams * per_100g / 100)       # grams x USDA, never estimated
+
+
 def test_the_grocery_box_is_the_sum_of_what_each_dinner_needs_to_buy(week):
     per_day: dict[str, float] = {}
     for d in week.days:

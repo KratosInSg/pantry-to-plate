@@ -11,7 +11,7 @@ a local Ollama. The planned week is built once per module (planning takes second
 | `test_reading_text_shows_honest_rows_and_asks_about_what_it_could_not_recognise` | kimchi gets a "which one?" selector offering "cabbage kimchi" |
 | `test_garbage_input_is_met_with_guidance_not_a_crash` | `!!! ???` → "Nothing was recognised", no fake food row |
 | `test_an_amount_the_user_corrects_is_no_longer_marked_as_assumed` | the row shows the food icon and an orange *Check amount* badge; editing grams turns it green *Ready* and clears the assumption in state |
-| `test_planning_shows_seven_days_with_reasons_ingredients_and_steps` | 7 day cards, "Why this dinner", ingredient and step expanders, metrics |
+| `test_planning_shows_seven_days_with_reasons_ingredients_and_steps` | 7 day cards, "Why this dinner", ingredient and step expanders, metrics; the Ingredients table's first columns are Ingredient, Amount, Protein |
 | `test_the_week_can_be_read_in_four_tabs`, `test_the_shopping_list_…` | tabs; shopping items and the "tick things off" caption |
 | `test_no_replan_is_possible_until_a_day_is_marked` | the button is disabled with an explanation |
 | `test_marking_days_out_of_order_is_explained_and_blocked` | "Mark days in order" and the button stays disabled |
@@ -35,3 +35,4 @@ widget's state after it was created). Unit tests of the logic could not have fou
 - 2026-10-15 — Resolve the Streamlit entry point relative to the repository root via `Path(__file__)`, not the pytest working directory.
 - 2026-10-16 — Added `test_a_loved_dinner_is_remembered_for_later_plans_until_forgotten` (mark, re-plan, fresh plan, forget); updated the unmarked-week message.
 - 2026-10-17 — The assumed-amount test checks the food icon and status badge instead of the old status sentence.
+- 2026-10-17 — The planned-week test checks the Protein column next to Amount.

@@ -253,6 +253,12 @@ def weekday_label(start_weekday: int, day: int, day_offset: int = 0) -> str:
     return WEEKDAY_NAMES[(start_weekday + day + day_offset) % 7]
 
 
+def protein_label(protein_g: float | None) -> str:
+    """``"12.4 g"`` for an ingredient line's protein; ``"—"`` when USDA has no value (unknown, not zero). Small
+    amounts keep one decimal so a spoon of something is not shown as a misleading "0 g"."""
+    return "—" if protein_g is None else f"{protein_g:.1f} g"
+
+
 def display_name(name: str) -> str:
     """A recipe or ingredient name for display. Food.com names lost their apostrophes ("julie s salsa chicken"), so a
     lone trailing "s" after a word is restored as a possessive: "Julie's Salsa Chicken"."""

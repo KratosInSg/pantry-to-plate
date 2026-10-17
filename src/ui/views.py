@@ -394,6 +394,7 @@ def _day_card(day: DayPlan, week: PlannedWeek, wid: int) -> str:
         left, right = st.columns(2)
         with left.expander("🧺 Ingredients"):
             rows = [{"Ingredient": logic.display_name(l.name), "Amount": fmt_g(l.grams),
+                     "Protein": logic.protein_label(l.protein_g),
                      "From": ("staple" if l.staple else _source(l)),
                      "Use by": (logic.weekday_label(week.scenario.start_weekday, l.use_by_day, 0)
                                 + ("" if l.deadline_known else " (est.)")) if l.use_by_day is not None else ""}
