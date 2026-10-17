@@ -12,7 +12,7 @@ The types that cross the backend ↔ UI boundary. Two kinds on purpose:
 
 | Name | What |
 | --- | --- |
-| `PantryEntry` | One review row: `raw_text`, `ingredient_id`, `name`, `grams`, `quantity_assumed`, deadline fields, `status`, `problem`, `suggestions`, `warnings`. `usable`, `to_pantry_item()`, `with_grams(g)`, `with_days_left(d)` |
+| `PantryEntry` | One review row: `raw_text`, `ingredient_id`, `name`, `food_group`, `grams`, `quantity_assumed`, deadline fields, `status`, `problem`, `suggestions`, `warnings`. `usable`, `to_pantry_item()`, `with_grams(g)`, `with_days_left(d)` |
 | `PantryReview` | `source_text`, `entries`, `unparsed`; `usable_entries`, `needs_attention` |
 | `IngredientChoice` | `ingredient_id`, `name`, `score` — an autocomplete hit or a "did you mean" |
 | `ENTRY_OK` / `ENTRY_ASSUMED` / `ENTRY_CHOOSE` / `ENTRY_UNKNOWN` / `ENTRY_NO_AMOUNT` / `ENTRY_UNSAFE` | What the UI should do with a row; `USABLE_STATUSES` = ok + assumed |
@@ -45,3 +45,4 @@ Exercised through [`tests/app/test_service.py`](../tests/app/test_service.md).
 
 - 2026-10-13 — Created.
 - 2026-10-16 — `IngredientLine.substituted_by`.
+- 2026-10-17 — `PantryEntry.food_group` (the ingredient's dataset food group; presentation only, picks the row's icon; `None` while the row has no ingredient).

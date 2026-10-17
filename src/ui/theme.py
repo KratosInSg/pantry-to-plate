@@ -37,12 +37,29 @@ LINE = "#ECE7DF"
 
 STEPS = ("Your kitchen", "Check it", "Your week")
 
-# Food-group icons for the shopping list (the dataset's ``food_group`` values; anything else gets the basket).
+# Food-group icons for the pantry rows and the shopping list. Keys are exactly the 22 ``food_group`` values in
+# data/canonical/ingredients/ingredient.parquet (a test checks none is missing); anything else gets the basket.
 GROUP_ICONS = {
-    "vegetable": "🥦", "fruit": "🍎", "meat": "🥩", "poultry": "🍗", "seafood": "🐟", "fish": "🐟", "dairy": "🧀",
-    "egg": "🥚", "grain_pasta": "🍝", "grain": "🌾", "bread": "🍞", "legume": "🫘", "nut_seed": "🥜",
-    "herb_spice": "🌿", "oil_fat": "🫒", "condiment_sauce": "🥫", "sweetener": "🍯", "beverage": "🧃",
-    "baking": "🧁", "other": "🧺",
+    "vegetable": "🥦", "fruit": "🍎", "meat": "🥩", "poultry": "🍗", "seafood": "🐟", "dairy": "🧀", "egg": "🥚",
+    "grain_pasta": "🍝", "bakery": "🍞", "legume": "🫘", "nut_seed": "🥜", "herb_spice": "🌿", "oil_fat": "🫒",
+    "sauce_condiment": "🥫", "soup_broth": "🍲", "sweetener": "🍯", "snack_sweet": "🍪", "beverage": "🧃",
+    "alcohol": "🍷", "water": "💧", "mixed_dish": "🥘", "other": "🧺",
+}
+# A more specific icon for the everyday ingredients a group icon would describe badly (rice is not pasta, milk is not
+# cheese). Exact canonical names only: a word match would put an egg on "egg noodles". Chosen by hand from the most
+# common pantry items; every name must exist in the dataset (a test checks).
+ITEM_ICONS = {
+    "spinach": "🥬", "lettuce": "🥬", "cabbage": "🥬", "tomato": "🍅", "potato": "🥔", "sweet potato": "🍠",
+    "carrot": "🥕", "onion": "🧅", "garlic": "🧄", "ginger": "🫚", "broccoli": "🥦", "corn": "🌽", "cucumber": "🥒",
+    "eggplant": "🍆", "mushroom": "🍄", "bell pepper": "🫑", "green bell pepper": "🫑", "red bell pepper": "🫑",
+    "chili": "🌶️", "jalapeno": "🌶️", "hot pepper": "🌶️", "avocado": "🥑", "olive": "🫒",
+    "banana": "🍌", "lemon": "🍋", "lime": "🍋", "orange": "🍊", "strawberry": "🍓", "cherry": "🍒", "peach": "🍑",
+    "pear": "🍐", "pineapple": "🍍", "watermelon": "🍉", "mango": "🥭", "kiwi": "🥝", "coconut": "🥥",
+    "rice": "🍚", "oats": "🌾", "all-purpose flour": "🌾", "bread": "🍞", "bagel": "🥯", "croissant": "🥐",
+    "pancake": "🥞", "pretzel": "🥨", "chocolate": "🍫",
+    "milk": "🥛", "butter": "🧈", "plain yogurt": "🥛", "heavy cream": "🥛",
+    "salt": "🧂", "honey": "🍯", "peanut": "🥜",
+    "shrimp": "🦐", "bacon": "🥓", "coffee": "☕", "tea": "🍵", "beer": "🍺",
 }
 
 # How many cards get their own entrance delay (a week has 7 dinners; a pantry rarely more than ~20 rows).
@@ -52,6 +69,22 @@ _STAGGERED = 24
 def group_icon(food_group: str | None) -> str:
     """Icon for a food group; the basket for anything unknown."""
     return GROUP_ICONS.get((food_group or "").lower(), GROUP_ICONS["other"])
+
+
+def food_icon(name: str | None, food_group: str | None) -> str:
+    """Icon for one ingredient: its own (``ITEM_ICONS``, exact canonical name) if it has one, else its group's.
+
+    Decorative: the name is always shown next to it. A row with no ingredient yet (``name`` and ``food_group``
+    ``None``) gets the basket.
+    """
+    return ITEM_ICONS.get((name or "").strip().lower()) or group_icon(food_group)
+
+
+def food_icon_html(icon: str) -> str:
+    """The pantry row's icon, large, on a round tile. Its own block (rendered in a narrow column) because Markdown
+    cannot size one character, and the name line next to it holds user text that must never be rendered as HTML.
+    The tile's neutral background keeps pale emoji (🥛, 🧂) visible on the white card."""
+    return f'<div class="p2p-food-icon" aria-hidden="true">{html.escape(icon)}</div>'
 
 
 def css() -> str:
@@ -127,6 +160,9 @@ h1, h2, h3 {{ color: var(--ink); letter-spacing: -0.01em; }}
 [class*="st-key-daycard_"]:hover, [class*="st-key-pantryrow_"]:hover {{ transform: translateY(-2px); box-shadow: var(--shadow-hover); }}
 [class*="st-key-daycard_"] {{ border-left: 5px solid var(--green) !important; }}
 [class*="st-key-pantryrow_attn"] {{ border-left: 5px solid var(--accent) !important; background: #FFFCFA; }}
+/* the food icon on a pantry row: ~1.5x the name's size (the text-sized emoji read as bullets, not pictures) */
+.p2p-food-icon {{ width: 46px; height: 46px; border-radius: 50%; background: #F3F1EC; display: flex;
+  align-items: center; justify-content: center; font-size: 1.6rem; line-height: 1; }}
 
 /* ---------- chips ---------- */
 .p2p-chips {{ display: flex; flex-wrap: wrap; gap: 6px; margin: 2px 0 8px 0; }}

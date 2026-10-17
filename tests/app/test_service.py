@@ -96,6 +96,17 @@ def test_review_turns_text_into_rows_with_honest_statuses(review):
     assert by_name["milk"].expiry_known                                  # "expires tomorrow" is a stated date
 
 
+def test_rows_carry_their_food_group_for_the_icon(service, review):
+    by_name = {e.name: e for e in review.entries if e.name}
+    assert by_name["spinach"].food_group == "vegetable" and by_name["chicken breast"].food_group == "poultry"
+    assert all(e.food_group is None for e in review.needs_attention if e.ingredient_id is None)
+    row = review.needs_attention[0]
+    picked = service.choose_ingredient(row, row.suggestions[0].ingredient_id)
+    assert picked.food_group is not None                                  # set once the user picks an ingredient
+    rice = service.search_ingredients("rice")[0].ingredient_id
+    assert service.add_pantry_entry(rice, 200).food_group == "grain_pasta"
+
+
 def test_unrecognised_items_need_attention_and_come_with_suggestions(review):
     bad = review.needs_attention
     assert [e.raw_text for e in bad] == ["a tub of kimchi"]

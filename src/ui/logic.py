@@ -225,9 +225,22 @@ _STATUS = {
 }
 
 
+# The one-or-two-word tag on a review row, keyed by the ``kind`` above. Short on purpose: it sits next to the name
+# as a coloured badge; rows that need explaining still carry ``entry.problem`` underneath.
+_BADGE = {"ok": "Ready", "assumed": "Check amount", "choose": "Pick one", "unknown": "Not recognised",
+          "amount": "Add amount", "unsafe": "Left out"}
+
+
 def status_label(entry: PantryEntry) -> tuple[str, str]:
     """``(kind, text)`` for a row's status; ``kind`` lets a view pick colour/icon, ``text`` is user-facing."""
     return _STATUS.get(entry.status, ("unknown", entry.status))
+
+
+def status_badge(entry: PantryEntry) -> tuple[str, str]:
+    """``(kind, tag)`` for a row's status badge: ``kind`` as in ``status_label``, ``tag`` a fixed short label (safe
+    to put in Markdown as it is: it never contains user text)."""
+    kind, _ = status_label(entry)
+    return kind, _BADGE[kind]
 
 
 def needs_choice(entry: PantryEntry) -> bool:

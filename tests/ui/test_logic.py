@@ -8,7 +8,8 @@ import pytest
 
 from app.models import ENTRY_ASSUMED, ENTRY_CHOOSE, ENTRY_NO_AMOUNT, ENTRY_OK, ENTRY_UNKNOWN, ENTRY_UNSAFE, PantryEntry
 from ui.logic import (DAY_COOKED, DAY_LOVED, display_name, DAY_MARKS, DAY_PLANNED, DAY_REJECTED, DAY_SKIPPED, apply_use_by, build_replan_request,
-                      current_use_by_index, local_today, md_escape, needs_choice, status_label, use_by_choices,
+                      current_use_by_index, local_today, md_escape, needs_choice, status_badge, status_label,
+                      use_by_choices,
                       weekday_label)
 
 IDS = [101, 102, 103, 104, 105, 106, 107]
@@ -123,6 +124,9 @@ def test_picking_a_day_states_a_hard_deadline_and_picking_not_sure_restores_the_
 def test_every_status_has_a_label(status, kind):
     k, text = status_label(_entry(status=status))
     assert k == kind and text
+    badge_kind, tag = status_badge(_entry(status=status))
+    assert badge_kind == kind and 0 < len(tag.split()) <= 2            # a tag, not a sentence
+    assert not set(tag) & set("[]:*_`")                                 # safe inside ":green-badge[...]"
 
 
 def test_only_unresolved_rows_ask_for_a_choice():

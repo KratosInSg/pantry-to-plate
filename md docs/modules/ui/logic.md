@@ -11,7 +11,7 @@ The decisions behind the UI that are worth testing, kept free of Streamlit so th
 | `build_replan_request(recipe_ids, marks) -> ReplanRequest` | Turns the per-day marks (*Planned / Cooked / Loved it / Skipped / Reject this dinner*) into what `service.replan` needs: `cooked` (a recipe id, or `None` per skipped day), `loved`, `rejected`, `remaining_days` |
 | `ReplanRequest` | `ok`, `changed`, `problem`, `loved`, `describe(rejected_names, loved_names)` — one sentence saying what the button will do |
 | `use_by_choices(start_weekday, horizon, original)`, `current_use_by_index`, `apply_use_by` | The use-by selector: our estimate, each day of the plan, "won't go off this week"; and how a choice changes an entry |
-| `status_label(entry)`, `needs_choice(entry)` | Row wording and which rows must ask "which one?" |
+| `status_label(entry)`, `status_badge(entry)`, `needs_choice(entry)` | Row wording, the short badge tag (*Ready*, *Check amount*, *Pick one*, *Not recognised*, *Add amount*, *Left out*; fixed text, safe in Markdown), and which rows must ask "which one?" |
 | `display_name(name)` | Display form of a recipe/ingredient name; restores the possessive Food.com dropped ("julie s" → "Julie's") |
 | `weekday_label(start_weekday, day, day_offset=0)`, `EXAMPLE_PANTRY`, `DAY_*` | Helpers and constants |
 
@@ -49,3 +49,4 @@ The decisions behind the UI that are worth testing, kept free of Streamlit so th
 - 2026-10-14 — Added `md_escape` (security review: typed links and images were rendered).
 - 2026-10-14 — Added `local_today` (the user's date from the browser timezone; fixes weekday names on a UTC server).
 - 2026-10-16 — "Loved it" day mark (`DAY_LOVED`): a cooked day whose recipe becomes rating evidence (`ReplanRequest.loved`).
+- 2026-10-17 — Added `status_badge` (the short tag on a pantry row's coloured badge).

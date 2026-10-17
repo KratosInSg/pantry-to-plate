@@ -47,6 +47,9 @@ class PantryEntry(BaseModel):
     raw_text: str = ""                   # what the user typed ("" for a row added by hand)
     ingredient_id: int | None = None
     name: str | None = None              # canonical name
+    # the dataset's food group of ``ingredient_id`` (``None`` while the row has no ingredient). Presentation only:
+    # the UI picks the row's icon from it; nothing in planning reads it.
+    food_group: str | None = None
     grams: float | None = None
     quantity_assumed: bool = False
     # deadline: what the planner will be told, and what produced it (kept so a corrected ingredient can be re-derived)

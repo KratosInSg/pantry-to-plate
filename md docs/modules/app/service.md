@@ -24,7 +24,7 @@ week    = service.replan(week, cooked=[week.days[0].recipe_id, None], rejected=[
 | `resolve_names(names) -> NameResolution` | Typed food names → ids; `unresolved` and `ambiguous` (with candidates) are reported, never guessed |
 | `build_profile(...) -> ProfileBuild` | Validated `UserProfile` from plain form values; `dinner_only=True` by default; `rated_dinners=` carries the rating history (a recipe rated twice keeps the later rating); raises `ValueError` naming the valid options for an unknown diet / allergen / cuisine |
 | `rate_dinner(recipe_id, rating=5) -> RatedDinner` | A catalogue recipe as rating evidence (name, ingredients, tags, cuisine); `ValueError` for an unknown id or a rating outside 1–5 |
-| `review_pantry(text, today=None)` | Free text → `PantryReview` (rows with honest statuses and suggestions) |
+| `review_pantry(text, today=None)` | Free text → `PantryReview` (rows with honest statuses and suggestions; each row with an ingredient carries its `food_group` for the UI's icon) |
 | `add_pantry_entry(ingredient_id, grams, days_left=None, urgent=False)` | A row added by hand |
 | `choose_ingredient(entry, ingredient_id)` | Resolve a "did you mean?" row; keeps the amount, re-derives the deadline |
 | `pantry_items(entries)` | Usable rows → merged `PantryItem`s (staticmethod) |
@@ -82,3 +82,4 @@ Logger `app.service`: the INFO timeline of a session. One line each for: service
 - 2026-10-15 — `build_profile(excluded_food_groups=...)` forwards strict food exclusions to the validated profile.
 - 2026-10-16 — Presentation uses `replay_with_substitutions`: ingredient lines carry `substituted_by`, and swapped items leave the grocery box, matching the explanation.
 - 2026-10-16 — `rate_dinner`, `build_profile(rated_dinners=...)` and `replan(loved=...)`: dinners the user loved become rating evidence for later plans.
+- 2026-10-17 — Every review row with an ingredient (parsed, chosen or added by hand) carries its `food_group`.

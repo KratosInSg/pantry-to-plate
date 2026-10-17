@@ -121,10 +121,12 @@ def test_an_amount_the_user_corrects_is_no_longer_marked_as_assumed():
     at = _app()
     at.text_area(key="pantry_text").set_value("spinach").run()
     at.button(key="read_pantry").click().run()
-    assert "Amount assumed" in _texts(at)
+    page = _texts(at)
+    assert ">🥬</div>" in page and "**Spinach** :orange-badge[Check amount]" in page    # food icon + status badge
     at.number_input(key="g_1_0").set_value(120.0).run()
     assert not at.exception
-    assert "Amount assumed" not in _texts(at)
+    page = _texts(at)
+    assert "Check amount" not in page and ":green-badge[Ready]" in page
     assert at.session_state["entries"][0].grams == 120.0 and not at.session_state["entries"][0].quantity_assumed
 
 
