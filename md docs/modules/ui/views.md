@@ -22,6 +22,18 @@ results from `PantryToPlateService`, lays them out, and reports what the user di
 `rated_dinners` (dinners marked "Loved it", kept for the session; shown in the Tastes section with a "Forget them" button,
 and passed to `build_profile` so a fresh plan learns from them).
 
+## Pantry review rows
+
+Each row reads `🥬 **Spinach** (Ready)`: the food's own icon (`theme.food_icon`, from the row's `food_group`) in a
+narrow first column, drawn large on a round tile (`theme.food_icon_html`), then the name, and a coloured status badge (Streamlit's `:color-badge[...]`, label from `logic.status_badge`, colour from
+`KIND_BADGE`): green *Ready*; orange *Check amount* (planned, but on our guessed amount); red *Pick one* /
+*Not recognised* / *Add amount* (needs the user first); grey *Left out* (unsafe, never planned). The status used to
+be a leading emoji (✅ 🟡 ❓ ❌ ⚠️); with a food icon in that spot two emojis competed, and a word is clearer than a
+colour code. Rows that need explaining (a choice, an unsafe item) keep their sentence underneath. The icon is
+decorative: the name is always next to it. It has its own column because Markdown cannot size one character and the
+name line holds user text that must never be rendered as HTML. On a phone-width screen Streamlit stacks columns, so
+the icon sits above the name. It also helps checking the parse: a wrong match shows a wrong-looking icon.
+
 ## Things that were learned the hard way
 
 * **Widget state can only be set in a callback.** Assigning to `st.session_state["pantry_text"]` after the text area
@@ -53,3 +65,5 @@ Through [`tests/ui/test_app.py`](../tests/ui/test_app.md).
 - 2026-10-15 — Diet sidebar now exposes strict food exclusions separate from allergies.
 - 2026-10-16 — Ingredients table shows "swap: milk (25 g) and lemon juice (1.7 g)" in the From column when a substitution rule replaced buying an item.
 - 2026-10-16 — Tastes section shows how many loved dinners shape new plans (with "Forget them"); `sidebar_profile` returns `rated_dinners`; re-plan passes `loved`.
+- 2026-10-17 — Pantry rows show the food's icon and a coloured status badge (`KIND_BADGE`, `_row_heading`) instead of a status emoji and a status line; the icon is shown large in its own column.
+- 2026-10-17 — Ingredients table has a Protein column next to Amount (per serving, grams × USDA; "—" when USDA has no value).

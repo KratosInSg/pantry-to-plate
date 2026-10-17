@@ -34,7 +34,12 @@ from explain.cards import meal_cards
 from explain.render import TERM_LABELS, fmt_g
 from ui import logic, theme
 
-KIND_ICON = {"ok": "✅", "assumed": "🟡", "choose": "❓", "unknown": "❌", "amount": "❓", "unsafe": "⚠️"}
+# Colour of a pantry row's status badge (Streamlit's ``:color-badge[...]``), by ``logic.status_badge`` kind. Green =
+# planned as it is; orange = planned, but on our guess; red = needs you before it can be planned; grey = shown only,
+# never planned. The badge text says it too, so colour is never the only signal. The row's leading emoji is the
+# food's own (``theme.food_icon``), so the status no longer competes with it for that spot.
+KIND_BADGE = {"ok": "green", "assumed": "orange", "choose": "red", "unknown": "red", "amount": "red",
+              "unsafe": "gray"}
 DIET_ICON = {"vegetarian": "🥕", "omnivore": "🍽️", "pescatarian": "🐟", "vegan": "🌱"}
 # Per food field in the profile form. Three fields of this length stay under the service's MAX_FOOD_NAMES in
 # ordinary use; a longer list gets the service's clear error, not a slow page.
@@ -188,22 +193,26 @@ def _load_review(service: PantryToPlateService, text: str, today: date) -> None:
 def _entry_row(service: PantryToPlateService, i: int, entry: PantryEntry, original: PantryEntry, review_id: int,
                today: date) -> tuple[PantryEntry, bool]:
     """One review row. Returns ``(possibly edited entry, whether its status changed)``."""
-    kind, text = logic.status_label(entry)
+    _, text = logic.status_label(entry)
     key = f"{review_id}_{i}"
     card = f"pantryrow_attn_{i}_{review_id}" if not entry.usable else f"pantryrow_{i}_{review_id}"
     with st.container(border=True, key=card):
         if logic.needs_choice(entry):
-            return _choice_row(service, entry, key, kind, text, today)
+            c_icon, c_body = st.columns([0.55, 9.45])
+            _html(theme.food_icon_html(theme.food_icon(entry.name, entry.food_group)), c_icon)
+            with c_body:
+                return _choice_row(service, entry, key, text, today)
 
         if entry.status == ENTRY_UNSAFE:                       # shown, never planned with, nothing to edit
-            st.markdown(f"{KIND_ICON.get(kind, '•')} **{logic.md_escape(entry.name or entry.raw_text)}**  \n"
-                        f":gray[{text}]")
+            c_icon, c_body = st.columns([0.55, 9.45], vertical_alignment="center")
+            _html(theme.food_icon_html(theme.food_icon(entry.name, entry.food_group)), c_icon)
+            c_body.markdown(f"{_row_heading(entry, logic.md_escape(entry.name or entry.raw_text))}  \n"
+                            f":gray[{logic.md_escape(entry.problem or text)}]")
             return entry, False
 
-        c_name, c_amt, c_use, c_keep = st.columns([3, 2, 3, 1.4], vertical_alignment="center")
-        shown_name = logic.md_escape(logic.display_name(entry.name or entry.raw_text))
-        c_name.markdown(f"{KIND_ICON.get(kind, '•')} **{shown_name}**  \n"
-                        f":gray[{text}]")
+        c_icon, c_name, c_amt, c_use, c_keep = st.columns([0.55, 2.7, 2, 3, 1.4], vertical_alignment="center")
+        _html(theme.food_icon_html(theme.food_icon(entry.name, entry.food_group)), c_icon)
+        c_name.markdown(_row_heading(entry, logic.md_escape(logic.display_name(entry.name or entry.raw_text))))
         shown = min(max(float(entry.grams), 0.1), 20000.0) if entry.grams else 100.0
         grams = c_amt.number_input("Amount (g)", min_value=0.1, max_value=20000.0, value=shown, step=10.0,
                                    format="%g", key=f"g_{key}")
@@ -229,10 +238,17 @@ def _entry_row(service: PantryToPlateService, i: int, entry: PantryEntry, origin
         return new, flipped
 
 
-def _choice_row(service: PantryToPlateService, entry: PantryEntry, key: str, kind: str, text: str,
+def _row_heading(entry: PantryEntry, shown_name: str) -> str:
+    """``**Spinach** (Ready)``: the name and the status badge (the food icon sits in its own column, larger).
+    ``shown_name`` must already be Markdown-escaped; the badge text is a fixed label, never user text."""
+    kind, tag = logic.status_badge(entry)
+    return f"**{shown_name}** :{KIND_BADGE.get(kind, 'gray')}-badge[{tag}]"
+
+
+def _choice_row(service: PantryToPlateService, entry: PantryEntry, key: str, text: str,
                 today: date) -> tuple[PantryEntry, bool]:
     """A row with no ingredient yet: pick one of the suggestions, or leave it out."""
-    st.markdown(f"{KIND_ICON.get(kind, '•')} **“{logic.md_escape(entry.raw_text)}”**  \n"
+    st.markdown(f"{_row_heading(entry, '“' + logic.md_escape(entry.raw_text) + '”')}  \n"
                 f":gray[{logic.md_escape(entry.problem or text)}]")
     options = [None] + [s.ingredient_id for s in entry.suggestions]
     names = {s.ingredient_id: s.name for s in entry.suggestions}
@@ -378,6 +394,7 @@ def _day_card(day: DayPlan, week: PlannedWeek, wid: int) -> str:
         left, right = st.columns(2)
         with left.expander("🧺 Ingredients"):
             rows = [{"Ingredient": logic.display_name(l.name), "Amount": fmt_g(l.grams),
+                     "Protein": logic.protein_label(l.protein_g),
                      "From": ("staple" if l.staple else _source(l)),
                      "Use by": (logic.weekday_label(week.scenario.start_weekday, l.use_by_day, 0)
                                 + ("" if l.deadline_known else " (est.)")) if l.use_by_day is not None else ""}

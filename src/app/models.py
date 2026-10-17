@@ -47,6 +47,9 @@ class PantryEntry(BaseModel):
     raw_text: str = ""                   # what the user typed ("" for a row added by hand)
     ingredient_id: int | None = None
     name: str | None = None              # canonical name
+    # the dataset's food group of ``ingredient_id`` (``None`` while the row has no ingredient). Presentation only:
+    # the UI picks the row's icon from it; nothing in planning reads it.
+    food_group: str | None = None
     grams: float | None = None
     quantity_assumed: bool = False
     # deadline: what the planner will be told, and what produced it (kept so a corrected ingredient can be re-derived)
@@ -124,6 +127,9 @@ class IngredientLine:
     deadline_known: bool
     substituted_by: str = ""             # "milk (220 g) and lemon juice (15 g)" when a substitution rule replaced
                                          # buying this ingredient (``optimizer.substitutions``); "" otherwise
+    # protein in ``grams`` of this ingredient: grams x USDA protein per 100 g (the same sum that gives the dinner's
+    # ``protein_g``). ``None`` = USDA has no protein value for it, shown as unknown rather than as 0.
+    protein_g: float | None = None
 
 
 @dataclass(frozen=True, slots=True)

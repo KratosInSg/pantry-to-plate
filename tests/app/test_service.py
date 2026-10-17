@@ -96,6 +96,17 @@ def test_review_turns_text_into_rows_with_honest_statuses(review):
     assert by_name["milk"].expiry_known                                  # "expires tomorrow" is a stated date
 
 
+def test_rows_carry_their_food_group_for_the_icon(service, review):
+    by_name = {e.name: e for e in review.entries if e.name}
+    assert by_name["spinach"].food_group == "vegetable" and by_name["chicken breast"].food_group == "poultry"
+    assert all(e.food_group is None for e in review.needs_attention if e.ingredient_id is None)
+    row = review.needs_attention[0]
+    picked = service.choose_ingredient(row, row.suggestions[0].ingredient_id)
+    assert picked.food_group is not None                                  # set once the user picks an ingredient
+    rice = service.search_ingredients("rice")[0].ingredient_id
+    assert service.add_pantry_entry(rice, 200).food_group == "grain_pasta"
+
+
 def test_unrecognised_items_need_attention_and_come_with_suggestions(review):
     bad = review.needs_attention
     assert [e.raw_text for e in bad] == ["a tub of kimchi"]
@@ -203,6 +214,17 @@ def test_pantry_use_by_deadline_is_shown_for_stock_that_has_one(week):
     uses = [l for d in week.days for l in d.ingredients if l.from_pantry_g > 0 and l.use_by_day is not None]
     assert uses, "the scenario has perishable stock, so some dinner must use stock that has a deadline"
     assert all(0 <= l.use_by_day < 7 for l in uses)
+
+
+def test_ingredient_protein_comes_from_usda_and_adds_up_to_the_dinner(service, week):
+    for d in week.days:
+        known = [l.protein_g for l in d.ingredients if l.protein_g is not None]
+        assert known and all(p >= 0 for p in known)
+        assert sum(known) == pytest.approx(d.protein_g, rel=1e-3, abs=0.05)    # the dinner's protein is this sum
+    line = week.days[0].ingredients[0]
+    iid = service.ctx.store.ingredient_by_name(line.name).ingredient_id
+    per_100g = service.ctx.store.nutrition_per_100g(iid)["protein_g"]
+    assert line.protein_g == pytest.approx(line.grams * per_100g / 100)       # grams x USDA, never estimated
 
 
 def test_the_grocery_box_is_the_sum_of_what_each_dinner_needs_to_buy(week):

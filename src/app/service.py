@@ -294,7 +294,8 @@ class PantryToPlateService:
             raise ValueError(f"unknown ingredient id {ingredient_id}")
         item = make_pantry_item(ingredient_id, grams, self.ctx.store, days_left=days_left,
                                 urgency=Urgency.URGENT if urgent else Urgency.NONE, horizon_days=horizon_days)
-        return self._entry_from_item(item, name=info.canonical_name, days_left=days_left, explicit=days_left is not None)
+        return self._entry_from_item(item, name=info.canonical_name, food_group=info.food_group, days_left=days_left,
+                                     explicit=days_left is not None)
 
     def choose_ingredient(self, entry: PantryEntry, ingredient_id: int, horizon_days: int = HORIZON_DAYS) -> PantryEntry:
         """The user picked which ingredient a "did you mean?" row is. Needs an amount (assumed or given)."""
@@ -303,13 +304,13 @@ class PantryToPlateService:
             raise ValueError(f"unknown ingredient id {ingredient_id}")
         if entry.grams is None or entry.grams <= 0:
             return entry.model_copy(update={"ingredient_id": ingredient_id, "name": info.canonical_name,
-                                            "status": ENTRY_NO_AMOUNT, "problem": _PROBLEMS[ENTRY_NO_AMOUNT],
+                                            "food_group": info.food_group, "status": ENTRY_NO_AMOUNT, "problem": _PROBLEMS[ENTRY_NO_AMOUNT],
                                             "suggestions": []})
         item = make_pantry_item(ingredient_id, entry.grams, self.ctx.store, days_left=entry.days_left_hint,
                                 urgency=entry.urgency, horizon_days=horizon_days,
                                 days_left_explicit=entry.days_left_explicit)
-        chosen = self._entry_from_item(item, name=info.canonical_name, days_left=entry.days_left_hint,
-                                       explicit=entry.days_left_explicit)
+        chosen = self._entry_from_item(item, name=info.canonical_name, food_group=info.food_group,
+                                       days_left=entry.days_left_hint, explicit=entry.days_left_explicit)
         return chosen.model_copy(update={"raw_text": entry.raw_text, "quantity_assumed": entry.quantity_assumed,
                                          "status": ENTRY_ASSUMED if entry.quantity_assumed else ENTRY_OK,
                                          "warnings": list(entry.warnings)})
@@ -330,7 +331,7 @@ class PantryToPlateService:
         if build.items:
             p = build.items[0]
             return PantryEntry(**{**common, "ingredient_id": p.ingredient_id, "name": item.canonical_name,
-                                  "grams": p.grams, "last_use_day": p.last_use_day, "expiry_known": p.expiry_known,
+                                  "food_group": self._food_group(p.ingredient_id), "grams": p.grams, "last_use_day": p.last_use_day, "expiry_known": p.expiry_known,
                                   "expiry_confidence": p.expiry_confidence,
                                   "status": ENTRY_ASSUMED if p.quantity_assumed else ENTRY_OK})
         _, reason = build.skipped[0]
@@ -341,12 +342,24 @@ class PantryToPlateService:
         # is only missing an amount, or was flagged unsafe, is a known ingredient and keeps its identity
         known = status in (ENTRY_NO_AMOUNT, ENTRY_UNSAFE) and item.ingredient_id is not None
         return PantryEntry(**{**common, "ingredient_id": item.ingredient_id if known else None,
-                              "name": item.canonical_name if known else None, "status": status,
+                              "name": item.canonical_name if known else None,
+                              "food_group": self._food_group(item.ingredient_id) if known else None, "status": status,
                               "problem": _PROBLEMS.get(status, reason)})
 
+    def _protein_g(self, ingredient_id: int, grams: float) -> float | None:
+        """Protein in ``grams`` of an ingredient (grams x USDA per 100 g); ``None`` if USDA has no protein value."""
+        per_100g = (self.ctx.store.nutrition_per_100g(ingredient_id) or {}).get("protein_g")
+        return None if per_100g is None else grams * per_100g / 100.0
+
+    def _food_group(self, ingredient_id: int | None) -> str | None:
+        """The dataset's food group of an ingredient, for the row's icon; ``None`` if unknown."""
+        info = self.ctx.store.ingredient(ingredient_id) if ingredient_id is not None else None
+        return info.food_group if info else None
+
     @staticmethod
-    def _entry_from_item(item: PantryItem, name: str, days_left: int | None, explicit: bool) -> PantryEntry:
-        return PantryEntry(ingredient_id=item.ingredient_id, name=name, grams=item.grams,
+    def _entry_from_item(item: PantryItem, name: str, food_group: str | None, days_left: int | None,
+                         explicit: bool) -> PantryEntry:
+        return PantryEntry(ingredient_id=item.ingredient_id, name=name, food_group=food_group, grams=item.grams,
                            last_use_day=item.last_use_day, expiry_known=item.expiry_known,
                            expiry_confidence=item.expiry_confidence, days_left_hint=days_left,
                            days_left_explicit=explicit, urgency=item.urgency, status=ENTRY_OK)
@@ -478,7 +491,7 @@ class PantryToPlateService:
                     to_buy_g=float(report.groceries_by_day[day].get(iid, 0.0)), staple=iid in ctx.ignore_ids,
                     use_by_day=use.last_use_day if use is not None else None,
                     deadline_known=use.deadline_known if use is not None else False,
-                    substituted_by=swapped.get(iid, "")))
+                    substituted_by=swapped.get(iid, ""), protein_g=self._protein_g(iid, float(g))))
             lines.sort(key=lambda l: (l.staple, -l.grams))
             days.append(DayPlan(
                 day=day, weekday=df.weekday, recipe_id=info.recipe_id, name=info.name, minutes=info.minutes,

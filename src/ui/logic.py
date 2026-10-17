@@ -225,9 +225,22 @@ _STATUS = {
 }
 
 
+# The one-or-two-word tag on a review row, keyed by the ``kind`` above. Short on purpose: it sits next to the name
+# as a coloured badge; rows that need explaining still carry ``entry.problem`` underneath.
+_BADGE = {"ok": "Ready", "assumed": "Check amount", "choose": "Pick one", "unknown": "Not recognised",
+          "amount": "Add amount", "unsafe": "Left out"}
+
+
 def status_label(entry: PantryEntry) -> tuple[str, str]:
     """``(kind, text)`` for a row's status; ``kind`` lets a view pick colour/icon, ``text`` is user-facing."""
     return _STATUS.get(entry.status, ("unknown", entry.status))
+
+
+def status_badge(entry: PantryEntry) -> tuple[str, str]:
+    """``(kind, tag)`` for a row's status badge: ``kind`` as in ``status_label``, ``tag`` a fixed short label (safe
+    to put in Markdown as it is: it never contains user text)."""
+    kind, _ = status_label(entry)
+    return kind, _BADGE[kind]
 
 
 def needs_choice(entry: PantryEntry) -> bool:
@@ -238,6 +251,12 @@ def needs_choice(entry: PantryEntry) -> bool:
 def weekday_label(start_weekday: int, day: int, day_offset: int = 0) -> str:
     """``"Wednesday"`` for plan day ``day`` (``day_offset`` = days of an earlier plan that already passed)."""
     return WEEKDAY_NAMES[(start_weekday + day + day_offset) % 7]
+
+
+def protein_label(protein_g: float | None) -> str:
+    """``"12.4 g"`` for an ingredient line's protein; ``"—"`` when USDA has no value (unknown, not zero). Small
+    amounts keep one decimal so a spoon of something is not shown as a misleading "0 g"."""
+    return "—" if protein_g is None else f"{protein_g:.1f} g"
 
 
 def display_name(name: str) -> str:
