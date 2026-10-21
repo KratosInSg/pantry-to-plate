@@ -65,7 +65,7 @@ All three planners produced complete seven-dinner plans with **zero recorded har
 
 **Real-user taste check:** On 50 held-out MealRec users, nearest-liked-dish content scoring reached **HR@10 0.202** and **AUC 0.622**, compared with a chance HR@10 of 0.100 and a popularity-prior HR@10 of 0.119. This is **content-based recommendation, not a newly trained ML model**, and does not demonstrate real household meal adoption.
 
-**Ingredient NLP evaluation (v3):** On 120 **synthetic, generator-labelled** pantry messages (1,718 items), the rules-only parser achieved precision **0.983** (95% CI [0.975, 0.989]), recall **0.822** ([0.765, 0.867]) and F1 **0.895** ([0.860, 0.922]). Amount accuracy on found items was 0.999 and urgency accuracy 0.989; only 19% of whole messages were completely correct. Planning from parsed messages increased simulated waste by **48.7 g/week** ([30.5, 70.9]) versus structured input. These are **not hand-labelled data**; the optional LLM fallback was not evaluated. See [08 — Ingredient NLP](Evaluation/08_ingredient_nlp/README.md).
+**Ingredient NLP evaluation (v3):** On 120 **synthetically generated, team-reviewed** pantry messages (1,718 items), the rules-only parser achieved precision **0.983** (95% CI [0.975, 0.989]), recall **0.822** ([0.765, 0.867]) and F1 **0.895** ([0.860, 0.922]). Amount accuracy on found items was 0.999 and urgency accuracy 0.989; only 19% of whole messages were completely correct. Planning from parsed messages increased simulated waste by **48.7 g/week** ([30.5, 70.9]) versus structured input. Initial answer keys were generated programmatically and subsequently reviewed by the project team; this is not an independently hand-annotated corpus. The optional LLM fallback was not evaluated. See [08 — Ingredient NLP](Evaluation/08_ingredient_nlp/README.md).
 
 ## Evaluation and documentation
 
@@ -79,7 +79,7 @@ All three planners produced complete seven-dinner plans with **zero recorded har
 | [05 — Solver backends](Evaluation/05_solver_backends/README.md) | HiGHS versus CP-SAT |
 | [06 — Weight tuning](Evaluation/06_weight_tuning/README.md) | Validation-only objective-weight selection |
 | [07 — GA configuration](Evaluation/07_ga_configuration/README.md) | Five-seed GA population, mutation and generation experiments |
-| [08 — Ingredient NLP](Evaluation/08_ingredient_nlp/README.md) | Synthetic parser precision/recall/F1 and parse-then-plan effects |
+| [08 — Ingredient NLP](Evaluation/08_ingredient_nlp/README.md) | Team-reviewed synthetic parser precision/recall/F1 and parse-then-plan effects |
 | [09 — Expiry safety margin](Evaluation/09_expiry_safety_margin/README.md) | v3 robustness study of a two-day estimated-expiry margin |
 | [Architecture](md%20docs/architecture.md) | Five-stage system design |
 | [Data preparation](data/canonical/README.md) | Canonical ingredients, data quality gates and sources |
