@@ -27,7 +27,7 @@ Tests · Change log**.
 | `src/domain/` | [domain/README.md](domain/README.md) | done (profile, pantry, scenario, plan; NLP → pantry conversion) |
 | `src/preference/` | [preference/README.md](preference/README.md) | content-based scorer done |
 | `src/optimizer/` | [optimizer/README.md](optimizer/README.md) | hard rules, shortlist, inventory, substitution rules, baselines, weekly MILP (HiGHS + CP-SAT backends) done |
-| `src/evaluation/` | [evaluation/README.md](evaluation/README.md) | benchmark frozen (v2 rebaseline); metrics, runner, robustness done; NLP labelled set pending |
+| `src/evaluation/` | [evaluation/README.md](evaluation/README.md) | benchmark frozen (v2 rebaseline; fresh test-only v3, 2026-10-21); metrics, runner, robustness done; synthetic NLP message set + scorer done (manually labelled set still pending) |
 | `src/explain/` | [explain/README.md](explain/README.md) | facts + templates + validated optional LLM paraphrase done |
 | `src/app/` | [app/README.md](app/README.md) | service facade for a UI: pantry review, profile, plan, grocery box, re-plan |
 | `src/ui/` | [ui/README.md](ui/README.md) | Streamlit prototype: pantry review, profile, week, shopping list, re-plan |
@@ -155,6 +155,8 @@ Tests · Change log**.
 | `evaluation/ga_objective_audit.py` | [evaluation/ga_objective_audit.md](evaluation/ga_objective_audit.md) |
 | `evaluation/taste_users.py` | [evaluation/taste_users.md](evaluation/taste_users.md) |
 | `evaluation/taste_eval.py` | [evaluation/taste_eval.md](evaluation/taste_eval.md) |
+| `evaluation/pantry_messages.py` | [evaluation/pantry_messages.md](evaluation/pantry_messages.md) |
+| `evaluation/nlp_eval.py` | [evaluation/nlp_eval.md](evaluation/nlp_eval.md) |
 
 ## `tests/`
 
@@ -204,6 +206,8 @@ Tests · Change log**.
 | `tests/evaluation/test_ga_hyperparams.py` | [tests/evaluation/test_ga_hyperparams.md](tests/evaluation/test_ga_hyperparams.md) |
 | `tests/evaluation/test_taste_users.py` | [tests/evaluation/test_taste_users.md](tests/evaluation/test_taste_users.md) |
 | `tests/evaluation/test_taste_eval.py` | [tests/evaluation/test_taste_eval.md](tests/evaluation/test_taste_eval.md) |
+| `tests/evaluation/test_pantry_messages.py` | [tests/evaluation/test_pantry_messages.md](tests/evaluation/test_pantry_messages.md) |
+| `tests/evaluation/test_nlp_eval.py` | [tests/evaluation/test_nlp_eval.md](tests/evaluation/test_nlp_eval.md) |
 
 ## Repo-level files
 
@@ -214,7 +218,7 @@ Tests · Change log**.
 | `requirements.txt` | Python dependencies (data build, runtime, optimiser), plus security minimums for transitive ones | a dependency is added/removed, or an audit flags one |
 | `.streamlit/config.toml` | Streamlit theme, and production safety (no tracebacks to visitors) | the look or deployment settings change |
 | `.gitignore` | Ignores raw downloads, caches, editor files. `data/canonical/` and `data/evaluation/` are tracked on purpose | a new large/generated folder appears |
-| `data/evaluation/` | The frozen benchmark (`scenarios_v1.jsonl`, `split_v1.json`, `FROZEN.json`) | never edited by hand; new version = new files |
+| `data/evaluation/` | The frozen benchmarks: v1 (root), v2 (rebaseline, default), v3 (120 new test-only kitchens + the synthetic pantry messages `pantry_messages_m1.jsonl`) | never edited by hand; new version = new files |
 
 ## Change log
 
@@ -236,3 +240,4 @@ Tests · Change log**.
 - 2026-10-16 — Added `optimizer/substitutions.py`, `evaluation/robustness.py` and their tests.
 - 2026-10-16 — Indexed the GA planner and experiments (`optimizer/genetic.py`, `evaluation/ga_*.py`), `explain/cards.py` and their tests.
 - 2026-10-16 — Added `preference/history.py`, `evaluation/taste_users.py`, `evaluation/taste_eval.py` (MealRec real-taste users) and their tests.
+- 2026-10-21 — Added `evaluation/pantry_messages.py`, `evaluation/nlp_eval.py` and their tests (synthetic NLP set and scorer, fresh v3 benchmark).

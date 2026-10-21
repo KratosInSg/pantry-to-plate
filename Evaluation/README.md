@@ -18,6 +18,8 @@ below are test results. Validation results are kept in each folder as the develo
 | 05 | Solver backends (validation) | HiGHS and OR-Tools CP-SAT give the same plans; HiGHS stays the default | [05_solver_backends](05_solver_backends/README.md) |
 | 06 | Weight tuning (validation) | Adopted preference ×6 and nutrition ×2: liked-cuisine dinners 12.6 % → 27.6 % and calorie fit 57 % → 71 % for +2.8 grocery items. A waste ×2 setting passed its rule but was not adopted before the test run | [06_weight_tuning](06_weight_tuning/README.md) |
 | 07 | GA configuration (validation) | Population 48, 350 generations, mutation 0.20, chosen for speed with strong nutrition and waste results | [07_ga_configuration](07_ga_configuration/README.md) |
+| 08 | **Ingredient NLP (synthetic messages, fresh v3)** | Rules-only parser on 120 synthetic pantry messages (1,718 items): precision 0.98, recall 0.82, F1 0.90 [0.86, 0.92]; amounts and urgency almost always right once an item is found. Main gaps: " + " separators, unknown cue wording, regional names. Planning from the typed messages costs +49 g waste a week | [08_ingredient_nlp](08_ingredient_nlp/README.md) |
+| 09 | **Expiry safety margin (validation, then fresh v3)** | Planning estimated expiry dates 2 days early fixes 03: on 120 new kitchens it degrades no more than the planner without expiry awareness (−5.4 g and −4.4 g at 1 and 2 days early) and 8–10 g less than today's MILP, at no nominal cost. Not yet the app default | [09_expiry_safety_margin](09_expiry_safety_margin/README.md) |
 
 ## Against the proposal's evaluation plan
 
@@ -29,8 +31,8 @@ below are test results. Validation results are kept in each folder as the develo
 | Constraint safety | done (01) | 0 violations for every planner in every scenario |
 | Nutrition adherence | done (01, 02) | Dinners in the calorie band 3.5 % → 68 %; protein minimum 14 % → 58 % |
 | Preference quality | done (01, 02, 04) | +0.065 taste match vs greedy; validated on real people's ratings in 04 |
-| Ingredient NLP (precision / recall / F1) | **not done** | Needs the hand-labelled sentence set, which has not been built |
-| Optimisation robustness | done (03) | See 03; the proposal's expectation is not supported |
+| Ingredient NLP (precision / recall / F1) | done on a **synthetic** set (08) | P 0.98, R 0.82, F1 0.90 on 120 generator-labelled messages; the hand-labelled set has not been built |
+| Optimisation robustness | done (03, 09) | 03: not supported by the deployed MILP; 09: met by the safety-margin variant on the fresh v3 benchmark |
 | Stage 1 · Gate the data | done | Coverage and consistency gates in `data/canonical/README.md` |
 | Stage 2 · Beat the baselines | done (01) | Random and greedy, plus GA vs MILP |
 | Stage 3 · Ablate components | done (02) | Expiry, nutrition and preference terms |

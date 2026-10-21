@@ -1,0 +1,17 @@
+{
+ "version": "v3",
+ "created": "2026-10-21",
+ "n_scenarios": 120,
+ "files": {
+  "scenarios_v3.jsonl": "3c38b1bbc5bfb1305c038d59327ed63d1f2d44de379d0f776b306cb2af322cfe",
+  "split_v3.json": "10371ddf617afcd57148c08ea3f61efe5d2dd2e34d023cb083e8e7207a8833e6"
+ },
+ "dataset_manifest_sha256": "2ee9f7a27324f09e83e026044ad858c659170ff371068142deb87b48ca867fe8",
+ "provenance": {
+  "type": "generated",
+  "generator": "evaluation.scenarios (v1)",
+  "base_seed": 20261100,
+  "n_per_family": 15,
+  "validation_share": 0.0
+ }
+}

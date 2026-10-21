@@ -47,6 +47,13 @@ Decisions worth knowing
   have options.
 * **Ablations are weights**, not code branches (``ABLATIONS``): switching a term off cannot accidentally change anything
   else, which is what makes ablation results attributable.
+* **Robustness option: a safety margin on estimated expiry** (``estimate_margin_days``, variants in ``VARIANTS``). The
+  robustness study (Evaluation/03) found that trusting an *estimated* deadline to the day makes the plan fragile: the
+  model schedules estimated-expiry stock right up to its estimate, so when the food turns a day early it is wasted. With
+  a margin of ``m`` days the model plans as if every estimated deadline inside the week were ``m`` days earlier (never
+  before tonight); known use-by dates are facts and are not moved. Only the planning view changes - the scenario, the
+  evaluation and the explanations keep the real estimate. Chosen on the validation split, tested once on the fresh v3
+  benchmark (Evaluation/09).
 """
 from __future__ import annotations
 
@@ -87,6 +94,9 @@ class OptimizerWeights:
     protein_type_cap: int = 4          # same for meat / poultry / fish / vegetarian
     urgency_weighting: bool = True     # ablation switch: False = every gram of expiring stock costs the same
     confidence_weighting: bool = True  # ablation switch: False = estimated expiry dates are trusted like known ones
+    # robustness option: plan estimated (not known) expiry dates this many days early; 0 = trust the estimate. See the
+    # module docstring and ``conservative_pantry``.
+    estimate_margin_days: int = 0
 
 
 DEFAULT_WEIGHTS = OptimizerWeights()
@@ -103,6 +113,24 @@ ABLATIONS: dict[str, OptimizerWeights] = {
     "no_nutrition": replace(DEFAULT_WEIGHTS, kcal_deviation=0.0, protein_deviation=0.0),
     "no_preference": replace(DEFAULT_WEIGHTS, preference=0.0),
 }
+
+# Robustness variants: the full objective, with estimated expiry dates planned ``d`` days early (``opt_margin1``,
+# ``opt_margin2``). Not ablations - nothing is switched off - so they live in their own table.
+VARIANTS: dict[str, OptimizerWeights] = {f"margin{d}": replace(DEFAULT_WEIGHTS, estimate_margin_days=d) for d in (1, 2)}
+
+
+def conservative_pantry(pantry: list[PantryItem], margin_days: int) -> list[PantryItem]:
+    """The pantry as the planner sees it when estimated deadlines are not trusted to the day.
+
+    Known use-by dates are facts and are returned unchanged. An *estimated* deadline moves ``margin_days`` earlier,
+    clamped at day 0 (the user just told us the food is there, so it lasts at least tonight). Stock with no deadline is
+    unchanged. ``margin_days <= 0`` returns the pantry as it is. The input items are not modified.
+    """
+    if margin_days <= 0:
+        return list(pantry)
+    return [item if item.expiry_known or item.last_use_day is None
+            else item.model_copy(update={"last_use_day": max(0, item.last_use_day - margin_days)})
+            for item in pantry]
 
 
 @dataclass
@@ -166,9 +194,15 @@ class WeeklyPlanner:
                         len(feasible), horizon)
             return plan_from_indices(self.name, ctx, feasible.tolist(), horizon, n_feasible=len(feasible))
 
-        cand = shortlist(ctx.catalog, scenario.profile, scenario.pantry, prepared.feasible, prepared.preference,
+        # The planning view: with a safety margin, estimated deadlines are planned early (shortlist and model alike).
+        # The plan is still judged, explained and replayed against the scenario's real estimates.
+        view = scenario
+        if self.weights.estimate_margin_days > 0:
+            view = scenario.model_copy(update={"pantry": conservative_pantry(scenario.pantry,
+                                                                              self.weights.estimate_margin_days)})
+        cand = shortlist(ctx.catalog, view.profile, view.pantry, prepared.feasible, prepared.preference,
                          ctx.ignore_ids, self._shortlist_cfg)
-        model, handles = self._build(scenario, cand, prepared.preference)
+        model, handles = self._build(view, cand, prepared.preference)
         logger.debug("%s: shortlist %d of %d feasible; model %d vars (%d integer), %d constraints; backend %s",
                      self.name, len(cand), len(feasible), model.n_vars, model.n_integer, model.n_constraints,
                      self.backend)
@@ -373,7 +407,8 @@ CPSAT_SUFFIX = "_cpsat"
 
 
 def make_planner(name: str, ctx: PlanningContext, **kwargs) -> WeeklyPlanner:
-    """Factory used by the benchmark runner: ``optimiser`` or ``opt_<ablation>`` (see ``ABLATIONS``).
+    """Factory used by the benchmark runner: ``optimiser``, ``opt_<ablation>`` (see ``ABLATIONS``) or
+    ``opt_<variant>`` (see ``VARIANTS``, e.g. ``opt_margin1``).
 
     A ``_cpsat`` suffix (``optimiser_cpsat``, ``opt_no_expiry_cpsat``) selects the CP-SAT backend; the unsuffixed name
     uses HiGHS. The suffix stays in ``plan.method`` so a results table can never mix the two up.
@@ -385,5 +420,7 @@ def make_planner(name: str, ctx: PlanningContext, **kwargs) -> WeeklyPlanner:
         return WeeklyPlanner(ctx, DEFAULT_WEIGHTS, name, **kwargs)
     if base.startswith("opt_") and base[4:] in ABLATIONS:
         return WeeklyPlanner(ctx, ABLATIONS[base[4:]], name, **kwargs)
+    if base.startswith("opt_") and base[4:] in VARIANTS:
+        return WeeklyPlanner(ctx, VARIANTS[base[4:]], name, **kwargs)
     raise ValueError(f"unknown optimiser variant {name!r}; expected 'optimiser' or one of "
-                     f"{['opt_' + a for a in ABLATIONS]}, optionally with the '{CPSAT_SUFFIX}' suffix")
+                     f"{['opt_' + a for a in (*ABLATIONS, *VARIANTS)]}, optionally with the '{CPSAT_SUFFIX}' suffix")

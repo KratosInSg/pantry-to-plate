@@ -37,6 +37,13 @@ Freezing
 --------
 ``freeze_benchmark`` writes the scenarios, a stratified validation/test split and a ``FROZEN.json`` holding SHA-256
 hashes. ``load_split`` re-verifies them on every load, so tuning code cannot silently alter the test set.
+
+Versions
+--------
+``v1``/``v2`` (``data/evaluation/``, ``data/evaluation/v2/``): the 240-scenario benchmark (seeds 20261012-20261041 per
+family), 120 validation / 120 test. ``v3`` (``data/evaluation/v3/``): 120 *new* scenarios from the same generator with
+new seeds (20261100-20261114 per family), all in the test split - a fresh held-out set for methods chosen after the
+v2 test split had been used, and the source of the synthetic pantry-message NLP set (``evaluation.pantry_messages``).
 """
 from __future__ import annotations
 
@@ -282,22 +289,30 @@ def _sha256(path: Path) -> str:
 
 
 def freeze_benchmark(scenarios: Sequence[Scenario], out_dir: Path = DEFAULT_EVAL_DIR,
-                     dataset_manifest: Path | None = None) -> Path:
-    """Write scenarios + split + ``FROZEN.json`` (hashes). Refuses to overwrite an existing frozen benchmark."""
+                     dataset_manifest: Path | None = None, version: str = BENCHMARK_VERSION,
+                     validation_share: float = 0.5, provenance: dict | None = None) -> Path:
+    """Write scenarios + split + ``FROZEN.json`` (hashes). Refuses to overwrite an existing frozen benchmark.
+
+    ``version`` names the files (``scenarios_<version>.jsonl``, ``split_<version>.json``); a new independent sample
+    gets a new version and a new directory. ``validation_share=0`` freezes a test-only benchmark (every scenario in
+    ``"test"``), for a fresh held-out set that nothing may be tuned on. ``provenance`` is copied into ``FROZEN.json``.
+    """
     out_dir.mkdir(parents=True, exist_ok=True)
     frozen_path = out_dir / "FROZEN.json"
     if frozen_path.exists():
-        raise FileExistsError(f"{frozen_path} already exists: the benchmark is frozen. Bump BENCHMARK_VERSION and use "
-                              f"a new directory to create a new one.")
-    sc_path = out_dir / f"scenarios_{BENCHMARK_VERSION}.jsonl"
-    sp_path = out_dir / f"split_{BENCHMARK_VERSION}.json"
+        raise FileExistsError(f"{frozen_path} already exists: the benchmark is frozen. Use a new version and a new "
+                              f"directory to create a new one.")
+    sc_path = out_dir / f"scenarios_{version}.jsonl"
+    sp_path = out_dir / f"split_{version}.json"
     sc_path.write_text("\n".join(s.model_dump_json() for s in scenarios) + "\n", encoding="utf-8")
-    sp_path.write_text(json.dumps(split_benchmark(scenarios), indent=1), encoding="utf-8")
+    sp_path.write_text(json.dumps(split_benchmark(scenarios, validation_share), indent=1), encoding="utf-8")
     meta = {
-        "version": BENCHMARK_VERSION, "created": date.today().isoformat(), "n_scenarios": len(scenarios),
+        "version": version, "created": date.today().isoformat(), "n_scenarios": len(scenarios),
         "files": {sc_path.name: _sha256(sc_path), sp_path.name: _sha256(sp_path)},
         "dataset_manifest_sha256": _sha256(dataset_manifest) if dataset_manifest and dataset_manifest.exists() else None,
     }
+    if provenance:
+        meta["provenance"] = provenance
     frozen_path.write_text(json.dumps(meta, indent=1), encoding="utf-8")
     return frozen_path
 

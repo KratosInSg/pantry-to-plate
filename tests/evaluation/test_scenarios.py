@@ -108,3 +108,25 @@ def test_repository_benchmark_is_intact_and_balanced():
     assert not {s.scenario_id for s in val} & {s.scenario_id for s in test}
     for fam in FAMILIES:
         assert sum(s.family == fam for s in val) == sum(s.family == fam for s in test) == 15
+
+
+def test_freeze_can_name_a_new_version_and_make_a_test_only_benchmark(small_benchmark, tmp_path):
+    """A new independent sample gets its own file names, can be all-test, and records where it came from."""
+    path = freeze_benchmark(small_benchmark, tmp_path, version="v9", validation_share=0.0,
+                            provenance={"base_seed": SEED})
+    meta = json.loads(path.read_text(encoding="utf-8"))
+    assert meta["version"] == "v9" and meta["provenance"] == {"base_seed": SEED}
+    assert set(meta["files"]) == {"scenarios_v9.jsonl", "split_v9.json"}
+    assert load_split("validation", tmp_path) == []
+    assert len(load_split("test", tmp_path)) == len(small_benchmark)
+
+
+def test_repository_v3_benchmark_is_fresh_test_only_and_disjoint_from_v2():
+    """v3 = 120 new kitchens, all held out, none of them a v2 kitchen (new seeds)."""
+    from pathlib import Path
+    v3_dir = Path(__file__).resolve().parents[2] / "data" / "evaluation" / "v3"
+    v3 = load_split("test", v3_dir)
+    assert len(v3) == 120 and load_split("validation", v3_dir) == []
+    assert {fam: sum(s.family == fam for s in v3) for fam in FAMILIES} == {fam: 15 for fam in FAMILIES}
+    v2_ids = {s.scenario_id for split in ("validation", "test") for s in load_split(split, DEFAULT_EVAL_DIR)}
+    assert not v2_ids & {s.scenario_id for s in v3}

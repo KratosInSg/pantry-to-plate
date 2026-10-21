@@ -1,0 +1,12 @@
+{
+ "version": "m1",
+ "created": "2026-10-21",
+ "n_messages": 120,
+ "n_items": 1718,
+ "seed": 20261021,
+ "source": "scenarios of this directory's FROZEN.json",
+ "files": {
+  "pantry_messages_m1.jsonl": "6201255451b778c0382c626b190cd3d501472592e266e063bd0393244cfe4309"
+ },
+ "labels": "synthetic: generated from the kitchens, not written or labelled by people"
+}
