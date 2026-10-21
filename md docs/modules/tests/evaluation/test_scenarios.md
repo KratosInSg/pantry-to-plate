@@ -22,3 +22,4 @@ Only when `BENCHMARK_VERSION` is bumped and a new benchmark is frozen: update th
 ## Change log
 
 - 2026-10-12 — Created.
+- 2026-10-21 — Added `test_freeze_can_name_a_new_version_and_make_a_test_only_benchmark` and `test_repository_v3_benchmark_is_fresh_test_only_and_disjoint_from_v2`.

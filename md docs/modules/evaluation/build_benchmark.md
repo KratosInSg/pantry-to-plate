@@ -38,3 +38,4 @@ benchmark loads and is balanced.
 
 - 2026-10-12 — Created; ran once to freeze v1.
 - 2026-10-14 — Configures logging at start-up.
+- 2026-10-21 — `--version` and `--validation-share` options, provenance recorded in `FROZEN.json`; ran once to freeze v3 (`--out data/evaluation/v3 --version v3 --n-per-family 15 --seed 20261100 --validation-share 0`).

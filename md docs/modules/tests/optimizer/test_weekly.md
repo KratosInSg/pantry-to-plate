@@ -30,3 +30,4 @@ so the shortlist is kept at 50).
 - 2026-10-13 — Added the cost-term decomposition test.
 
 - 2026-10-16 — Added regression test that unavoidable expiring pantry stock absent from candidate demand contributes to the MILP's constant waste cost.
+- 2026-10-21 — Added `test_robustness_variants_are_named_planners`, `test_conservative_pantry_moves_only_estimated_deadlines`, `test_margin_stops_planned_use_of_estimated_stock_before_its_estimate` and `test_margin_planner_plans_a_complete_safe_week`.

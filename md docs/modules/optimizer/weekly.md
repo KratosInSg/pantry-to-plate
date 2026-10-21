@@ -115,3 +115,4 @@ Logger `optimizer.weekly`. DEBUG: shortlist size, model size (variables, integer
 - 2026-10-14 — Logging: model size, solve outcome and cost terms at DEBUG; no-candidate / no-solution at WARNING.
 
 - 2026-10-16 — Fixed constant waste accounting for expiring pantry ingredients absent from every shortlisted recipe. Their waste cannot be avoided by the solver, but must still be included in the reported objective. This adjusts objective reporting by a scenario-specific constant without changing recipe ranking. Motivated by GA-vs-MILP fixed-plan term audit.
+- 2026-10-21 — Robustness option `estimate_margin_days` (default 0: no change to the deployed planner) and `conservative_pantry`: estimated deadlines inside the week are planned `m` days early, known use-by dates untouched; planners `opt_margin1`, `opt_margin2` (`VARIANTS`). Selection on validation and the single v3 test: `Evaluation/09_expiry_safety_margin/`.

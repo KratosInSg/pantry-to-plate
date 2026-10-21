@@ -64,3 +64,4 @@ sensitivity to wrong shelf-life estimates.
 - 2026-10-12 — Created; v1 frozen into `data/evaluation/` (SHA-256 recorded in `FROZEN.json`).
 
 - 2026-10-15 — Default evaluation directory now points to `data/evaluation/v2/`, an audited byte-for-byte rebaseline of the original committed scenario and split files. The original v1 SHA-256 manifest did not match either committed file; v1 is retained unchanged. v2 does not represent independently regenerated scenarios or a new test set.
+- 2026-10-21 — `freeze_benchmark` takes `version`, `validation_share` and `provenance` (defaults unchanged). Used to freeze **v3** (`data/evaluation/v3/`): 120 new scenarios, seeds 20261100–20261114 per family, all in the test split - a fresh held-out set for methods chosen after the v2 test split was used, and the source of the synthetic NLP messages.

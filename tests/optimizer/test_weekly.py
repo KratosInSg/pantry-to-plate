@@ -16,7 +16,8 @@ from optimizer.candidates import ShortlistConfig, shortlist
 from optimizer.hard_rules import count_violations
 from optimizer.inventory import account_inventory, deadlines_from_pantry
 from optimizer.planning import prepare
-from optimizer.weekly import ABLATIONS, COST_TERMS, DEFAULT_WEIGHTS, WeeklyPlanner, make_planner
+from optimizer.weekly import (ABLATIONS, COST_TERMS, DEFAULT_WEIGHTS, VARIANTS, WeeklyPlanner, conservative_pantry,
+                              make_planner)
 
 SMALL = ShortlistConfig(size=50)
 
@@ -114,6 +115,48 @@ def test_make_planner_names(ctx):
     assert make_planner("opt_no_expiry", ctx).name == "opt_no_expiry"
     with pytest.raises(ValueError):
         make_planner("opt_nonsense", ctx)
+
+
+def test_robustness_variants_are_named_planners(ctx):
+    p = make_planner("opt_margin1", ctx)
+    assert p.name == "opt_margin1" and p.weights == VARIANTS["margin1"]
+    assert p.weights.estimate_margin_days == 1 and DEFAULT_WEIGHTS.estimate_margin_days == 0
+    assert make_planner("opt_margin2", ctx).weights.estimate_margin_days == 2
+    # everything except the margin is the deployed objective
+    assert VARIANTS["margin2"].waste_per_100g == DEFAULT_WEIGHTS.waste_per_100g
+    assert VARIANTS["margin2"].preference == DEFAULT_WEIGHTS.preference
+
+
+def test_conservative_pantry_moves_only_estimated_deadlines():
+    known = PantryItem(ingredient_id=1, grams=100, last_use_day=3, expiry_known=True)
+    estimate = PantryItem(ingredient_id=2, grams=100, last_use_day=3, expiry_known=False, expiry_confidence=0.5)
+    tonight = PantryItem(ingredient_id=3, grams=100, last_use_day=0, expiry_known=False, expiry_confidence=0.5)
+    keeps = PantryItem(ingredient_id=4, grams=100, last_use_day=None)
+    out = conservative_pantry([known, estimate, tonight, keeps], 2)
+    assert [i.last_use_day for i in out] == [3, 1, 0, None]          # known untouched, clamped at day 0
+    assert estimate.last_use_day == 3                                 # inputs are not modified
+    assert [i.last_use_day for i in conservative_pantry([estimate], 0)] == [3]
+
+
+def test_margin_stops_planned_use_of_estimated_stock_before_its_estimate(ctx, store):
+    """With a 1-day margin, an estimated deadline of day 2 can only be planned on days 0-1 (a known one keeps day 2)."""
+    spinach = store.ingredient_by_name("spinach").ingredient_id
+    for known, expected_days in ((False, 2), (True, 3)):
+        sc = Scenario(scenario_id="margin", pantry=[PantryItem(ingredient_id=spinach, grams=300, last_use_day=2,
+                                                               expiry_known=known, expiry_confidence=0.6)])
+        planner = _planner(ctx, weights=VARIANTS["margin1"])
+        view = sc.model_copy(update={"pantry": conservative_pantry(sc.pantry, 1)})
+        prepared = prepare(sc, ctx)
+        cand = shortlist(ctx.catalog, view.profile, view.pantry, prepared.feasible, prepared.preference,
+                         ctx.ignore_ids, SMALL)
+        _, handles = planner._build(view, cand, prepared.preference)
+        assert len(handles["use"][spinach]) == expected_days
+
+
+def test_margin_planner_plans_a_complete_safe_week(ctx, expiry_scenario):
+    plan = _planner(ctx, weights=VARIANTS["margin1"], name="opt_margin1").plan(expiry_scenario)
+    assert plan.is_complete and plan.planner == "opt_margin1"
+    assert count_violations(ctx.catalog, expiry_scenario.profile, _idx(ctx, plan)) == 0
 
 
 def test_cpsat_suffix_selects_the_backend_and_keeps_the_name(ctx):

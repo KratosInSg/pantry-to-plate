@@ -1,0 +1,76 @@
+# 08 · Ingredient NLP: how well does the parser read a pantry message?
+
+Evaluation measure 7 of the proposal (precision, recall, F1). The proposal planned a **manually written and labelled**
+set of pantry sentences; that set was not built. This evaluation uses a **synthetic** substitute and says so: 120 pantry
+messages, one per kitchen of the fresh v3 benchmark, written by a generator that also writes the answer key.
+
+| | |
+| --- | --- |
+| Data | `data/evaluation/v3/pantry_messages_m1.jsonl`: 120 messages, 1,718 food items, frozen (SHA-256) on 2026-10-21 before the parser saw them. Labels come from the generator (`src/evaluation/pantry_messages.py`), not from people |
+| Parser | `nlp.PantryParser`, **rules only** (the optional LLM fallback was not run: no model in the evaluation environment) |
+| Date / code | 2026-10-21 · `src/evaluation/nlp_eval.py` |
+| Commands | `python src/evaluation/nlp_eval.py --eval-dir data/evaluation/v3 --save` · `... --plan optimiser --save` (parse-then-plan) |
+| Rows | [`nlp_items_v3.csv`](nlp_items_v3.csv) (one row per item) · [`parse_then_plan_v3.csv`](parse_then_plan_v3.csv) (one row per kitchen × pantry source) · [`pantry_messages_v3.csv`](pantry_messages_v3.csv) (the 120 messages, to paste into the app) |
+
+What the messages contain: common names (70 %), other real aliases ("yellow onion", "firm tofu"), Singapore/British
+names ("prawns", "courgette", "minced beef", "capsicum"), harmless extra words ("fresh", "organic"), one-letter typos;
+amounts in grams/kg, counts ("half an onion"), volumes ("300 ml milk", "2 cups of rice"), containers ("a can of",
+"a tray of") or none; stated use-by dates ("expires tomorrow", "use by Friday") and qualitative cues ("going bad",
+"needs using soon"); comma, line, semicolon or " + " separated, sometimes with "I have" / "Pantry:" in front.
+
+## Result (rules-only parser, 120 messages)
+
+| Measure | Value [95 % CI, resampling messages] |
+| --- | --- |
+| **Precision** (confident ingredients that are right) | **0.983** [0.975, 0.989] |
+| **Recall** (food items found) | **0.822** [0.765, 0.867] |
+| **F1** | **0.895** [0.860, 0.922] |
+| Amount read correctly (found items) | 0.999 [0.996, 1.000] |
+| Urgency read correctly (found items) | 0.989 [0.983, 0.994]; items with a cue only: 0.944 |
+| Stated use-by day read correctly | 134 / 137 (0.978) |
+| Items the parser asked the user about (ambiguous) | 81 |
+| Messages read completely right | 19 % |
+
+Counts: 1,413 found, 25 confident wrong ingredients, 196 not recognised, 81 asked the user, 3 with no item, 0 food
+items invented from chatter.
+
+**Where it fails** (the main causes of the 305 misses, from the per-item rows):
+
+| Cause | Effect |
+| --- | --- |
+| **" + " as a separator** is not split (10 messages) | 131 items missed: recall 0.00 for those messages. Without them, recall is **0.890** [0.875, 0.905] and F1 **0.934** [0.924, 0.944] |
+| Unknown cue wording left in the name: "needs using soon", "should be used soon", "not so fresh anymore", "good until Friday" | recall 0.52 for items with a qualitative cue (vs 0.90 with no cue); the item is unresolved or ambiguous |
+| Unknown container word "tray"; openings such as "Things at home:" stuck to the first item | the item is unresolved or ambiguous |
+| Singapore/British names | recall 0.44: "beef mince" and "minced beef" read as *beef*, "lean minced beef" as *lean beef*, "sweetcorn" not recognised; "prawns", "spring onions", "double cream", "plain flour", "courgette" read correctly |
+| Near-duplicate vocabulary entries | some "wrong" answers are the same food under another entry: "green capsicum" → *green bell pepper* (key: *green pepper*), "tuna in water" → *tuna* |
+
+Recall by name type: common name 0.83, other alias 0.89, extra word 0.86, typo 0.81, regional 0.44. When an item *is*
+found, its amount and urgency are almost always right.
+
+## Parse-then-plan: what reading the message costs the week
+
+Each v3 kitchen was planned twice by the MILP optimiser: from its frozen structured pantry, and from the parser's
+reading of its message. Both plans are judged on the **same** frozen kitchen (hidden true expiry dates).
+
+| Metric (mean of 120 kitchens) | Structured pantry | Typed message | Typed − structured [95 % CI] |
+| --- | --- | --- | --- |
+| Waste (g/week) | 697.9 | 746.6 | **+48.7** [+30.5, +70.9] |
+| Extra grocery items | 15.7 | 16.3 | +0.63 [+0.03, +1.31] |
+| Extra groceries (g) | 1,403 | 1,506 | +103 [+50, +160] |
+| Dinners in calorie band % | 65.8 | 68.2 | +2.4 [−1.2, +6.4] |
+| Hard-rule violations | 0 | 0 | 0 |
+| Complete weeks | 100 % | 100 % | 0 |
+
+Missed items are planned as if absent, so the week wastes about 49 g more and buys slightly more; safety and
+completeness are unaffected. This is the cost of the misses above, plus small differences between the grams a message
+states (rounded counts, cups) and the kitchen's exact grams.
+
+## Caveats
+
+- **Synthetic labels.** The messages measure how well the parser reads *this generator's phrasing*. Real users' wording
+  will differ; the proposal's manually labelled set remains future work.
+- **Rules only.** The LLM fallback, which re-reads exactly the low-confidence fragments that fail here, was not run.
+  With a model available: `python src/evaluation/nlp_eval.py --eval-dir data/evaluation/v3 --llm`.
+- **Strict matching.** A near-synonym entry counts as wrong.
+- **Do not tune the parser on this set.** The four gaps above are easy to fix; a fixed parser must be measured on a new
+  message set (new seed and version) to give an unbiased number.

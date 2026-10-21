@@ -14,7 +14,7 @@
 | 4 | Constraint safety | Diet/allergy violations — must be zero |
 | 5 | Nutrition adherence | Intake vs. the user's target range |
 | 6 | Preference quality | Preference score, disliked-meal rate |
-| 7 | Ingredient NLP | Precision, recall, F1 on the labelled set |
+| 7 | Ingredient NLP | Precision, recall, F1 on the labelled set (2026-10-21: measured on a synthetic, generator-labelled set; see `Evaluation/08`) |
 | 8 | Robustness | How much the plan degrades under perturbed expiry/quantities |
 
 All eight are measured on the same frozen held-out scenarios, for every method, baselines included.
@@ -462,3 +462,16 @@ the AUC column above.
 
 - Real taste satisfaction — there's no real user panel. Preference quality in the planning benchmark is measured against synthetic profiles with known likes/dislikes. The real-taste check above uses real people's past ratings (MealRec), but it is offline (ranking their later-rated dinners), positive-only, and not a study of people eating our plans.
 - Constraint safety is relative to the knowledge base — hidden allergens in branded/packaged products aren't covered yet (see architecture.md → Out of scope).
+
+## 2026-10-21 · Fresh benchmark v3, synthetic NLP set, expiry safety margin
+
+* **v3** (`data/evaluation/v3/`): 120 new kitchens, new seeds, all test - fresh data for anything chosen after the v2
+  test run.
+* **Ingredient NLP** (`Evaluation/08_ingredient_nlp/`): 120 synthetic pantry messages from the v3 kitchens, labels from
+  the generator. Rules-only parser: P 0.983, R 0.822, F1 0.895 [0.860, 0.922]; without the 10 " + "-separated
+  messages R 0.890, F1 0.934. Parse-then-plan: +48.7 g waste [+30.5, +70.9] versus planning from the structured pantry.
+  Do not tune the parser on m1; measure a fixed parser on a new message set.
+* **Safety margin** (`Evaluation/09_expiry_safety_margin/`): `opt_margin2` chosen on v2 validation by a pre-written rule,
+  run once on v3. Degradation versus `opt_no_expiry`: −5.4 g [−11.6, +0.0] (1 day early), −4.4 g [−12.5, +2.8]
+  (2 days early) - measure 8 met; versus today's `optimiser`: −7.7 g and −9.5 g, CIs below 0; no nominal cost. Not yet the
+  default.
