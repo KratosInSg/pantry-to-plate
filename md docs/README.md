@@ -38,7 +38,7 @@ October 2026 — prototype implemented; frozen held-out evaluation completed on 
 | Hard-rule filter, preference scorer, shortlist, inventory accounting (`src/preference/`, `src/optimizer/`) | done |
 | Ingredient substitution rules (`optimizer/substitutions.py`; buttermilk ← milk + lemon juice, …) | done: fired on the replay from spare, hard-rule-safe stock; shown in the grocery box, ingredient lines and the Substitution card. Not yet inside the optimiser's objective |
 | Weekly optimiser (MILP; HiGHS default, OR-Tools CP-SAT as a second backend in a child process) and baselines | done; ≈ 6 s per plan; solver comparison in `evaluation.md` |
-| Evaluation: benchmark frozen (240 scenarios; v2 = byte-exact rebaseline of v1), metrics, runner, robustness (`evaluation/robustness.py`) | done; **test split run once (2026-10-16)**, results in `Evaluation/`; NLP evaluated on 120 synthetic generator-labelled v3 messages (precision 0.983, recall 0.822, F1 0.895); no human-labelled dataset yet |
+| Evaluation: benchmark frozen (240 scenarios; v2 = byte-exact rebaseline of v1), metrics, runner, robustness (`evaluation/robustness.py`) | done; **test split run once (2026-10-16)**, results in `Evaluation/`; NLP evaluated on 120 synthetically generated, team-reviewed v3 messages (precision 0.983, recall 0.822, F1 0.895) |
 | LLM runtime (Ollama + `qwen3:8b`) and client (`src/llm/`) | done; checked live |
 | Preferences from ratings (`preference/history.py`) + real-taste check on 100 MealRec users (`evaluation/taste_users.py`, `taste_eval.py`) | done; test users run once. Nearest liked dishes + tags: HR@10 0.202 (chance 0.10), AUC 0.622, ahead of popularity (HR@10 0.119) with CIs clear of zero. **In the planner**: the scorer's rating-history term over `UserProfile.rated_dinners`, fed by the UI's "Loved it" mark |
 | NLP LLM fallback (`src/nlp/llm_fallback.py`) | done; validated against the user's words; not yet scored on a labelled set |
@@ -50,6 +50,6 @@ October 2026 — prototype implemented; frozen held-out evaluation completed on 
 
 ## October 21 evaluation updates
 
-- [Ingredient NLP](../Evaluation/08_ingredient_nlp/README.md): 120 synthetic generator-labelled messages (1,718 ingredient mentions), rules-only precision 0.983, recall 0.822, F1 0.895. Not hand-labelled; optional LLM fallback not evaluated.
+- [Ingredient NLP](../Evaluation/08_ingredient_nlp/README.md): 120 synthetically generated, team-reviewed messages (1,718 ingredient mentions), rules-only precision 0.983, recall 0.822, F1 0.895. Initial labels were programmatically generated and reviewed by the team; optional LLM fallback not evaluated.
 - [Expiry safety margin](../Evaluation/09_expiry_safety_margin/README.md): two-day margin selected on v2 validation and tested on fresh v3 kitchens. It improves robustness to early spoilage but is not yet the default planner.
 - [Frozen v3 benchmark](../data/evaluation/v3/README.md): 120 new test-only kitchens plus synthetic pantry-message answer keys.
