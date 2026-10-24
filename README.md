@@ -3,12 +3,24 @@
 
 **NUS-ISS · MTech in AI Systems · Intelligent Reasoning Systems (IRS) Practice Module**
 
-**Team:** Aryan Chopra and Shreyash Sarade  
+**Team:** Aryan Chopra (A0353345E) and Shreyash Sarade (A0354057A)  
+**Live application:** [Open Pantry-to-Plate on Streamlit](https://pantry-to-plate-369.streamlit.app)  
 **Project status:** Completed prototype and recorded held-out evaluation (October 2026). This repository is for academic assessment, not a deployed grocery subscription service.
 
 Pantry-to-Plate converts pantry descriptions written in ordinary language into a **seven-day dinner plan** and a list of **additional ingredients needed**. It accounts for dietary and allergen restrictions, estimated or known use-by dates, nutrition targets, preferences, weekday cooking time, and available pantry stock. Each dinner includes traceable explanations. The application supports mid-week replanning and a “Loved it” feedback signal.
 
 > **Scope:** One household profile; dinners only; academic prototype. No payment, grocery delivery, clinical dietary advice, packaged-food allergen verification, or real-household food-waste trial.
+
+## Team and GitHub
+
+| Member | NUS-ISS student ID | GitHub |
+| --- | --- | --- |
+| Aryan Chopra | A0353345E | [@KratosInSg](https://github.com/KratosInSg) (current repository owner) |
+| Shreyash Jitendra Sarade | A0354057A | [@Shreyash855](https://github.com/Shreyash855) |
+
+**Live demo:** https://pantry-to-plate-369.streamlit.app
+
+The formal `member-github.txt` file is included separately in the final NUS-ISS submission package.
 
 ## Quick start
 
@@ -71,7 +83,7 @@ All three planners produced complete seven-dinner plans with **zero recorded har
 
 | Resource | Contents |
 | --- | --- |
-| [Evaluation results index](Evaluation/README.md) | Seven experiment families, raw CSVs, confidence intervals and caveats |
+| [Evaluation results index](Evaluation/README.md) | Nine experiment families, raw CSVs, confidence intervals and caveats |
 | [01 — Planner comparison](Evaluation/01_planner_comparison/README.md) | Random, greedy, GA, MILP, test/validation and GA seeds |
 | [02 — Ablations](Evaluation/02_ablations/README.md) | Expiry, nutrition and preference objective contributions |
 | [03 — Robustness](Evaluation/03_robustness/README.md) | Earlier expiry and incorrect pantry quantities; negative findings reported |
@@ -99,7 +111,7 @@ Reproduction commands for the published evaluation are in [Evaluation/README.md]
 
 The recipe corpus comes from Food.com; nutrition is joined from USDA FoodData Central; shelf-life estimates use USDA FoodKeeper. The real-taste study uses MealRec (Allrecipes-derived ratings). Ingredient amounts for retained Food.com recipes were estimated against nutritional constraints, not directly observed. Some expiry dates are estimates. Dataset licensing and permission must be reviewed before commercial use; MealRec raw/derived user data is not redistributed here.
 
-The app is a research prototype, not a clinically validated diet planner or an allergen certification tool. It has no persistent user accounts, payment processing or actual grocery fulfilment. See the security checklist before any public deployment.
+The app is a research prototype, not a clinically validated diet planner or an allergen certification tool. It has no persistent user accounts, payment processing or actual grocery fulfilment. See the security checklist for production-hardening considerations; the current prototype is accessible through Streamlit Community Cloud.
 
 ## NUS-ISS submission
 
