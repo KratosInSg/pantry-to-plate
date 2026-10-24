@@ -25,28 +25,22 @@ MVP scope: one user, one week, mainly dinners.
 
 The week-by-week build plan (with the subagent/skill setup) lives in the [implementation roadmap](https://claude.ai/code/artifact/076c7456-5243-4511-ac52-b8f4a7cca012).
 
-## Status
+## Implemented system
 
-October 2026 — prototype implemented; frozen held-out evaluation completed on 16 October. See the [root README](../README.md) for current submission status and quick start.
+The current application is deployed at [pantry-to-plate-369.streamlit.app](https://pantry-to-plate-369.streamlit.app). The project integrates the following components:
 
-| Component | State |
+| Component | Implementation and evidence |
 | --- | --- |
-| Data build + curated dataset (`data/canonical/`) | done |
-| Knowledge store (`src/knowledge/store.py`) | done |
-| NLP pantry parser (`src/nlp/`) | done (rules-based; optional LLM fallback) |
-| Recipe catalogue, domain models, pantry conversion (`src/knowledge/recipes.py`, `src/domain/`) | done |
-| Hard-rule filter, preference scorer, shortlist, inventory accounting (`src/preference/`, `src/optimizer/`) | done |
-| Ingredient substitution rules (`optimizer/substitutions.py`; buttermilk ← milk + lemon juice, …) | done: fired on the replay from spare, hard-rule-safe stock; shown in the grocery box, ingredient lines and the Substitution card. Not yet inside the optimiser's objective |
-| Weekly optimiser (MILP; HiGHS default, OR-Tools CP-SAT as a second backend in a child process) and baselines | done; ≈ 6 s per plan; solver comparison in `evaluation.md` |
-| Evaluation: benchmark frozen (240 scenarios; v2 = byte-exact rebaseline of v1), metrics, runner, robustness (`evaluation/robustness.py`) | done; **test split run once (2026-10-16)**, results in `Evaluation/`; NLP evaluated on 120 synthetically generated, team-reviewed v3 messages (precision 0.983, recall 0.822, F1 0.895) |
-| LLM runtime (Ollama + `qwen3:8b`) and client (`src/llm/`) | done; checked live |
-| Preferences from ratings (`preference/history.py`) + real-taste check on 100 MealRec users (`evaluation/taste_users.py`, `taste_eval.py`) | done; test users run once. Nearest liked dishes + tags: HR@10 0.202 (chance 0.10), AUC 0.622, ahead of popularity (HR@10 0.119) with CIs clear of zero. **In the planner**: the scorer's rating-history term over `UserProfile.rated_dinners`, fed by the UI's "Loved it" mark |
-| NLP LLM fallback (`src/nlp/llm_fallback.py`) | done; validated against the user's words; not yet scored on a labelled set |
-| Explainer (`src/explain/`): facts → templates → optional validated LLM paraphrase | done; template text complete without an LLM; paraphrase 30/32 sections accepted live |
-| App service layer (`src/app/`): pantry review, profile, plan, grocery box, steps | done |
-| Mid-week replanning (`optimizer/replan.py`; reject / skip a dinner, roll the pantry forward) | done (alternatives-with-trade-offs and counterfactual diffs not built) |
-| UI prototype (`src/ui/`, Streamlit) | done: pantry review, profile, week, shopping list, re-plan; run with `streamlit run src/ui/streamlit_app.py` |
+| Data and knowledge | Curated canonical ingredients, Food.com recipe catalogue, USDA nutrition and FoodKeeper shelf-life reference data |
+| Natural-language pantry entry | Rules-first ingredient, quantity and urgency parsing with validated optional LLM fallback; rules-only parser evaluated in [Evaluation/08](../Evaluation/08_ingredient_nlp/README.md) |
+| Safety and inventory reasoning | Dietary/allergen filtering, hard-rule-safe ingredient substitutions, inventory replay and expiry-aware feasibility |
+| Weekly optimisation | SciPy/HiGHS MILP, OR-Tools CP-SAT cross-check, genetic algorithm, greedy and random baselines |
+| Personalisation | Content-based preferences with session feedback from “Loved it”; evaluated on MealRec users |
+| Explainable recommendations | Deterministic facts, eight evidence cards and optional validated LLM paraphrasing |
+| Interactive application | Streamlit pantry review, user profile, seven-dinner planning, grocery list and mid-week replanning |
+| Quantitative evaluation | [Nine studies](../Evaluation/README.md) covering held-out planning, ablations, robustness, preference ranking, NLP, solver comparison and GA tuning |
 
+The two-day expiry safety margin is an independently evaluated experimental planner variant; the published application uses the original MILP default. Ingredient substitutions are applied after weekly optimisation. The optional LLM is not required for core planning.
 
 ## October 21 evaluation updates
 
