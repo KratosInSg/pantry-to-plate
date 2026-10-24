@@ -45,8 +45,8 @@ only differ in the plan they hand in, never in how they are judged.
 
 ## Additional completed evaluations
 
-* **Robustness:** Expiry and pantry-quantity perturbations are evaluated in `src/evaluation/robustness.py`, including the two-day estimated-expiry safety-margin experiment on fresh v3 kitchens. See [Evaluation/03](../../../../Evaluation/03_robustness/README.md) and [Evaluation/09](../../../../Evaluation/09_expiry_safety_margin/README.md).
-* **Ingredient NLP:** Precision, recall, F1 and field-level accuracy are evaluated in `src/evaluation/nlp_eval.py` on 120 synthetically generated, team-reviewed pantry messages (1,718 ingredient mentions). See [Evaluation/08](../../../../Evaluation/08_ingredient_nlp/README.md). These measurements use generated answer keys reviewed by the team, rather than independently collected real-user annotations.
+* **Robustness:** Expiry and pantry-quantity perturbations are evaluated in `src/evaluation/robustness.py`, including the two-day estimated-expiry safety-margin experiment on fresh v3 kitchens. See [Evaluation/03](../../../Evaluation/03_robustness/README.md) and [Evaluation/09](../../../Evaluation/09_expiry_safety_margin/README.md).
+* **Ingredient NLP:** Precision, recall, F1 and field-level accuracy are evaluated in `src/evaluation/nlp_eval.py` on 120 synthetically generated, team-reviewed pantry messages (1,718 ingredient mentions). See [Evaluation/08](../../../Evaluation/08_ingredient_nlp/README.md). These measurements use generated answer keys reviewed by the team, rather than independently collected real-user annotations.
 
 ## Tests
 
